@@ -40,4 +40,4 @@ The current supported list of crypto currencies are:
 - thorcoin
 - xmascoin
 
-It's possible some of these coins may eventually be submitted into the ports tree after they gain enough demand and popularity.
+It's possible some of these coins may eventually be submitted into the ports tree after they gain enough demand and popularity.  If you found this work helpful and would like to show your thanks you may send aome BTC to: 1B6eyXVRPxdEitW5vWrUnzzXUy6o38P9wN or some ZET to: ZK6kdE5H5q7H6QRNRAuqLF6RrVD4cFbiNX
