@@ -1,0 +1,479 @@
+# This is a shell archive.  Save it in a file, remove anything before
+# this line, and then unpack it by entering "sh file".  Note, it may
+# create directories; files and directories will be owned by you and
+# have default permissions.
+#
+# This archive contains:
+#
+#	octocoin
+#	octocoin/files
+#	octocoin/files/pkg-message.in
+#	octocoin/files/octocoin.in
+#	octocoin/files/patch-src-m4-octocoin_find_bdb48_m4
+#	octocoin/files/octocoin.conf.sample
+#	octocoin/files/patch-src__scrypt.h
+#	octocoin/files/patch-src__scrypt.cpp
+#	octocoin/files/patch-compat-h.patch
+#	octocoin/files/extra-patch-configure_ac
+#	octocoin/files/octocoin-qt.desktop
+#	octocoin/Makefile
+#	octocoin/pkg-descr
+#	octocoin/pkg-plist
+#	octocoin/distinfo
+#
+echo c - octocoin
+mkdir -p octocoin > /dev/null 2>&1
+echo c - octocoin/files
+mkdir -p octocoin/files > /dev/null 2>&1
+echo x - octocoin/files/pkg-message.in
+sed 's/^X//' >octocoin/files/pkg-message.in << '9c3547cd16821b86232ae3d80d630931'
+X*******************************************************************
+XTo configure the OctoCoin server please edit: 
+X%%PREFIX%%/etc/%%PORTNAME%%.conf
+X
+XYou must at least set a "rpcpassword" in the configuration file above.
+X
+XTo run the %%PORTNAME%%d server at startup, add the following
+Xsettings to your /etc/rc.conf
+X
+X%%PORTNAME%%_enable="YES"
+X
+X*******************************************************************
+9c3547cd16821b86232ae3d80d630931
+echo x - octocoin/files/octocoin.in
+sed 's/^X//' >octocoin/files/octocoin.in << '6d59213ff1cba2c686836b13c42689c5'
+X#!/bin/sh
+X#
+X# $FreeBSD: $
+X#
+X
+X# PROVIDE: %%PORTNAME%%
+X# REQUIRE: LOGIN
+X# KEYWORD: shutdown
+X
+X#
+X# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+X# to enable this service:
+X#
+X# %%PORTNAME%%_enable (bool):	Set to NO by default.
+X#				Set it to YES to enable %%PORTNAME%%.
+X# %%PORTNAME%%_config (path):	Set to %%PREFIX%%/etc/%%PORTNAME%%.conf
+X#				by default.
+X# %%PORTNAME%%_user:	The user account %%PORTNAME%% daemon runs as
+X#				It uses 'root' user by default.
+X# %%PORTNAME%%_group:	The group account %%PORTNAME%% daemon runs as
+X#				It uses 'wheel' group by default.
+X# %%PORTNAME%%_datadir (str):	Default to "/var/db/%%PORTNAME%%"
+X#				Base data directory.
+X
+X. /etc/rc.subr
+X
+Xname=%%PORTNAME%%
+Xrcvar=%%PORTNAME%%_enable
+X
+X: ${%%PORTNAME%%_enable:=NO}
+X: ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
+X: ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}
+X: ${%%PORTNAME%%_user="root"}
+X: ${%%PORTNAME%%_group="wheel"}
+X
+Xrequired_files=${%%PORTNAME%%_config}
+Xcommand=%%PREFIX%%/bin/%%PORTNAME%%d
+X%%PORTNAME%%_chdir=${%%PORTNAME%%_datadir}
+Xpidfile="${%%PORTNAME%%_datadir}/%%PORTNAME%%d.pid"
+Xstop_cmd=%%PORTNAME%%_stop
+Xcommand_args="-conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} -noupnp -daemon -pid=${pidfile}"
+Xstart_precmd="${name}_prestart"
+X
+X%%PORTNAME%%_create_datadir()
+X{
+X	echo "Creating data directory"
+X	eval mkdir -p ${%%PORTNAME%%_datadir}
+X	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_datadir}
+X	#n -s ${%%PORTNAME%%_datadir} /.%%PORTNAME%%
+X}
+X
+X%%PORTNAME%%_prestart()
+X{
+X	if [ ! -d "${%%PORTNAME%%_datadir}/." ]; then
+X		%%PORTNAME%%_create_datadir || return 1
+X	fi
+X}
+X
+X%%PORTNAME%%_requirepidfile()
+X{
+X	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
+X		echo "${name} not running? (check $pidfile)."
+X		exit 1
+X	fi
+X}
+X
+X%%PORTNAME%%_stop()
+X{
+X    %%PORTNAME%%_requirepidfile
+X
+X	echo "Stopping ${name}."
+X	eval ${command} -conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} stop
+X	wait_for_pids ${rc_pid}
+X}
+X
+Xload_rc_config $name
+Xrun_rc_command "$1"
+6d59213ff1cba2c686836b13c42689c5
+echo x - octocoin/files/patch-src-m4-octocoin_find_bdb48_m4
+sed 's/^X//' >octocoin/files/patch-src-m4-octocoin_find_bdb48_m4 << 'cd7b1cb19fe689bdf5ab297030c66bb0'
+X--- src/m4/octocoin_find_bdb48.m4.orig	1969-12-31 19:00:00.000000000 -0500
+X+++ src/m4/octocoin_find_bdb48.m4	2014-06-29 23:44:57.000000000 -0400
+X@@ -0,0 +1,66 @@
+X+AC_DEFUN([OCTOCOIN_FIND_BDB48],[
+X+  AC_MSG_CHECKING([for Berkeley DB C++ headers])
+X+  BDB_CPPFLAGS=
+X+  BDB_LIBS=
+X+  bdbpath=X
+X+  bdb48path=X
+X+  bdbdirlist=
+X+  for _vn in 4.8 48 4 5 ''; do
+X+    for _pfx in b lib ''; do
+X+      bdbdirlist="$bdbdirlist ${_pfx}db${_vn}"
+X+    done
+X+  done
+X+  for searchpath in $bdbdirlist ''; do
+X+    test -n "${searchpath}" && searchpath="${searchpath}/"
+X+    AC_TRY_COMPILE([
+X+      #include <${searchpath}db_cxx.h>
+X+    ],[
+X+      #if !((DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 8) || DB_VERSION_MAJOR > 4)
+X+        #error "failed to find bdb 4.8+"
+X+      #endif
+X+    ],[
+X+      if test "x$bdbpath" = "xX"; then
+X+        bdbpath="${searchpath}"
+X+      fi
+X+    ],[
+X+      continue
+X+    ])
+X+    AC_TRY_COMPILE([
+X+      #include <${searchpath}db_cxx.h>
+X+    ],[
+X+      #if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR == 8)
+X+        #error "failed to find bdb 4.8"
+X+      #endif
+X+    ],[
+X+      bdb48path="${searchpath}"
+X+      break
+X+    ])
+X+  done
+X+  if test "x$bdbpath" = "xX"; then
+X+    AC_MSG_RESULT([no])
+X+    AC_MSG_ERROR(libdb_cxx headers missing)
+X+  elif test "x$bdb48path" = "xX"; then
+X+    OCTOCOIN_SUBDIR_TO_INCLUDE(BDB_CPPFLAGS,[${bdbpath}],db_cxx)
+X+    AC_ARG_WITH([incompatible-bdb],[AS_HELP_STRING([--with-incompatible-bdb], [allow using a bdb version other than 4.8])],[
+X+      AC_MSG_WARN([Found Berkeley DB other than 4.8; wallets opened by this build will not be portable!])
+X+    ],[
+X+      AC_MSG_ERROR([Found Berkeley DB other than 4.8, required for portable wallets (--with-incompatible-bdb to ignore)])
+X+    ])
+X+  else
+X+    OCTOCOIN_SUBDIR_TO_INCLUDE(BDB_CPPFLAGS,[${bdb48path}],db_cxx)
+X+    bdbpath="${bdb48path}"
+X+  fi
+X+  AC_SUBST(BDB_CPPFLAGS)
+X+  
+X+  # TODO: Ideally this could find the library version and make sure it matches the headers being used
+X+  for searchlib in db_cxx-4.8 db_cxx; do
+X+    AC_CHECK_LIB([$searchlib],[main],[
+X+      BDB_LIBS="-l${searchlib}"
+X+      break
+X+    ])
+X+  done
+X+  if test "x$BDB_LIBS" = "x"; then
+X+      AC_MSG_ERROR(libdb_cxx missing)
+X+  fi
+X+  AC_SUBST(BDB_LIBS)
+X+])
+cd7b1cb19fe689bdf5ab297030c66bb0
+echo x - octocoin/files/octocoin.conf.sample
+sed 's/^X//' >octocoin/files/octocoin.conf.sample << '8cbff8086d65fc4b87344fc15745bc14'
+Xrpcuser=myname
+X#rpcpassword=YOU MUST SET A PASSWORD
+Xmaxconnections=20
+Xrpcallowip=127.0.0.1
+Xrpcport=22888
+Xport=22889
+Xserver=1
+Xdaemon=1
+Xlisten=1
+Xlogtimestamps=1
+Xaddnode=octocoin.securepayment.cc:22889
+8cbff8086d65fc4b87344fc15745bc14
+echo x - octocoin/files/patch-src__scrypt.h
+sed 's/^X//' >octocoin/files/patch-src__scrypt.h << 'e54b0b32bba587c765a8600cc22a2e92'
+X--- src/scrypt.h.orig	2014-05-28 18:12:14.000000000 -0400
+X+++ src/scrypt.h	2014-06-29 23:57:50.000000000 -0400
+X@@ -29,19 +29,4 @@
+X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
+X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+X 
+X-static inline uint32_t le32dec(const void *pp)
+X-{
+X-        const uint8_t *p = (uint8_t const *)pp;
+X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+X-}
+X-
+X-static inline void le32enc(void *pp, uint32_t x)
+X-{
+X-        uint8_t *p = (uint8_t *)pp;
+X-        p[0] = x & 0xff;
+X-        p[1] = (x >> 8) & 0xff;
+X-        p[2] = (x >> 16) & 0xff;
+X-        p[3] = (x >> 24) & 0xff;
+X-}
+X-#endif
+X\ No newline at end of file
+X+#endif
+e54b0b32bba587c765a8600cc22a2e92
+echo x - octocoin/files/patch-src__scrypt.cpp
+sed 's/^X//' >octocoin/files/patch-src__scrypt.cpp << 'e1afd96c8e4c14bbe528d54f57491754'
+X--- src/scrypt.cpp.orig	2014-05-28 18:12:14.000000000 -0400
+X+++ src/scrypt.cpp	2014-06-29 23:59:37.000000000 -0400
+X@@ -35,6 +35,7 @@
+X #include <stdint.h>
+X #include <string.h>
+X #include <openssl/sha.h>
+X+#include <boost/lexical_cast.hpp>
+X 
+X #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
+X #ifdef _MSC_VER
+X@@ -46,22 +47,6 @@
+X #endif
+X #endif
+X 
+X-static inline uint32_t be32dec(const void *pp)
+X-{
+X-	const uint8_t *p = (uint8_t const *)pp;
+X-	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
+X-	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
+X-}
+X-
+X-static inline void be32enc(void *pp, uint32_t x)
+X-{
+X-	uint8_t *p = (uint8_t *)pp;
+X-	p[3] = x & 0xff;
+X-	p[2] = (x >> 8) & 0xff;
+X-	p[1] = (x >> 16) & 0xff;
+X-	p[0] = (x >> 24) & 0xff;
+X-}
+X-
+X typedef struct HMAC_SHA256Context {
+X 	SHA256_CTX ictx;
+X 	SHA256_CTX octx;
+e1afd96c8e4c14bbe528d54f57491754
+echo x - octocoin/files/patch-compat-h.patch
+sed 's/^X//' >octocoin/files/patch-compat-h.patch << 'f09f8f46e9d037212e4c092da53b88b9'
+X--- src/compat.h.orig	2014-05-28 18:12:14.000000000 -0400
+X+++ src/compat.h	2014-06-30 00:05:46.000000000 -0400
+X@@ -30,6 +30,7 @@
+X #else
+X #include <sys/types.h>
+X #include <arpa/inet.h>
+X+#include <sys/socket.h>
+X #include <ifaddrs.h>
+X #include <limits.h>
+X #include <net/if.h>
+X@@ -37,7 +38,6 @@
+X #include <netinet/in.h>
+X #include <sys/fcntl.h>
+X #include <sys/mman.h>
+X-#include <sys/socket.h>
+X #include <unistd.h>
+X #endif
+X 
+f09f8f46e9d037212e4c092da53b88b9
+echo x - octocoin/files/extra-patch-configure_ac
+sed 's/^X//' >octocoin/files/extra-patch-configure_ac << 'f0a7ea62b4104a6ece5afd8c7ebd54d2'
+X--- configure.ac.orig	2014-05-28 18:12:14.000000000 -0400
+X+++ configure.ac	2014-06-29 23:52:48.000000000 -0400
+X@@ -233,7 +233,7 @@
+X        if test x$BREW = xbrew; then
+X          dnl add default homebrew paths
+X          openssl_prefix=`$BREW --prefix openssl`
+X-         bdb_prefix=`$BREW --prefix berkeley-db5`
+X+         bdb_prefix=`$BREW --prefix berkeley-db4`
+X          export PKG_CONFIG_PATH="$openssl_prefix/lib/pkgconfig:$PKG_CONFIG_PATH"
+X          CPPFLAGS="$CPPFLAGS -I$bdb_prefix/include"
+X          LIBS="$LIBS -L$bdb_prefix/lib"
+X@@ -359,7 +359,7 @@
+X 
+X if test x$enable_wallet != xno; then
+X     dnl Check for libdb_cxx only if wallet enabled
+X-    OCTOCOIN_FIND_BDB51
+X+    OCTOCOIN_FIND_BDB48
+X fi
+X 
+X dnl Check for libminiupnpc (optional)
+f0a7ea62b4104a6ece5afd8c7ebd54d2
+echo x - octocoin/files/octocoin-qt.desktop
+sed 's/^X//' >octocoin/files/octocoin-qt.desktop << 'aa78cd8c9d17f5d87014e6bb5f7738ec'
+X[Desktop Entry]
+XEncoding=UTF-8
+XName=Octocoin
+XComment=Octocoin P2P Cryptocurrency
+XComment[fr]=Octocoin, monnaie virtuelle cryptographique pair à pair
+XComment[tr]=Octocoin, esten ese kriptografik sanal para birimi
+XExec=octocoin-qt %u
+XTerminal=false
+XType=Application
+XIcon=octocoin
+XMimeType=x-scheme-handler/octocoin;
+XCategories=Office;Finance;
+aa78cd8c9d17f5d87014e6bb5f7738ec
+echo x - octocoin/Makefile
+sed 's/^X//' >octocoin/Makefile << 'f851d8796b22eb59f61d38f6aaf05dea'
+X# Created by: Daniel Morante <daniel@morante.net>
+X# $FreeBSD$
+X
+XPORTNAME=	octocoin
+XPORTVERSION=	1.8.0.0
+XCATEGORIES=	net-p2p finance
+XMASTER_SITES=	GH
+X
+XMAINTAINER=	daniel@morante.net
+XCOMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
+X
+XLICENSE=	MIT
+X
+XBUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
+XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
+X
+XOPTIONS_DEFINE=	X11 WALLET UPNP QRCODES
+XOPTIONS_DEFAULT=	X11 WALLET QRCODES
+XUPNP_DESC=	Build with UPNP support
+XWALLET_DESC=	Build the binaries with support to create and manage a wallet.
+XQRCODES_DESC=	Build with QR code display
+X
+XAUTOMAKE_ARGS+=	--add-missing
+XUSE_AUTOTOOLS=	aclocal autoheader automake autoconf
+XCONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/include" CRYPTO_CFLAGS="-I/usr/include"
+X
+XUSE_GITHUB=	yes
+XGH_ACCOUNT=	${PORTNAME}
+XGH_PROJECT=	${PORTNAME}
+XGH_COMMIT=	9afdcf3
+XGH_TAGNAME=	9afdcf3
+X
+XUSES=		gmake
+XUSE_OPENSSL=	yes
+XUSE_BDB=	yes
+XWANT_BDB_VER=	5
+X
+XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
+XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+XCXXFLAGS+=	-Wno-invalid-offsetof
+X
+X.include <bsd.port.options.mk>
+X
+XCONFIGURE_ARGS+=--disable-tests
+XCONFIGURE_ARGS+=--with-incompatible-bdb
+X
+X.if ${PORT_OPTIONS:MX11}
+XPLIST_SUB+=	X11=""
+X.else
+XSUB_LIST+=	PORTNAME=${PORTNAME}
+XUSE_RC_SUBR=	${PORTNAME}
+XSUB_FILES=	pkg-message
+XPLIST_SUB+=	X11="@comment "
+X.endif
+X
+XCLI_BINARY=		${PORTNAME}-cli
+XDAEMON=		${PORTNAME}d
+X
+X.if ${PORT_OPTIONS:MX11}
+XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc qtestlib_build
+XUSES+=		desktop-file-utils
+XQT_BINARY=		${PORTNAME}-qt
+XBUILD_DEPENDS+=	protoc:${PORTSDIR}/devel/protobuf
+XCONFIGURE_ARGS+=--with-gui
+XPLIST_SUB+=	HEADLESS="@comment "
+X.else
+XCONFIGURE_ARGS+=--without-gui
+XPLIST_SUB+=	HEADLESS=""
+X.endif
+X
+X.if ${PORT_OPTIONS:MQRCODES}
+XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
+XCONFIGURE_ARGS+=--with-qrencode
+X.else
+XCONFIGURE_ARGS+=--without-qrencode
+X.endif
+X
+XPLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
+X			EXECUTABLE_CLI=bin/${CLI_BINARY} \
+X			EXECUTABLE_DAEMON=bin/${DAEMON} \
+X			PORTNAME=${PORTNAME}
+X
+X.if ${PORT_OPTIONS:MUPNP}
+XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+XCONFIGURE_ARGS+=--with-miniupnpc
+X.else
+XCONFIGURE_ARGS+=--without-miniupnpc
+X.endif
+X
+X.if ${PORT_OPTIONS:MWALLET}
+XCONFIGURE_ARGS+=--enable-wallet
+X.else
+XCONFIGURE_ARGS+=--disable-wallet
+X.endif
+X
+X.include <bsd.port.pre.mk>
+X
+Xpost-patch:
+X	${MKDIR} ${WRKSRC}/src/build-aux
+X
+Xdo-install:
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${CLI_BINARY} ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
+X
+X.if ${PORT_OPTIONS:MX11}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${QT_BINARY} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
+X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+X		-e 's,128,,g' ${FILESDIR}/${PORTNAME}-qt.desktop
+X	${INSTALL} ${FILESDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+X.else
+X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
+X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
+X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
+X	fi
+X.endif
+X
+X.include <bsd.port.post.mk>
+f851d8796b22eb59f61d38f6aaf05dea
+echo x - octocoin/pkg-descr
+sed 's/^X//' >octocoin/pkg-descr << '51048ced0be2cb3f120ef19fcf370d16'
+XOctoCoin is a free open source peer-to-peer electronic cash system that
+Xis completely decentralized, without the need for a central server or
+Xtrusted parties. Users hold the crypto keys to their own money and
+Xtransact directly with each other, with the help of a P2P network to
+Xcheck for double-spending.
+X
+XWWW: http://octocoin.org
+51048ced0be2cb3f120ef19fcf370d16
+echo x - octocoin/pkg-plist
+sed 's/^X//' >octocoin/pkg-plist << '5dc33745d1b103a23d830aa37665b57b'
+X%%EXECUTABLE_DAEMON%%
+X%%EXECUTABLE_CLI%%
+X%%X11%%%%EXECUTABLE_QT%%
+X%%X11%%share/applications/%%PORTNAME%%-qt.desktop
+X%%X11%%share/pixmaps/%%PORTNAME%%.png
+X%%HEADLESS%%@unexec if cmp -s %D/etc/%%PORTNAME%%.conf.sample %D/etc/%%PORTNAME%%.conf; then rm -f %D/etc/%%PORTNAME%%.conf; fi
+X%%HEADLESS%%etc/%%PORTNAME%%.conf.sample
+X%%HEADLESS%%@exec if [ ! -f %D/etc/%%PORTNAME%%.conf ] ; then cp -p %D/%F %B/%%PORTNAME%%.conf; fi
+5dc33745d1b103a23d830aa37665b57b
+echo x - octocoin/distinfo
+sed 's/^X//' >octocoin/distinfo << '999fe3c62b144f03ac3c5cce49c4c21b'
+XSHA256 (octocoin-1.8.0.0.tar.gz) = 060a3188b5bf2509672eca21edbab8b0bc656cd37f46d4894cdeb5cc971f882d
+XSIZE (octocoin-1.8.0.0.tar.gz) = 4411441
+999fe3c62b144f03ac3c5cce49c4c21b
+exit
+
