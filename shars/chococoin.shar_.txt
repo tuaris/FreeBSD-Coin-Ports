@@ -285,6 +285,7 @@ X
 Xpost-patch:
 X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 X	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+X	@${RM} -f ${WRKSRC}/src/leveldb/*.a
 X.if !${PORT_OPTIONS:MX11}
 X	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 X	@${REINPLACE_CMD} \
