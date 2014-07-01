@@ -1,7 +1,7 @@
 FreeBSD Coin Ports
 ==================
 
-These are FreeBSD Ports for Several Alternative Crypto Currencies. Instructions on how to use these files can be found at:
+These are FreeBSD Ports for several alternative crypto currencies (Altcoins). Instructions on how to use these files can be found at:
 
 http://www.unibia.com/unibianet/freebsd/freebsd-ports-many-alternative-crypto-currencies
 
