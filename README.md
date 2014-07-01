@@ -1,13 +1,11 @@
-FreeBSD-Coin-Ports
+FreeBSD Coin Ports
 ==================
 
-FreeBSD Ports for Several Alternative Crypto Currencies
-
-Instructions on how to use these can be found at:
+These are FreeBSD Ports for Several Alternative Crypto Currencies. Instructions on how to use these files can be found at:
 
 http://www.unibia.com/unibianet/freebsd/freebsd-ports-many-alternative-crypto-currencies
 
-Current supported currencies are:
+Current supported list of currencies are:
 
 - binarycoin
 - bonuscoin
