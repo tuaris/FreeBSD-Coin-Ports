@@ -27,6 +27,7 @@ The current supported list of crypto currencies are:
 - MMXIVCoin
 - mooncoin
 - mustachecoin
+- muniti
 - nbcoin
 - octocoin
 - orangecat
