@@ -24,6 +24,7 @@ The current supported list of crypto currencies are:
 - mazacoin
 - microcoin
 - mintcoin
+- MMXIVCoin
 - mooncoin
 - mustachecoin
 - nbcoin
