@@ -9,6 +9,7 @@ The current supported list of crypto currencies are:
 
 - binarycoin
 - bonuscoin
+- camcoin
 - catcoin
 - chococoin
 - continuumcoin
