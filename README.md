@@ -43,6 +43,7 @@ The current supported list of crypto currencies are:
 - terracoin
 - tetcoin
 - thorcoin
+- uro
 - VeniVidiVici
 - xmascoin
 
