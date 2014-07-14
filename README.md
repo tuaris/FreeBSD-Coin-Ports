@@ -7,6 +7,7 @@ http://www.unibia.com/unibianet/freebsd/freebsd-ports-many-alternative-crypto-cu
 
 The current supported list of crypto currencies are:
 
+- bitcoindark
 - binarycoin
 - bonuscoin
 - camcoin
