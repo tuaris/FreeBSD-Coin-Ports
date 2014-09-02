@@ -204,7 +204,7 @@ echo x - emerald/files/emerald.conf.sample
 sed 's/^X//' >emerald/files/emerald.conf.sample << 'c3135a59f17eedfbb698b4f2cce59373'
 Xrpcuser=myname
 X#rpcpassword=YOU MUST SET A PASSWORD
-Xmaxconnection=20
+Xmaxconnections=20
 Xrpcallowip=127.0.0.1
 Xrpcport=12128
 Xport=12127
@@ -212,7 +212,7 @@ Xserver=1
 Xdaemon=1
 Xlisten=1
 Xlogtimestamps=1
-Xaddnode=63.247.147.164
+Xaddnode=emerald.securepayment.cc
 Xaddnode=198.199.90.252
 Xaddnode=24.6.21.198
 Xaddnode=108.27.249.69
@@ -237,7 +237,7 @@ X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD$
 X
 XPORTNAME=	emerald
-XPORTVERSION=	0.6.4.0
+XPORTVERSION=	0.8.2.1
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -254,10 +254,10 @@ XUPNP_DESC=	Build with UPNP support
 XQRCODES_DESC=	Build with QR code display
 X
 XUSE_GITHUB=	yes
-XGH_ACCOUNT=	${PORTNAME}project
+XGH_ACCOUNT=	Emerald-Crypto
 XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	5ae5c6c
-XGH_TAGNAME=	5ae5c6c
+XGH_COMMIT=	308bde3
+XGH_TAGNAME=	308bde3
 X
 XUSES=		gmake
 XUSE_OPENSSL=	yes
@@ -364,8 +364,8 @@ XWWW: https://github.com/emeraldproject/emerald
 58c45585b7ea31c35180993cf3e2bc22
 echo x - emerald/distinfo
 sed 's/^X//' >emerald/distinfo << '638eafb2c75501058b9e5277ee601326'
-XSHA256 (emerald-0.6.4.0.tar.gz) = 99e4c8de5ffcab9dd3f4813ced09df2a88989b26a9bf5f787a586d6798613084
-XSIZE (emerald-0.6.4.0.tar.gz) = 2484627
+XSHA256 (emerald-0.8.2.1.tar.gz) = a03389f8bf38bf1a402ce7083fca09a73e5e232619498f3bc1da7e19cb354a35
+XSIZE (emerald-0.8.2.1.tar.gz) = 3120101
 638eafb2c75501058b9e5277ee601326
 echo x - emerald/pkg-plist
 sed 's/^X//' >emerald/pkg-plist << '7bb6d9b8021a204be0059f3ae2a2e895'

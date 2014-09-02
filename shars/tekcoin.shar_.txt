@@ -23,188 +23,9 @@ echo c - tekcoin/files
 mkdir -p tekcoin/files > /dev/null 2>&1
 echo x - tekcoin/files/patch-src-makefile_bsd
 sed 's/^X//' >tekcoin/files/patch-src-makefile_bsd << 'a1ba2a4253560dbb5f61e7cbde20ce07'
-X--- src/makefile.bsd.orig	2014-05-10 18:20:31.000000000 -0400
-X+++ src/makefile.bsd	2014-06-23 20:11:37.000000000 -0400
-X@@ -1,179 +1,184 @@
-X-# Copyright (c) 2009-2010 Satoshi Nakamoto
-X-# Distributed under the MIT/X11 software license, see the accompanying
-X-# file COPYING or http://www.opensource.org/licenses/mit-license.php.
-X-
-X-USE_UPNP:=0
-X-USE_IPV6:=1
-X-
-X-LINK:=$(CXX)
-X-
-X-DEFS=-DBOOST_SPIRIT_THREADSAFE
-X-
-X-DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
-X-LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
-X-
-X-TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
-X-
-X-LMODE = dynamic
-X-LMODE2 = dynamic
-X-ifdef STATIC
-X-	LMODE = static
-X-	ifeq (${STATIC}, all)
-X-		LMODE2 = static
-X-	endif
-X-else
-X-	TESTDEFS += -DBOOST_TEST_DYN_LINK
-X-endif
-X-
-X-# for boost 1.37, add -mt to the boost libraries
-X-LIBS += \
-X- -Wl,-B$(LMODE) \
-X-   -l boost_system$(BOOST_LIB_SUFFIX) \
-X-   -l boost_filesystem$(BOOST_LIB_SUFFIX) \
-X-   -l boost_program_options$(BOOST_LIB_SUFFIX) \
-X-   -l boost_thread$(BOOST_LIB_SUFFIX) \
-X-   -l db_cxx$(BDB_LIB_SUFFIX) \
-X-   -l ssl \
-X-   -l crypto \
-X-   -l execinfo
-X-
-X-ifndef USE_UPNP
-X-	override USE_UPNP = -
-X-endif
-X-ifneq (${USE_UPNP}, -)
-X-	LIBS += -l miniupnpc
-X-	DEFS += -DUSE_UPNP=$(USE_UPNP)
-X-endif
-X-
-X-ifneq (${USE_IPV6}, -)
-X-	DEFS += -DUSE_IPV6=$(USE_IPV6)
-X-endif
-X-
-X-LIBS+= \
-X- -Wl,-B$(LMODE2) \
-X-   -l z \
-X-   -l dl \
-X-   -l pthread
-X-
-X-
-X-# Hardening
-X-# Make some classes of vulnerabilities unexploitable in case one is discovered.
-X-#
-X-    # This is a workaround for Ubuntu bug #691722, the default -fstack-protector causes
-X-    # -fstack-protector-all to be ignored unless -fno-stack-protector is used first.
-X-    # see: https://bugs.launchpad.net/ubuntu/+source/gcc-4.5/+bug/691722
-X-    HARDENING=-fno-stack-protector
-X-
-X-    # Stack Canaries
-X-    # Put numbers at the beginning of each stack frame and check that they are the same.
-X-    # If a stack buffer if overflowed, it writes over the canary number and then on return
-X-    # when that number is checked, it won't be the same and the program will exit with
-X-    # a "Stack smashing detected" error instead of being exploited.
-X-    HARDENING+=-fstack-protector-all -Wstack-protector
-X-
-X-    # Make some important things such as the global offset table read only as soon as
-X-    # the dynamic linker is finished building it. This will prevent overwriting of addresses
-X-    # which would later be jumped to.
-X-    LDHARDENING+=-Wl,-z,relro -Wl,-z,now
-X-
-X-    # Build position independent code to take advantage of Address Space Layout Randomization
-X-    # offered by some kernels.
-X-    # see doc/build-unix.txt for more information.
-X-    ifdef PIE
-X-        HARDENING+=-fPIE
-X-        LDHARDENING+=-pie
-X-    endif
-X-
-X-    # -D_FORTIFY_SOURCE=2 does some checking for potentially exploitable code patterns in
-X-    # the source such overflowing a statically defined buffer.
-X-    HARDENING+=-D_FORTIFY_SOURCE=2
-X-#
-X-
-X-
-X-DEBUGFLAGS=-g
-X-
-X-# CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
-X-# adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
-X-xCXXFLAGS=-O0 -msse2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
-X-    $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
-X-
-X-# LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
-X-# adds some defaults in front. Unfortunately, LDFLAGS=... $(LDFLAGS) does not work.
-X-xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
-X-
-X-OBJS= \
-X-    obj/alert.o \
-X-    obj/version.o \
-X-    obj/checkpoints.o \
-X-    obj/netbase.o \
-X-    obj/addrman.o \
-X-    obj/crypter.o \
-X-    obj/key.o \
-X-    obj/db.o \
-X-    obj/init.o \
-X-    obj/irc.o \
-X-    obj/keystore.o \
-X-    obj/main.o \
-X-    obj/net.o \
-X-    obj/protocol.o \
-X-    obj/tekcoinrpc.o \
-X-    obj/rpcdump.o \
-X-    obj/rpcnet.o \
-X-    obj/rpcmining.o \
-X-    obj/rpcwallet.o \
-X-    obj/rpcblockchain.o \
-X-    obj/rpcrawtransaction.o \
-X-    obj/script.o \
-X-    obj/sync.o \
-X-    obj/util.o \
-X-    obj/wallet.o \
-X-    obj/walletdb.o \
-X-    obj/noui.o \
-X-    obj/kernel.o
-X-
-X-
-X-all: tekcoind
-X-
-X-test check: test_tekcoin FORCE
-X-	./test_tekcoin
-X-
-X-# auto-generated dependencies:
-X--include obj/*.P
-X--include obj-test/*.P
-X-
-X-obj/build.h: FORCE
-X-	/bin/sh ../share/genbuild.sh obj/build.h
-X-version.cpp: obj/build.h
-X-DEFS += -DHAVE_BUILD_INFO
-X-
-X-obj/%.o: %.cpp
-X-	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
-X-	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-X-	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-X-	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-X-	  rm -f $(@:%.o=%.d)
-X-
-X-tekcoind: $(OBJS:obj/%=obj/%)
-X-	$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
-X-
-X-TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
-X-
-X-obj-test/%.o: test/%.cpp
-X-	$(CXX) -c $(TESTDEFS) $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
-X-	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-X-	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-X-	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-X-	  rm -f $(@:%.o=%.d)
-X-
-X-test_tekcoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
-X-	$(LINK) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ -Wl,-B$(LMODE) -lboost_unit_test_framework $(xLDFLAGS) $(LIBS)
-X-
-X-clean:
-X-	-rm -f tekcoind test_tekcoin
-X-	-rm -f obj/*.o
-X-	-rm -f obj-test/*.o
-X-	-rm -f obj/*.P
-X-	-rm -f obj-test/*.P
-X-	-rm -f obj/build.h
-X-
-X-FORCE:
+X--- src/makefile.bsd.orig	1969-12-31 19:00:00.000000000 -0500
+X+++ src/makefile.bsd	2014-09-01 20:06:41.000000000 -0400
+X@@ -0,0 +1,179 @@
 X+# Copyright (c) 2009-2010 Satoshi Nakamoto
 X+# Distributed under the MIT/X11 software license, see the accompanying
 X+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
@@ -215,11 +36,6 @@ X+
 X+LINK:=$(CXX)
 X+
 X+DEFS=-DBOOST_SPIRIT_THREADSAFE
-X+
-X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
-X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
-X+BOOST_LIB_PATH=%%PREFIX%%/lib
-X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
 X+
 X+DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
 X+LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
@@ -407,8 +223,8 @@ X*******************************************************************
 e1544986a8a64ba217e19c37af8ceaf6
 echo x - tekcoin/files/patch-tekcoin-qt_pro
 sed 's/^X//' >tekcoin/files/patch-tekcoin-qt_pro << '151442219a0af2f8d1b7855c308beef3'
-X--- tekcoin-qt.pro.orig	2014-05-10 18:20:31.000000000 -0400
-X+++ tekcoin-qt.pro	2014-06-23 20:14:28.000000000 -0400
+X--- tekcoin-qt.pro.orig	2014-08-27 12:56:24.000000000 -0400
+X+++ tekcoin-qt.pro	2014-09-01 20:09:11.000000000 -0400
 X@@ -1,391 +1,391 @@
 X-TEMPLATE = app
 X-TARGET = Tekcoin-qt
@@ -1294,7 +1110,7 @@ X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD$
 X
 XPORTNAME=	tekcoin
-XPORTVERSION=	1.1.0.0
+XPORTVERSION=	2.0.0.0
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -1304,7 +1120,7 @@ X
 XLICENSE=	MIT
 X
 XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-X			execinfo:${PORTSDIR}/devel/libexecinfo
+X    		execinfo:${PORTSDIR}/devel/libexecinfo
 X
 XOPTIONS_DEFINE=	X11 UPNP QRCODES
 XOPTIONS_DEFAULT=	X11 QRCODES
@@ -1314,8 +1130,8 @@ X
 XUSE_GITHUB=	yes
 XGH_ACCOUNT=	maxxine
 XGH_PROJECT=	TEK
-XGH_COMMIT=	133d11e
-XGH_TAGNAME=	133d11e
+XGH_COMMIT=	d05554b
+XGH_TAGNAME=	d05554b
 X
 XUSES=		gmake
 XUSE_OPENSSL=	yes
@@ -1339,7 +1155,7 @@ X.endif
 X
 X.if ${PORT_OPTIONS:MX11}
 XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
-XBINARY=		${ -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX}-qt
+XBINARY=		${PORTNAME}-qt
 XPLIST_SUB+=	HEADLESS="@comment "
 X.else
 XBINARY=		${PORTNAME}d
@@ -1407,8 +1223,8 @@ X.include <bsd.port.post.mk>
 485a14d53c5f419b3caf396b0920b095
 echo x - tekcoin/distinfo
 sed 's/^X//' >tekcoin/distinfo << '4df9b9785a4c9eeff561c2bee4388064'
-XSHA256 (tekcoin-1.1.0.0.tar.gz) = e2df5b5b60a3ed919a90bde49b03e900e9f4fbc7e9668dfb296a97f2dac26250
-XSIZE (tekcoin-1.1.0.0.tar.gz) = 5033307
+XSHA256 (tekcoin-2.0.0.0.tar.gz) = b45645cc3965956eade623305453ececc7d18b4a7d294f8a5e00292b192b6801
+XSIZE (tekcoin-2.0.0.0.tar.gz) = 5033633
 4df9b9785a4c9eeff561c2bee4388064
 echo x - tekcoin/pkg-descr
 sed 's/^X//' >tekcoin/pkg-descr << '6b22dd6f784d9e559e3d6bf9643da8ea'
