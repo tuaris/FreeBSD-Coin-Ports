@@ -35,6 +35,7 @@ The current supported list of crypto currencies are:
 - nbcoin
 - octocoin
 - orangecat
+- Peercoin
 - Rainbowcoin
 - starcoin
 - stashcoin
@@ -45,6 +46,7 @@ The current supported list of crypto currencies are:
 - terracoin
 - tetcoin
 - thorcoin
+- Unobtanium
 - uro
 - VeniVidiVici
 - xmascoin
