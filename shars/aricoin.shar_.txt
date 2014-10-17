@@ -8,7 +8,6 @@
 #	aricoin
 #	aricoin/files
 #	aricoin/files/patch-src-makefile_unix
-#	aricoin/files/extra-patch-endian
 #	aricoin/files/pkg-message.in
 #	aricoin/files/aricoin.in
 #	aricoin/files/patch-src-wallet_cpp
@@ -59,34 +58,6 @@ X    -l pthread
 X 
 X 
 fdc10b07016447f89cb1abea278b9b3f
-echo x - aricoin/files/extra-patch-endian
-sed 's/^X//' >aricoin/files/extra-patch-endian << '62509b761183b4298ad392c31112bfde'
-X--- src/scrypt.c.orig	2014-08-30 05:49:14.000000000 -0400
-X+++ src/scrypt.c	2014-10-16 22:32:31.000000000 -0400
-X@@ -33,22 +33,6 @@
-X #include <string.h>
-X #include <openssl/sha.h>
-X 
-X-static inline uint32_t be32dec(const void *pp)
-X-{
-X-	const uint8_t *p = (uint8_t const *)pp;
-X-	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
-X-	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
-X-}
-X-
-X-static inline void be32enc(void *pp, uint32_t x)
-X-{
-X-	uint8_t *p = (uint8_t *)pp;
-X-	p[3] = x & 0xff;
-X-	p[2] = (x >> 8) & 0xff;
-X-	p[1] = (x >> 16) & 0xff;
-X-	p[0] = (x >> 24) & 0xff;
-X-}
-X-
-X static inline uint32_t le32dec(const void *pp)
-X {
-X 	const uint8_t *p = (uint8_t const *)pp;
-62509b761183b4298ad392c31112bfde
 echo x - aricoin/files/pkg-message.in
 sed 's/^X//' >aricoin/files/pkg-message.in << '083d169a3d7e365550d1512fdd93a13c'
 X*******************************************************************
@@ -201,16 +172,28 @@ Xrpcuser=myname
 X#rpcpassword=YOU MUST SET A PASSWORD
 Xmaxconnections=20
 Xrpcallowip=127.0.0.1
-Xrpcport=12128
-Xport=12127
+Xrpcport=16568
+Xport=16567
 Xserver=1
 Xdaemon=1
 Xlisten=1
 Xlogtimestamps=1
-Xaddnode=emerald.securepayment.cc
-Xaddnode=198.199.90.252
-Xaddnode=24.6.21.198
-Xaddnode=108.27.249.69
+Xaddnode=aricoin.securepayment.cc
+Xaddnode=101.98.221.119
+Xaddnode=107.170.113.37
+Xaddnode=208.84.132.253
+Xaddnode=76.182.28.65
+Xaddnode=192.64.116.239
+Xaddnode=64.34.49.151
+Xaddnode=192.64.116.155
+Xaddnode=162.243.212.142
+Xaddnode=116.231.133.47
+Xaddnode=79.224.246.160
+Xaddnode=195.154.235.60
+Xaddnode=121.73.163.66
+Xaddnode=178.254.43.124
+Xaddnode=138.91.38.144
+Xaddnode=188.226.239.21
 f3a427217040dbbe2ed0d027f9cdd6e5
 echo x - aricoin/files/patch-aricoin-qt_pro
 sed 's/^X//' >aricoin/files/patch-aricoin-qt_pro << '438fa294474edc70033c65d0dbce165f'
