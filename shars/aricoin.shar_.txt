@@ -356,10 +356,6 @@ X.endif
 X
 X.include <bsd.port.pre.mk>
 X
-X.if ${OSVERSION} >= 1000000
-XEXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
-X.endif
-X
 Xpost-patch:
 X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 X	@${MKDIR} ${WRKSRC}/src/obj
@@ -382,9 +378,10 @@ X.endif
 X
 Xdo-install:
 X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/${GH_PROJECT}-Qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 X		-e 's,bitcoin,${PORTNAME},g' \
+X		-e 's,80\.xpm,.png,g' \
 X		-e 's,Bitcoin,${GH_PROJECT},g' \
 X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
