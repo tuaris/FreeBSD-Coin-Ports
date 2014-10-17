@@ -14,6 +14,9 @@
 #	aricoin/files/patch-src-wallet_cpp
 #	aricoin/files/aricoin.conf.sample
 #	aricoin/files/patch-aricoin-qt_pro
+#	aricoin/files/patch-src__serialize.h
+#	aricoin/files/patch-src__net.cpp
+#	aricoin/files/patch-src__qt__qtipcserver.cpp
 #	aricoin/Makefile
 #	aricoin/pkg-descr
 #	aricoin/distinfo
@@ -58,9 +61,9 @@ X
 fdc10b07016447f89cb1abea278b9b3f
 echo x - aricoin/files/extra-patch-endian
 sed 's/^X//' >aricoin/files/extra-patch-endian << '62509b761183b4298ad392c31112bfde'
-X--- src/scrypt.cpp.orig	2013-12-09 18:10:12.046606050 +0000
-X+++ src/scrypt.cpp	2013-12-09 18:10:25.898605023 +0000
-X@@ -34,22 +34,6 @@
+X--- src/scrypt.c.orig	2014-08-30 05:49:14.000000000 -0400
+X+++ src/scrypt.c	2014-10-16 22:32:31.000000000 -0400
+X@@ -33,22 +33,6 @@
 X #include <string.h>
 X #include <openssl/sha.h>
 X 
@@ -80,31 +83,9 @@ X-	p[1] = (x >> 16) & 0xff;
 X-	p[0] = (x >> 24) & 0xff;
 X-}
 X-
-X typedef struct HMAC_SHA256Context {
-X 	SHA256_CTX ictx;
-X 	SHA256_CTX octx;
-X--- src/scrypt.h.orig	2013-12-09 15:26:17.343282984 +0000
-X+++ src/scrypt.h	2013-12-09 15:45:11.032205545 +0000
-X@@ -17,19 +17,4 @@
-X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
-X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
-X 
-X-static inline uint32_t le32dec(const void *pp)
-X-{
-X-        const uint8_t *p = (uint8_t const *)pp;
-X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
-X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
-X-}
-X-
-X-static inline void le32enc(void *pp, uint32_t x)
-X-{
-X-        uint8_t *p = (uint8_t *)pp;
-X-        p[0] = x & 0xff;
-X-        p[1] = (x >> 8) & 0xff;
-X-        p[2] = (x >> 16) & 0xff;
-X-        p[3] = (x >> 24) & 0xff;
-X-}
-X #endif
+X static inline uint32_t le32dec(const void *pp)
+X {
+X 	const uint8_t *p = (uint8_t const *)pp;
 62509b761183b4298ad392c31112bfde
 echo x - aricoin/files/pkg-message.in
 sed 's/^X//' >aricoin/files/pkg-message.in << '083d169a3d7e365550d1512fdd93a13c'
@@ -245,6 +226,59 @@ X windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 X 
 X contains(RELEASE, 1) {
 438fa294474edc70033c65d0dbce165f
+echo x - aricoin/files/patch-src__serialize.h
+sed 's/^X//' >aricoin/files/patch-src__serialize.h << '74ec4e788b339776751e89b2bc2bfcbf'
+X--- ./src/serialize.h.orig	2013-09-24 01:50:35.661706153 +0000
+X+++ ./src/serialize.h	2013-09-24 01:50:52.913703572 +0000
+X@@ -895,19 +895,6 @@
+X     iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
+X     void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
+X 
+X-    void insert(iterator it, const_iterator first, const_iterator last)
+X-    {
+X-        assert(last - first >= 0);
+X-        if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
+X-        {
+X-            // special case for inserting at the front when there's room
+X-            nReadPos -= (last - first);
+X-            memcpy(&vch[nReadPos], &first[0], last - first);
+X-        }
+X-        else
+X-            vch.insert(it, first, last);
+X-    }
+X-
+X     void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
+X     {
+X         assert(last - first >= 0);
+74ec4e788b339776751e89b2bc2bfcbf
+echo x - aricoin/files/patch-src__net.cpp
+sed 's/^X//' >aricoin/files/patch-src__net.cpp << '37396c59b02bee4b4ce0d93acbce82de'
+X--- src/net.cpp.orig	2014-01-18 04:31:19.000000000 +0000
+X+++ src/net.cpp	2014-01-18 04:32:57.000000000 +0000
+X@@ -58,7 +58,7 @@
+X static bool vfLimited[NET_MAX] = {};
+X static CNode* pnodeLocalHost = NULL;
+X uint64 nLocalHostNonce = 0;
+X-array<int, THREAD_MAX> vnThreadsRunning;
+X+boost::array<int, THREAD_MAX> vnThreadsRunning;
+X static std::vector<SOCKET> vhListenSocket;
+X CAddrMan addrman;
+X 
+37396c59b02bee4b4ce0d93acbce82de
+echo x - aricoin/files/patch-src__qt__qtipcserver.cpp
+sed 's/^X//' >aricoin/files/patch-src__qt__qtipcserver.cpp << 'b7cbed641833b941b27912df41688b1b'
+X--- src/qt/qtipcserver.cpp.orig	2014-01-18 05:21:31.335425774 +0000
+X+++ src/qt/qtipcserver.cpp	2014-01-18 05:22:33.976421840 +0000
+X@@ -21,7 +21,7 @@
+X 
+X static void ipcThread2(void* pArg);
+X 
+X-#ifdef MAC_OSX
+X+#if defined(MAC_OSX) || defined(__FreeBSD__)
+X // URI handling not implemented on OSX yet
+X 
+X void ipcInit() { }
+b7cbed641833b941b27912df41688b1b
 echo x - aricoin/Makefile
 sed 's/^X//' >aricoin/Makefile << 'e43f5420cb4ee34c1e6c5a8fa8ce9cd3'
 X# Created by: Daniel Morante <daniel@morante.net>
