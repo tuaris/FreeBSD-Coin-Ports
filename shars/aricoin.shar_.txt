@@ -11,6 +11,7 @@
 #	aricoin/files/extra-patch-endian
 #	aricoin/files/pkg-message.in
 #	aricoin/files/aricoin.in
+#	aricoin/files/patch-src-wallet_cpp
 #	aricoin/files/aricoin.conf.sample
 #	aricoin/files/patch-aricoin-qt_pro
 #	aricoin/Makefile
@@ -200,6 +201,19 @@ X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 04d3bb917141252f86e8d8d0a35c8a98
+echo x - aricoin/files/patch-src-wallet_cpp
+sed 's/^X//' >aricoin/files/patch-src-wallet_cpp << 'b8dc771db0b404fe7678bc2eaffc11b3'
+X--- src/wallet.cpp.orig	2014-08-30 05:49:14.000000000 -0400
+X+++ src/wallet.cpp	2014-10-16 20:57:34.000000000 -0400
+X@@ -11,6 +11,7 @@
+X #include "ui_interface.h"
+X #include "base58.h"
+X #include "main.h"
+X+#include <boost/algorithm/string/replace.hpp>
+X 
+X using namespace std;
+X 
+b8dc771db0b404fe7678bc2eaffc11b3
 echo x - aricoin/files/aricoin.conf.sample
 sed 's/^X//' >aricoin/files/aricoin.conf.sample << 'f3a427217040dbbe2ed0d027f9cdd6e5'
 Xrpcuser=myname
@@ -334,16 +348,16 @@ X.endif
 X
 Xdo-install:
 X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/${GH_PROJECT}-Qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
 X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 X		-e 's,bitcoin,${PORTNAME},g' \
-X		-e 's,Bitcoin,Aricoin,g' \
+X		-e 's,Bitcoin,${GH_PROJECT},g' \
 X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 X
 X.else
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${GH_PROJECT}d ${STAGEDIR}${PREFIX}/bin/${BINARY}
 X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
