@@ -329,6 +329,7 @@ X.endif
 X
 X.if ${PORT_OPTIONS:MX11}
 XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
+XUSES+=	desktop-file-utils
 XBINARY=		${PORTNAME}-qt
 XPLIST_SUB+=	HEADLESS="@comment "
 X.else
