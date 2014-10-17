@@ -231,7 +231,7 @@ X
 XLICENSE=	MIT
 X
 XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-X			execinfo:${PORTSDIR}/devel/libexecinfo
+X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
 X
 XOPTIONS_DEFINE=	X11 UPNP QRCODES
 XOPTIONS_DEFAULT=	X11 QRCODES
