@@ -123,8 +123,8 @@ X
 X: ${%%PORTNAME%%_enable:=NO}
 X: ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
 X: ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}
-X: ${%%PORTNAME%%_user="%%PORTNAME%%"}
-X: ${%%PORTNAME%%_group="%%PORTNAME%%"}
+X: ${%%PORTNAME%%_user="root"}
+X: ${%%PORTNAME%%_group="wheel"}
 X
 Xrequired_files=${%%PORTNAME%%_config}
 Xcommand=%%PREFIX%%/bin/%%PORTNAME%%d
