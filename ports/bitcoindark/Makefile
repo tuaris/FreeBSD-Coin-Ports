@@ -78,6 +78,9 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+post-extract:
+	@${MV} ${WRKSRC}/BitcoinDark-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
+
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
 	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
@@ -105,9 +108,9 @@ do-install:
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,NovaCoin,BitcoinDark,g' \
 		-e 's,novacoin,${PORTNAME},g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/novacoin-qt.desktop
+		-e 's,bitcoin80\.xpm,${PORTNAME}.png,g' ${WRKSRC}/contrib/debian/novacoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/novacoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/novacoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/BitcoinDarkd ${STAGEDIR}${PREFIX}/bin/${BINARY}
