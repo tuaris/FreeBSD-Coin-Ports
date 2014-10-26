@@ -1,0 +1,14 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=12128
+port=12127
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=emerald.securepayment.cc
+addnode=198.199.90.252
+addnode=24.6.21.198
+addnode=108.27.249.69
