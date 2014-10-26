@@ -1,0 +1,12 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=14632
+port=14631
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=bitcoindark.securepayment.cc:14631
+addnode=107.170.59.196
