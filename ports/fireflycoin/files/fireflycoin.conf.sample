@@ -1,0 +1,12 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnection=20
+rpcallowip=127.0.0.1
+rpcport=5534
+port=5535
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=63.247.147.163
+addnode=fireflycoin.com
