@@ -76,10 +76,8 @@ QMAKE_USE_UPNP=	-
 .include <bsd.port.pre.mk>
 
 post-extract:
-.if ${PORT_OPTIONS:MX11}
 	@${MV} ${WRKSRC}/${PORTNAME}-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro.old
 	@${MV} ${WRKSRC}/${PORTNAME}-qt-linux.pro ${WRKSRC}/${PORTNAME}-qt.pro
-.endif
 
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
