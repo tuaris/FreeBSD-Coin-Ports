@@ -1,0 +1,12 @@
+*******************************************************************
+To configure the TEKcoin server please edit: 
+/usr/local/etc/tekcoin.conf
+
+You must at least set a "rpcpassword" in the configuration file above.
+
+To run the tekcoind server at startup, add the following
+settings to your /etc/rc.conf
+
+tekcoin_enable="YES"
+
+*******************************************************************

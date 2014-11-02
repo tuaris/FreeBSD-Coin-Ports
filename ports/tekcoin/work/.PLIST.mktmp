@@ -1,0 +1,10 @@
+/usr/local/share/licenses/tekcoin-2.0.0.0/catalog.mk
+/usr/local/share/licenses/tekcoin-2.0.0.0/LICENSE
+/usr/local/share/licenses/tekcoin-2.0.0.0/MIT
+bin/tekcoind
+@comment share/applications/tekcoin-qt.desktop
+@comment share/pixmaps/tekcoin.png
+@unexec if cmp -s %D/etc/tekcoin.conf.sample %D/etc/tekcoin.conf; then rm -f %D/etc/tekcoin.conf; fi
+etc/tekcoin.conf.sample
+@exec if [ ! -f %D/etc/tekcoin.conf ] ; then cp -p %D/%F %B/tekcoin.conf; fi
+/usr/local/etc/rc.d/tekcoin

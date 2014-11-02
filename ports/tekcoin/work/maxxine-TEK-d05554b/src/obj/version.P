@@ -1,0 +1,4 @@
+obj/version.o: version.cpp version.h clientversion.h \
+  /root/FreeBSD-Coin-Ports/ports/tekcoin/work/maxxine-TEK-d05554b/src/obj/build.h
+version.cpp version.h clientversion.h :
+  /root/FreeBSD-Coin-Ports/ports/tekcoin/work/maxxine-TEK-d05554b/src/obj/build.h :
