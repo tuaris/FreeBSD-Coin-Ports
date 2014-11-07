@@ -1,0 +1,10 @@
+--- src/util.h.orig	2014-11-06 21:01:34.000000000 -0500
++++ src/util.h	2014-11-06 20:58:33.000000000 -0500
+@@ -34,6 +34,7 @@
+ 
+ #include <stdint.h>
+ #include <inttypes.h>
++#include <stdarg.h>
+ 
+ static const int64_t COIN = 100000000;
+ static const int64_t CENT = 1000000;
