@@ -1,0 +1,11 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=13332
+port=13333
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=terracoin.securepayment.cc
