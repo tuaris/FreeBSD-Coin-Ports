@@ -1,0 +1,13 @@
+--- src/main.cpp.orig	2014-04-06 10:51:18.000000000 -0400
++++ src/main.cpp	2014-06-24 00:10:04.000000000 -0400
+@@ -1254,8 +1254,8 @@
+ 
+ int static generateMTRandom(unsigned int s, int range)
+ {
+-    random::mt19937 gen(s);
+-    random::uniform_int_distribution<> dist(1, range);
++    boost::random::mt19937 gen(s);
++    boost::random::uniform_int_distribution<> dist(1, range);
+     return dist(gen);
+ }
+ 
