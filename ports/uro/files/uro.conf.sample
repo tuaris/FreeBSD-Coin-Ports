@@ -1,0 +1,11 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=10
+rpcallowip=127.0.0.1
+rpcport=36348
+port=36347
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=uro.securepayment.cc
