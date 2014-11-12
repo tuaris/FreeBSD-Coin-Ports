@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Octocoin
+Comment=Octocoin P2P Cryptocurrency
+Comment[fr]=Octocoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Octocoin, eşten eşe kriptografik sanal para birimi
+Exec=octocoin-qt %u
+Terminal=false
+Type=Application
+Icon=octocoin
+MimeType=x-scheme-handler/octocoin;
+Categories=Office;Finance;
