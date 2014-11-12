@@ -12,6 +12,9 @@
 #	tekcoin/files/patch-tekcoin-qt_pro
 #	tekcoin/files/tekcoin.in
 #	tekcoin/files/tekcoin.conf.sample
+#	tekcoin/files/patch-src__net.cpp
+#	tekcoin/files/patch-src__serialize.h
+#	tekcoin/files/tekcoin-qt.desktop.in
 #	tekcoin/Makefile
 #	tekcoin/distinfo
 #	tekcoin/pkg-descr
@@ -23,188 +26,45 @@ echo c - tekcoin/files
 mkdir -p tekcoin/files > /dev/null 2>&1
 echo x - tekcoin/files/patch-src-makefile_bsd
 sed 's/^X//' >tekcoin/files/patch-src-makefile_bsd << 'a1ba2a4253560dbb5f61e7cbde20ce07'
-X--- src/makefile.bsd.orig	1969-12-31 19:00:00.000000000 -0500
-X+++ src/makefile.bsd	2014-09-01 20:06:41.000000000 -0400
-X@@ -0,0 +1,179 @@
-X+# Copyright (c) 2009-2010 Satoshi Nakamoto
-X+# Distributed under the MIT/X11 software license, see the accompanying
-X+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+X--- src/makefile.bsd.orig	2014-11-12 03:11:10.000000000 -0500
+X+++ src/makefile.bsd	2014-11-12 03:12:54.000000000 -0500
+X@@ -9,6 +9,11 @@
+X 
+X DEFS=-DBOOST_SPIRIT_THREADSAFE
+X 
+X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
+X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
+X+BOOST_LIB_PATH=%%PREFIX%%/lib
+X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
 X+
-X+USE_UPNP:=0
-X+USE_IPV6:=1
-X+
-X+LINK:=$(CXX)
-X+
-X+DEFS=-DBOOST_SPIRIT_THREADSAFE
-X+
-X+DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
-X+LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
-X+
-X+TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
-X+
-X+LMODE = dynamic
-X+LMODE2 = dynamic
-X+ifdef STATIC
-X+	LMODE = static
-X+	ifeq (${STATIC}, all)
-X+		LMODE2 = static
-X+	endif
-X+else
-X+	TESTDEFS += -DBOOST_TEST_DYN_LINK
-X+endif
-X+
-X+# for boost 1.37, add -mt to the boost libraries
-X+LIBS += \
-X+ -Wl,-B$(LMODE) \
-X+   -l boost_system$(BOOST_LIB_SUFFIX) \
-X+   -l boost_filesystem$(BOOST_LIB_SUFFIX) \
-X+   -l boost_program_options$(BOOST_LIB_SUFFIX) \
-X+   -l boost_thread$(BOOST_LIB_SUFFIX) \
+X DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
+X LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
+X 
+X@@ -32,6 +37,7 @@
+X    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
+X    -l boost_program_options$(BOOST_LIB_SUFFIX) \
+X    -l boost_thread$(BOOST_LIB_SUFFIX) \
 X+   -l boost_chrono$(BOOST_LIB_SUFFIX) \
-X+   -l db_cxx$(BDB_LIB_SUFFIX) \
-X+   -l ssl \
-X+   -l crypto \
-X+   -l execinfo
-X+
-X+ifndef USE_UPNP
-X+	override USE_UPNP = -
-X+endif
-X+ifneq (${USE_UPNP}, -)
-X+	LIBS += -l miniupnpc
-X+	DEFS += -DUSE_UPNP=$(USE_UPNP)
-X+endif
-X+
-X+ifneq (${USE_IPV6}, -)
-X+	DEFS += -DUSE_IPV6=$(USE_IPV6)
-X+endif
-X+
-X+LIBS+= \
-X+ -Wl,-B$(LMODE2) \
-X+   -l z \
-X+   -l pthread
-X+
-X+
-X+# Hardening
-X+# Make some classes of vulnerabilities unexploitable in case one is discovered.
-X+#
-X+    # This is a workaround for Ubuntu bug #691722, the default -fstack-protector causes
-X+    # -fstack-protector-all to be ignored unless -fno-stack-protector is used first.
-X+    # see: https://bugs.launchpad.net/ubuntu/+source/gcc-4.5/+bug/691722
-X+    HARDENING=-fno-stack-protector
-X+
-X+    # Stack Canaries
-X+    # Put numbers at the beginning of each stack frame and check that they are the same.
-X+    # If a stack buffer if overflowed, it writes over the canary number and then on return
-X+    # when that number is checked, it won't be the same and the program will exit with
-X+    # a "Stack smashing detected" error instead of being exploited.
-X+    HARDENING+=-fstack-protector-all -Wstack-protector
-X+
-X+    # Make some important things such as the global offset table read only as soon as
-X+    # the dynamic linker is finished building it. This will prevent overwriting of addresses
-X+    # which would later be jumped to.
-X+    LDHARDENING+=-Wl,-z,relro -Wl,-z,now
-X+
-X+    # Build position independent code to take advantage of Address Space Layout Randomization
-X+    # offered by some kernels.
-X+    # see doc/build-unix.txt for more information.
-X+    ifdef PIE
-X+        HARDENING+=-fPIE
-X+        LDHARDENING+=-pie
-X+    endif
-X+
-X+    # -D_FORTIFY_SOURCE=2 does some checking for potentially exploitable code patterns in
-X+    # the source such overflowing a statically defined buffer.
-X+    HARDENING+=-D_FORTIFY_SOURCE=2
-X+#
-X+
-X+
-X+DEBUGFLAGS=-g
-X+
-X+# CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
-X+# adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
+X    -l db_cxx$(BDB_LIB_SUFFIX) \
+X    -l ssl \
+X    -l crypto \
+X@@ -52,7 +58,6 @@
+X LIBS+= \
+X  -Wl,-B$(LMODE2) \
+X    -l z \
+X-   -l dl \
+X    -l pthread
+X 
+X 
+X@@ -94,7 +99,7 @@
+X 
+X # CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
+X # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
+X-xCXXFLAGS=-O0 -msse2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
 X+xCXXFLAGS=-O2 -msse2 -pthread -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter \
-X+    $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
-X+
-X+# LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
-X+# adds some defaults in front. Unfortunately, LDFLAGS=... $(LDFLAGS) does not work.
-X+xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
-X+
-X+OBJS= \
-X+    obj/alert.o \
-X+    obj/version.o \
-X+    obj/checkpoints.o \
-X+    obj/netbase.o \
-X+    obj/addrman.o \
-X+    obj/crypter.o \
-X+    obj/key.o \
-X+    obj/db.o \
-X+    obj/init.o \
-X+    obj/irc.o \
-X+    obj/keystore.o \
-X+    obj/main.o \
-X+    obj/net.o \
-X+    obj/protocol.o \
-X+    obj/tekcoinrpc.o \
-X+    obj/rpcdump.o \
-X+    obj/rpcnet.o \
-X+    obj/rpcmining.o \
-X+    obj/rpcwallet.o \
-X+    obj/rpcblockchain.o \
-X+    obj/rpcrawtransaction.o \
-X+    obj/script.o \
-X+    obj/sync.o \
-X+    obj/util.o \
-X+    obj/wallet.o \
-X+    obj/walletdb.o \
-X+    obj/noui.o \
-X+    obj/kernel.o
-X+
-X+
-X+all: tekcoind
-X+
-X+test check: test_tekcoin FORCE
-X+	./test_tekcoin
-X+
-X+# auto-generated dependencies:
-X+-include obj/*.P
-X+-include obj-test/*.P
-X+
-X+obj/build.h: FORCE
-X+	/bin/sh ../share/genbuild.sh obj/build.h
-X+version.cpp: obj/build.h
-X+DEFS += -DHAVE_BUILD_INFO
-X+
-X+obj/%.o: %.cpp
-X+	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
-X+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-X+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-X+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-X+	  rm -f $(@:%.o=%.d)
-X+
-X+tekcoind: $(OBJS:obj/%=obj/%)
-X+	$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
-X+
-X+TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
-X+
-X+obj-test/%.o: test/%.cpp
-X+	$(CXX) -c $(TESTDEFS) $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
-X+	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-X+	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
-X+	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-X+	  rm -f $(@:%.o=%.d)
-X+
-X+test_tekcoin: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
-X+	$(LINK) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ -Wl,-B$(LMODE) -lboost_unit_test_framework $(xLDFLAGS) $(LIBS)
-X+
-X+clean:
-X+	-rm -f tekcoind test_tekcoin
-X+	-rm -f obj/*.o
-X+	-rm -f obj-test/*.o
-X+	-rm -f obj/*.P
-X+	-rm -f obj-test/*.P
-X+	-rm -f obj/build.h
-X+
-X+FORCE:
+X     $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
+X 
+X # LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
 a1ba2a4253560dbb5f61e7cbde20ce07
 echo x - tekcoin/files/pkg-message.in
 sed 's/^X//' >tekcoin/files/pkg-message.in << 'e1544986a8a64ba217e19c37af8ceaf6'
@@ -224,790 +84,21 @@ e1544986a8a64ba217e19c37af8ceaf6
 echo x - tekcoin/files/patch-tekcoin-qt_pro
 sed 's/^X//' >tekcoin/files/patch-tekcoin-qt_pro << '151442219a0af2f8d1b7855c308beef3'
 X--- tekcoin-qt.pro.orig	2014-08-27 12:56:24.000000000 -0400
-X+++ tekcoin-qt.pro	2014-09-01 20:09:11.000000000 -0400
-X@@ -1,391 +1,391 @@
-X-TEMPLATE = app
-X-TARGET = Tekcoin-qt
-X-VERSION = 1.0.0
-X-INCLUDEPATH += src src/json src/qt
-X-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
-X-CONFIG += no_include_pwd
-X-CONFIG += static
-X-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-X-
-X-#uncomment the following section to enable building on windows:
-X-windows:LIBS += -lshlwapi
-X-LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
+X+++ tekcoin-qt.pro	2014-10-26 02:04:02.000000000 -0400
+X@@ -374,11 +374,11 @@
+X # Set libraries and includes at end, to use platform-defined defaults if not overridden
+X INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
+X LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
 X-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X-windows:LIBS += -lws2_32 -lole32 -loleaut32 -luuid -lgdi32
-X-LIBS += -lboost_system-mgw48-mt-s-1_55 -lboost_filesystem-mgw48-mt-s-1_55 -lboost_program_options-mgw48-mt-s-1_55 -lboost_thread-mgw48-mt-s-1_55
-X-BOOST_LIB_SUFFIX=-mgw48-mt-s-1_55
-X-BOOST_INCLUDE_PATH=C:/deps/boost_1_55_0
-X-BOOST_LIB_PATH=C:/deps/boost_1_55_0/stage/lib
-X-BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
-X-BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-X-OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1g/include
-X-OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1g
-X-MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
-X-MINIUPNPC_INCLUDE_PATH=c:/deps
-X-QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.3
-X-QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.3/.libs
-X-
-X-OBJECTS_DIR = build
-X-MOC_DIR = build
-X-UI_DIR = build
-X-
-X-# use: qmake "RELEASE=1"
-X-contains(RELEASE, 1) {
-X-    # Mac: compile for maximum compatibility (10.5, 32-bit)
-X-    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-X-
-X-    !windows:!macx {
-X-        # Linux: static link
-X-        LIBS += -Wl,-Bstatic
-X-    }
-X-}
-X-
-X-!win32 {
-X-# for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
-X-QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-X-QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-X-# We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
-X-# This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
-X-}
-X-# for extra security on Windows: enable ASLR and DEP via GCC linker flags
-X-# NOTE OLD win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
-X-win32:QMAKE_LFLAGS *= -Wl,--large-address-aware -static
-X-# use: qmake "USE_QRCODE=1"
-X-# libqrencode (http://fukuchi.org/works/qrencode/index.en.html) must be installed for support
-X-contains(USE_QRCODE, 1) {
-X-    message(Building with QRCode support)
-X-    DEFINES += USE_QRCODE
-X-    LIBS += -lqrencode -lpthread
-X-}
-X-
-X-# use: qmake "USE_UPNP=1" ( enabled by default; default)
-X-#  or: qmake "USE_UPNP=0" (disabled by default)
-X-#  or: qmake "USE_UPNP=-" (not supported)
-X-# miniupnpc (http://miniupnp.free.fr/files/) must be installed for support
-X-contains(USE_UPNP, -) {
-X-    message(Building without UPNP support)
-X-} else {
-X-    message(Building with UPNP support)
-X-    count(USE_UPNP, 0) {
-X-        USE_UPNP=1
-X-    }
-X-    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB
-X-    INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
-X-    LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
-X-    win32:LIBS += -liphlpapi
-X-}
-X-
-X-# use: qmake "USE_DBUS=1"
-X-contains(USE_DBUS, 1) {
-X-    message(Building with DBUS (Freedesktop notifications) support)
-X-    DEFINES += USE_DBUS
-X-    QT += dbus
-X-}
-X-
-X-# use: qmake "USE_IPV6=1" ( enabled by default; default)
-X-#  or: qmake "USE_IPV6=0" (disabled by default)
-X-#  or: qmake "USE_IPV6=-" (not supported)
-X-contains(USE_IPV6, -) {
-X-    message(Building without IPv6 support)
-X-} else {
-X-    count(USE_IPV6, 0) {
-X-        USE_IPV6=1
-X-    }
-X-    DEFINES += USE_IPV6=$$USE_IPV6
-X-}
-X-
-X-contains(tekcoin_NEED_QT_PLUGINS, 1) {
-X-    DEFINES += tekcoin_NEED_QT_PLUGINS
-X-    QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
-X-}
-X-
-X-
-X-# regenerate src/build.h
-X-!windows|contains(USE_BUILD_INFO, 1) {
-X-    genbuild.depends = FORCE
-X-    genbuild.commands = cd $$PWD; /bin/sh share/genbuild.sh $$OUT_PWD/build/build.h
-X-    genbuild.target = $$OUT_PWD/build/build.h
-X-    PRE_TARGETDEPS += $$OUT_PWD/build/build.h
-X-    QMAKE_EXTRA_TARGETS += genbuild
-X-    DEFINES += HAVE_BUILD_INFO
-X-}
-X-
-X-QMAKE_CXXFLAGS += -msse2
-X-QMAKE_CFLAGS += -msse2
-X-QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector
-X-
-X-# Input
-X-DEPENDPATH += src src/json src/qt
-X-HEADERS += src/qt/tekcoingui.h \
-X-    src/qt/transactiontablemodel.h \
-X-    src/qt/addresstablemodel.h \
-X-    src/qt/optionsdialog.h \
-X-    src/qt/sendcoinsdialog.h \
-X-	src/qt/coincontroldialog.h \
-X-	src/qt/coincontroltreewidget.h \
-X-    src/qt/addressbookpage.h \
-X-    src/qt/signverifymessagedialog.h \
-X-    src/qt/aboutdialog.h \
-X-    src/qt/editaddressdialog.h \
-X-    src/qt/tekcoinaddressvalidator.h \
-X-    src/alert.h \
-X-    src/addrman.h \
-X-    src/base58.h \
-X-    src/bignum.h \
-X-    src/checkpoints.h \
-X-	src/coincontrol.h \
-X-    src/compat.h \
-X-    src/sync.h \
-X-    src/util.h \
-X-    src/uint256.h \
-X-    src/kernel.h \
-X-    src/serialize.h \
-X-    src/strlcpy.h \
-X-    src/main.h \
-X-    src/net.h \
-X-    src/key.h \
-X-    src/db.h \
-X-    src/walletdb.h \
-X-    src/script.h \
-X-    src/init.h \
-X-    src/irc.h \
-X-    src/mruset.h \
-X-    src/json/json_spirit_writer_template.h \
-X-    src/json/json_spirit_writer.h \
-X-    src/json/json_spirit_value.h \
-X-    src/json/json_spirit_utils.h \
-X-    src/json/json_spirit_stream_reader.h \
-X-    src/json/json_spirit_reader_template.h \
-X-    src/json/json_spirit_reader.h \
-X-    src/json/json_spirit_error_position.h \
-X-    src/json/json_spirit.h \
-X-    src/qt/clientmodel.h \
-X-    src/qt/guiutil.h \
-X-    src/qt/transactionrecord.h \
-X-    src/qt/guiconstants.h \
-X-    src/qt/optionsmodel.h \
-X-    src/qt/monitoreddatamapper.h \
-X-    src/qt/transactiondesc.h \
-X-    src/qt/transactiondescdialog.h \
-X-    src/qt/tekcoinamountfield.h \
-X-    src/wallet.h \
-X-    src/keystore.h \
-X-    src/qt/transactionfilterproxy.h \
-X-    src/qt/transactionview.h \
-X-    src/qt/walletmodel.h \
-X-    src/tekcoinrpc.h \
-X-    src/qt/overviewpage.h \
-X-    src/qt/csvmodelwriter.h \
-X-    src/crypter.h \
-X-    src/qt/sendcoinsentry.h \
-X-    src/qt/qvalidatedlineedit.h \
-X-    src/qt/tekcoinunits.h \
-X-    src/qt/qvaluecombobox.h \
-X-    src/qt/askpassphrasedialog.h \
-X-    src/protocol.h \
-X-    src/qt/notificator.h \
-X-    src/qt/qtipcserver.h \
-X-    src/allocators.h \
-X-    src/ui_interface.h \
-X-    src/qt/rpcconsole.h \
-X-    src/version.h \
-X-    src/netbase.h \
-X-    src/clientversion.h
-X-
-X-SOURCES += src/qt/tekcoin.cpp src/qt/tekcoingui.cpp \
-X-    src/qt/transactiontablemodel.cpp \
-X-    src/qt/addresstablemodel.cpp \
-X-    src/qt/optionsdialog.cpp \
-X-    src/qt/sendcoinsdialog.cpp \
-X-	src/qt/coincontroldialog.cpp \
-X-	src/qt/coincontroltreewidget.cpp \
-X-    src/qt/addressbookpage.cpp \
-X-    src/qt/signverifymessagedialog.cpp \
-X-    src/qt/aboutdialog.cpp \
-X-    src/qt/editaddressdialog.cpp \
-X-    src/qt/tekcoinaddressvalidator.cpp \
-X-    src/alert.cpp \
-X-    src/version.cpp \
-X-    src/sync.cpp \
-X-    src/util.cpp \
-X-    src/netbase.cpp \
-X-    src/key.cpp \
-X-    src/script.cpp \
-X-    src/main.cpp \
-X-    src/init.cpp \
-X-    src/net.cpp \
-X-    src/irc.cpp \
-X-    src/checkpoints.cpp \
-X-    src/addrman.cpp \
-X-    src/db.cpp \
-X-    src/walletdb.cpp \
-X-    src/qt/clientmodel.cpp \
-X-    src/qt/guiutil.cpp \
-X-    src/qt/transactionrecord.cpp \
-X-    src/qt/optionsmodel.cpp \
-X-    src/qt/monitoreddatamapper.cpp \
-X-    src/qt/transactiondesc.cpp \
-X-    src/qt/transactiondescdialog.cpp \
-X-    src/qt/tekcoinstrings.cpp \
-X-    src/qt/tekcoinamountfield.cpp \
-X-    src/wallet.cpp \
-X-    src/keystore.cpp \
-X-    src/qt/transactionfilterproxy.cpp \
-X-    src/qt/transactionview.cpp \
-X-    src/qt/walletmodel.cpp \
-X-    src/tekcoinrpc.cpp \
-X-    src/rpcdump.cpp \
-X-    src/rpcnet.cpp \
-X-    src/rpcmining.cpp \
-X-    src/rpcwallet.cpp \
-X-    src/rpcblockchain.cpp \
-X-    src/rpcrawtransaction.cpp \
-X-    src/qt/overviewpage.cpp \
-X-    src/qt/csvmodelwriter.cpp \
-X-    src/crypter.cpp \
-X-    src/qt/sendcoinsentry.cpp \
-X-    src/qt/qvalidatedlineedit.cpp \
-X-    src/qt/tekcoinunits.cpp \
-X-    src/qt/qvaluecombobox.cpp \
-X-    src/qt/askpassphrasedialog.cpp \
-X-    src/protocol.cpp \
-X-    src/qt/notificator.cpp \
-X-    src/qt/qtipcserver.cpp \
-X-    src/qt/rpcconsole.cpp \
-X-    src/noui.cpp \
-X-    src/kernel.cpp
-X-
-X-RESOURCES += \
-X-    src/qt/tekcoin.qrc
-X-
-X-FORMS += \
-X-    src/qt/forms/sendcoinsdialog.ui \
-X-	src/qt/forms/coincontroldialog.ui \
-X-	src/qt/forms/coincontroldialog.ui \
-X-    src/qt/forms/addressbookpage.ui \
-X-    src/qt/forms/signverifymessagedialog.ui \
-X-    src/qt/forms/aboutdialog.ui \
-X-    src/qt/forms/editaddressdialog.ui \
-X-    src/qt/forms/transactiondescdialog.ui \
-X-    src/qt/forms/overviewpage.ui \
-X-    src/qt/forms/sendcoinsentry.ui \
-X-    src/qt/forms/askpassphrasedialog.ui \
-X-    src/qt/forms/rpcconsole.ui \
-X-    src/qt/forms/optionsdialog.ui
-X-
-X-contains(USE_QRCODE, 1) {
-X-HEADERS += src/qt/qrcodedialog.h
-X-SOURCES += src/qt/qrcodedialog.cpp
-X-FORMS += src/qt/forms/qrcodedialog.ui
-X-}
-X-
-X-contains(tekcoin_QT_TEST, 1) {
-X-SOURCES += src/qt/test/test_main.cpp \
-X-    src/qt/test/uritests.cpp
-X-HEADERS += src/qt/test/uritests.h
-X-DEPENDPATH += src/qt/test
-X-QT += testlib
-X-TARGET = tekcoin-qt_test
-X-DEFINES += tekcoin_QT_TEST
-X-}
-X-
-X-CODECFORTR = UTF-8
-X-
-X-# for lrelease/lupdate
-X-# also add new translations to src/qt/tekcoin.qrc under translations/
-X-TRANSLATIONS = $$files(src/qt/locale/tekcoin_*.ts)
-X-
-X-isEmpty(QMAKE_LRELEASE) {
-X-    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
-X-    else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
-X-}
-X-isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
-X-# automatically build translations, so they can be included in resource file
-X-TSQM.name = lrelease ${QMAKE_FILE_IN}
-X-TSQM.input = TRANSLATIONS
-X-TSQM.output = $$QM_DIR/${QMAKE_FILE_BASE}.qm
-X-TSQM.commands = $$QMAKE_LRELEASE ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_OUT}
-X-TSQM.CONFIG = no_link
-X-QMAKE_EXTRA_COMPILERS += TSQM
-X-
-X-# "Other files" to show in Qt Creator
-X-OTHER_FILES += \
-X-    doc/*.rst doc/*.txt doc/README README.md res/tekcoin-qt.rc src/test/*.cpp src/test/*.h src/qt/test/*.cpp src/qt/test/*.h
-X-
-X-# platform specific defaults, if not overridden on command line
-X-isEmpty(BOOST_LIB_SUFFIX) {
-X-    macx:BOOST_LIB_SUFFIX = -mt
-X-    windows:BOOST_LIB_SUFFIX = -mgw44-mt-s-1_50
-X-}
-X-
-X-isEmpty(BOOST_THREAD_LIB_SUFFIX) {
-X-    BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
-X-}
-X-
-X-isEmpty(BDB_LIB_PATH) {
-X-    macx:BDB_LIB_PATH = /opt/local/lib/db48
-X-}
-X-
-X-isEmpty(BDB_LIB_SUFFIX) {
-X-    macx:BDB_LIB_SUFFIX = -4.8
-X-}
-X-
-X-isEmpty(BDB_INCLUDE_PATH) {
-X-    macx:BDB_INCLUDE_PATH = /opt/local/include/db48
-X-}
-X-
-X-isEmpty(BOOST_LIB_PATH) {
-X-    macx:BOOST_LIB_PATH = /opt/local/lib
-X-}
-X-
-X-isEmpty(BOOST_INCLUDE_PATH) {
-X-    macx:BOOST_INCLUDE_PATH = /opt/local/include
-X-}
-X-
-X-windows:DEFINES += WIN32
-X-windows:RC_FILE = src/qt/res/tekcoin-qt.rc
-X-
-X-windows:!contains(MINGW_THREAD_BUGFIX, 0) {
-X-    # At least qmake's win32-g++-cross profile is missing the -lmingwthrd
-X-    # thread-safety flag. GCC has -mthreads to enable this, but it doesn't
-X-    # work with static linking. -lmingwthrd must come BEFORE -lmingw, so
-X-    # it is prepended to QMAKE_LIBS_QT_ENTRY.
-X-    # It can be turned off with MINGW_THREAD_BUGFIX=0, just in case it causes
-X-    # any problems on some untested qmake profile now or in the future.
-X-    DEFINES += _MT
-X-    QMAKE_LIBS_QT_ENTRY = -lmingwthrd $$QMAKE_LIBS_QT_ENTRY
-X-}
-X-
-X-!windows:!macx {
-X-    DEFINES += LINUX
-X-    LIBS += -lrt
-X-}
-X-
-X-macx:HEADERS += src/qt/macdockiconhandler.h
-X-macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
-X-macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
-X-macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
-X-macx:ICON = src/qt/res/icons/tekcoin.icns
-X-macx:TARGET = "tekcoin-Qt"
-X-macx:QMAKE_CFLAGS_THREAD += -pthread
-X-macx:QMAKE_LFLAGS_THREAD += -pthread
-X-macx:QMAKE_CXXFLAGS_THREAD += -pthread
-X-
-X-# Set libraries and includes at end, to use platform-defined defaults if not overridden
-X-INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-X-LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-X-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X-# -lgdi32 has to happen after -lcrypto (see  #681)
-X-windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
-X-
+X+LIBS += -lssl -lcrypto -lexecinfo -ldb_cxx$$BDB_LIB_SUFFIX
+X # -lgdi32 has to happen after -lcrypto (see  #681)
+X windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+X 
 X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-X-windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-X-
-X-contains(RELEASE, 1) {
-X-    !windows:!macx {
-X-        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-X-        LIBS += -Wl,-Bdynamic
-X-    }
-X-}
-X-
-X-system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
-X+TEMPLATE = app
-X+TARGET = Tekcoin-qt
-X+VERSION = 1.0.0
-X+INCLUDEPATH += src src/json src/qt
-X+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
-X+CONFIG += no_include_pwd
-X+CONFIG += static
-X+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-X+
-X+#uncomment the following section to enable building on windows:
-X+windows:LIBS += -lshlwapi
-X+LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-X+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X+windows:LIBS += -lws2_32 -lole32 -loleaut32 -luuid -lgdi32
-X+LIBS += -lboost_system-mgw48-mt-s-1_55 -lboost_filesystem-mgw48-mt-s-1_55 -lboost_program_options-mgw48-mt-s-1_55 -lboost_thread-mgw48-mt-s-1_55
-X+BOOST_LIB_SUFFIX=-mgw48-mt-s-1_55
-X+BOOST_INCLUDE_PATH=C:/deps/boost_1_55_0
-X+BOOST_LIB_PATH=C:/deps/boost_1_55_0/stage/lib
-X+BDB_INCLUDE_PATH=C:/deps/db-4.8.30.NC/build_unix
-X+BDB_LIB_PATH=C:/deps/db-4.8.30.NC/build_unix
-X+OPENSSL_INCLUDE_PATH=C:/deps/openssl-1.0.1g/include
-X+OPENSSL_LIB_PATH=C:/deps/openssl-1.0.1g
-X+MINIUPNPC_LIB_PATH=C:/deps/miniupnpc
-X+MINIUPNPC_INCLUDE_PATH=c:/deps
-X+QRENCODE_INCLUDE_PATH=C:/deps/qrencode-3.4.3
-X+QRENCODE_LIB_PATH=C:/deps/qrencode-3.4.3/.libs
-X+
-X+OBJECTS_DIR = build
-X+MOC_DIR = build
-X+UI_DIR = build
-X+
-X+# use: qmake "RELEASE=1"
-X+contains(RELEASE, 1) {
-X+    # Mac: compile for maximum compatibility (10.5, 32-bit)
-X+    macx:QMAKE_CXXFLAGS += -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
-X+
-X+    !windows:!macx {
-X+        # Linux: static link
-X+        LIBS += -Wl,-Bstatic
-X+    }
-X+}
-X+
-X+!win32 {
-X+# for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
-X+QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-X+QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
-X+# We need to exclude this for Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
-X+# This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
-X+}
-X+# for extra security on Windows: enable ASLR and DEP via GCC linker flags
-X+# NOTE OLD win32:QMAKE_LFLAGS *= -Wl,--dynamicbase -Wl,--nxcompat
-X+win32:QMAKE_LFLAGS *= -Wl,--large-address-aware -static
-X+# use: qmake "USE_QRCODE=1"
-X+# libqrencode (http://fukuchi.org/works/qrencode/index.en.html) must be installed for support
-X+contains(USE_QRCODE, 1) {
-X+    message(Building with QRCode support)
-X+    DEFINES += USE_QRCODE
-X+    LIBS += -lqrencode -lpthread
-X+}
-X+
-X+# use: qmake "USE_UPNP=1" ( enabled by default; default)
-X+#  or: qmake "USE_UPNP=0" (disabled by default)
-X+#  or: qmake "USE_UPNP=-" (not supported)
-X+# miniupnpc (http://miniupnp.free.fr/files/) must be installed for support
-X+contains(USE_UPNP, -) {
-X+    message(Building without UPNP support)
-X+} else {
-X+    message(Building with UPNP support)
-X+    count(USE_UPNP, 0) {
-X+        USE_UPNP=1
-X+    }
-X+    DEFINES += USE_UPNP=$$USE_UPNP STATICLIB
-X+    INCLUDEPATH += $$MINIUPNPC_INCLUDE_PATH
-X+    LIBS += $$join(MINIUPNPC_LIB_PATH,,-L,) -lminiupnpc
-X+    win32:LIBS += -liphlpapi
-X+}
-X+
-X+# use: qmake "USE_DBUS=1"
-X+contains(USE_DBUS, 1) {
-X+    message(Building with DBUS (Freedesktop notifications) support)
-X+    DEFINES += USE_DBUS
-X+    QT += dbus
-X+}
-X+
-X+# use: qmake "USE_IPV6=1" ( enabled by default; default)
-X+#  or: qmake "USE_IPV6=0" (disabled by default)
-X+#  or: qmake "USE_IPV6=-" (not supported)
-X+contains(USE_IPV6, -) {
-X+    message(Building without IPv6 support)
-X+} else {
-X+    count(USE_IPV6, 0) {
-X+        USE_IPV6=1
-X+    }
-X+    DEFINES += USE_IPV6=$$USE_IPV6
-X+}
-X+
-X+contains(tekcoin_NEED_QT_PLUGINS, 1) {
-X+    DEFINES += tekcoin_NEED_QT_PLUGINS
-X+    QTPLUGIN += qcncodecs qjpcodecs qtwcodecs qkrcodecs qtaccessiblewidgets
-X+}
-X+
-X+
-X+# regenerate src/build.h
-X+!windows|contains(USE_BUILD_INFO, 1) {
-X+    genbuild.depends = FORCE
-X+    genbuild.commands = cd $$PWD; /bin/sh share/genbuild.sh $$OUT_PWD/build/build.h
-X+    genbuild.target = $$OUT_PWD/build/build.h
-X+    PRE_TARGETDEPS += $$OUT_PWD/build/build.h
-X+    QMAKE_EXTRA_TARGETS += genbuild
-X+    DEFINES += HAVE_BUILD_INFO
-X+}
-X+
-X+QMAKE_CXXFLAGS += -msse2
-X+QMAKE_CFLAGS += -msse2
-X+QMAKE_CXXFLAGS_WARN_ON = -fdiagnostics-show-option -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter -Wstack-protector
-X+
-X+# Input
-X+DEPENDPATH += src src/json src/qt
-X+HEADERS += src/qt/tekcoingui.h \
-X+    src/qt/transactiontablemodel.h \
-X+    src/qt/addresstablemodel.h \
-X+    src/qt/optionsdialog.h \
-X+    src/qt/sendcoinsdialog.h \
-X+	src/qt/coincontroldialog.h \
-X+	src/qt/coincontroltreewidget.h \
-X+    src/qt/addressbookpage.h \
-X+    src/qt/signverifymessagedialog.h \
-X+    src/qt/aboutdialog.h \
-X+    src/qt/editaddressdialog.h \
-X+    src/qt/tekcoinaddressvalidator.h \
-X+    src/alert.h \
-X+    src/addrman.h \
-X+    src/base58.h \
-X+    src/bignum.h \
-X+    src/checkpoints.h \
-X+	src/coincontrol.h \
-X+    src/compat.h \
-X+    src/sync.h \
-X+    src/util.h \
-X+    src/uint256.h \
-X+    src/kernel.h \
-X+    src/serialize.h \
-X+    src/strlcpy.h \
-X+    src/main.h \
-X+    src/net.h \
-X+    src/key.h \
-X+    src/db.h \
-X+    src/walletdb.h \
-X+    src/script.h \
-X+    src/init.h \
-X+    src/irc.h \
-X+    src/mruset.h \
-X+    src/json/json_spirit_writer_template.h \
-X+    src/json/json_spirit_writer.h \
-X+    src/json/json_spirit_value.h \
-X+    src/json/json_spirit_utils.h \
-X+    src/json/json_spirit_stream_reader.h \
-X+    src/json/json_spirit_reader_template.h \
-X+    src/json/json_spirit_reader.h \
-X+    src/json/json_spirit_error_position.h \
-X+    src/json/json_spirit.h \
-X+    src/qt/clientmodel.h \
-X+    src/qt/guiutil.h \
-X+    src/qt/transactionrecord.h \
-X+    src/qt/guiconstants.h \
-X+    src/qt/optionsmodel.h \
-X+    src/qt/monitoreddatamapper.h \
-X+    src/qt/transactiondesc.h \
-X+    src/qt/transactiondescdialog.h \
-X+    src/qt/tekcoinamountfield.h \
-X+    src/wallet.h \
-X+    src/keystore.h \
-X+    src/qt/transactionfilterproxy.h \
-X+    src/qt/transactionview.h \
-X+    src/qt/walletmodel.h \
-X+    src/tekcoinrpc.h \
-X+    src/qt/overviewpage.h \
-X+    src/qt/csvmodelwriter.h \
-X+    src/crypter.h \
-X+    src/qt/sendcoinsentry.h \
-X+    src/qt/qvalidatedlineedit.h \
-X+    src/qt/tekcoinunits.h \
-X+    src/qt/qvaluecombobox.h \
-X+    src/qt/askpassphrasedialog.h \
-X+    src/protocol.h \
-X+    src/qt/notificator.h \
-X+    src/qt/qtipcserver.h \
-X+    src/allocators.h \
-X+    src/ui_interface.h \
-X+    src/qt/rpcconsole.h \
-X+    src/version.h \
-X+    src/netbase.h \
-X+    src/clientversion.h
-X+
-X+SOURCES += src/qt/tekcoin.cpp src/qt/tekcoingui.cpp \
-X+    src/qt/transactiontablemodel.cpp \
-X+    src/qt/addresstablemodel.cpp \
-X+    src/qt/optionsdialog.cpp \
-X+    src/qt/sendcoinsdialog.cpp \
-X+	src/qt/coincontroldialog.cpp \
-X+	src/qt/coincontroltreewidget.cpp \
-X+    src/qt/addressbookpage.cpp \
-X+    src/qt/signverifymessagedialog.cpp \
-X+    src/qt/aboutdialog.cpp \
-X+    src/qt/editaddressdialog.cpp \
-X+    src/qt/tekcoinaddressvalidator.cpp \
-X+    src/alert.cpp \
-X+    src/version.cpp \
-X+    src/sync.cpp \
-X+    src/util.cpp \
-X+    src/netbase.cpp \
-X+    src/key.cpp \
-X+    src/script.cpp \
-X+    src/main.cpp \
-X+    src/init.cpp \
-X+    src/net.cpp \
-X+    src/irc.cpp \
-X+    src/checkpoints.cpp \
-X+    src/addrman.cpp \
-X+    src/db.cpp \
-X+    src/walletdb.cpp \
-X+    src/qt/clientmodel.cpp \
-X+    src/qt/guiutil.cpp \
-X+    src/qt/transactionrecord.cpp \
-X+    src/qt/optionsmodel.cpp \
-X+    src/qt/monitoreddatamapper.cpp \
-X+    src/qt/transactiondesc.cpp \
-X+    src/qt/transactiondescdialog.cpp \
-X+    src/qt/tekcoinstrings.cpp \
-X+    src/qt/tekcoinamountfield.cpp \
-X+    src/wallet.cpp \
-X+    src/keystore.cpp \
-X+    src/qt/transactionfilterproxy.cpp \
-X+    src/qt/transactionview.cpp \
-X+    src/qt/walletmodel.cpp \
-X+    src/tekcoinrpc.cpp \
-X+    src/rpcdump.cpp \
-X+    src/rpcnet.cpp \
-X+    src/rpcmining.cpp \
-X+    src/rpcwallet.cpp \
-X+    src/rpcblockchain.cpp \
-X+    src/rpcrawtransaction.cpp \
-X+    src/qt/overviewpage.cpp \
-X+    src/qt/csvmodelwriter.cpp \
-X+    src/crypter.cpp \
-X+    src/qt/sendcoinsentry.cpp \
-X+    src/qt/qvalidatedlineedit.cpp \
-X+    src/qt/tekcoinunits.cpp \
-X+    src/qt/qvaluecombobox.cpp \
-X+    src/qt/askpassphrasedialog.cpp \
-X+    src/protocol.cpp \
-X+    src/qt/notificator.cpp \
-X+    src/qt/qtipcserver.cpp \
-X+    src/qt/rpcconsole.cpp \
-X+    src/noui.cpp \
-X+    src/kernel.cpp
-X+
-X+RESOURCES += \
-X+    src/qt/tekcoin.qrc
-X+
-X+FORMS += \
-X+    src/qt/forms/sendcoinsdialog.ui \
-X+	src/qt/forms/coincontroldialog.ui \
-X+	src/qt/forms/coincontroldialog.ui \
-X+    src/qt/forms/addressbookpage.ui \
-X+    src/qt/forms/signverifymessagedialog.ui \
-X+    src/qt/forms/aboutdialog.ui \
-X+    src/qt/forms/editaddressdialog.ui \
-X+    src/qt/forms/transactiondescdialog.ui \
-X+    src/qt/forms/overviewpage.ui \
-X+    src/qt/forms/sendcoinsentry.ui \
-X+    src/qt/forms/askpassphrasedialog.ui \
-X+    src/qt/forms/rpcconsole.ui \
-X+    src/qt/forms/optionsdialog.ui
-X+
-X+contains(USE_QRCODE, 1) {
-X+HEADERS += src/qt/qrcodedialog.h
-X+SOURCES += src/qt/qrcodedialog.cpp
-X+FORMS += src/qt/forms/qrcodedialog.ui
-X+}
-X+
-X+contains(tekcoin_QT_TEST, 1) {
-X+SOURCES += src/qt/test/test_main.cpp \
-X+    src/qt/test/uritests.cpp
-X+HEADERS += src/qt/test/uritests.h
-X+DEPENDPATH += src/qt/test
-X+QT += testlib
-X+TARGET = tekcoin-qt_test
-X+DEFINES += tekcoin_QT_TEST
-X+}
-X+
-X+CODECFORTR = UTF-8
-X+
-X+# for lrelease/lupdate
-X+# also add new translations to src/qt/tekcoin.qrc under translations/
-X+TRANSLATIONS = $$files(src/qt/locale/tekcoin_*.ts)
-X+
-X+isEmpty(QMAKE_LRELEASE) {
-X+    win32:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]\\lrelease.exe
-X+    else:QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
-X+}
-X+isEmpty(QM_DIR):QM_DIR = $$PWD/src/qt/locale
-X+# automatically build translations, so they can be included in resource file
-X+TSQM.name = lrelease ${QMAKE_FILE_IN}
-X+TSQM.input = TRANSLATIONS
-X+TSQM.output = $$QM_DIR/${QMAKE_FILE_BASE}.qm
-X+TSQM.commands = $$QMAKE_LRELEASE ${QMAKE_FILE_IN} -qm ${QMAKE_FILE_OUT}
-X+TSQM.CONFIG = no_link
-X+QMAKE_EXTRA_COMPILERS += TSQM
-X+
-X+# "Other files" to show in Qt Creator
-X+OTHER_FILES += \
-X+    doc/*.rst doc/*.txt doc/README README.md res/tekcoin-qt.rc src/test/*.cpp src/test/*.h src/qt/test/*.cpp src/qt/test/*.h
-X+
-X+# platform specific defaults, if not overridden on command line
-X+isEmpty(BOOST_LIB_SUFFIX) {
-X+    macx:BOOST_LIB_SUFFIX = -mt
-X+    windows:BOOST_LIB_SUFFIX = -mgw44-mt-s-1_50
-X+}
-X+
-X+isEmpty(BOOST_THREAD_LIB_SUFFIX) {
-X+    BOOST_THREAD_LIB_SUFFIX = $$BOOST_LIB_SUFFIX
-X+}
-X+
-X+isEmpty(BDB_LIB_PATH) {
-X+    macx:BDB_LIB_PATH = /opt/local/lib/db48
-X+}
-X+
-X+isEmpty(BDB_LIB_SUFFIX) {
-X+    macx:BDB_LIB_SUFFIX = -4.8
-X+}
-X+
-X+isEmpty(BDB_INCLUDE_PATH) {
-X+    macx:BDB_INCLUDE_PATH = /opt/local/include/db48
-X+}
-X+
-X+isEmpty(BOOST_LIB_PATH) {
-X+    macx:BOOST_LIB_PATH = /opt/local/lib
-X+}
-X+
-X+isEmpty(BOOST_INCLUDE_PATH) {
-X+    macx:BOOST_INCLUDE_PATH = /opt/local/include
-X+}
-X+
-X+windows:DEFINES += WIN32
-X+windows:RC_FILE = src/qt/res/tekcoin-qt.rc
-X+
-X+windows:!contains(MINGW_THREAD_BUGFIX, 0) {
-X+    # At least qmake's win32-g++-cross profile is missing the -lmingwthrd
-X+    # thread-safety flag. GCC has -mthreads to enable this, but it doesn't
-X+    # work with static linking. -lmingwthrd must come BEFORE -lmingw, so
-X+    # it is prepended to QMAKE_LIBS_QT_ENTRY.
-X+    # It can be turned off with MINGW_THREAD_BUGFIX=0, just in case it causes
-X+    # any problems on some untested qmake profile now or in the future.
-X+    DEFINES += _MT
-X+    QMAKE_LIBS_QT_ENTRY = -lmingwthrd $$QMAKE_LIBS_QT_ENTRY
-X+}
-X+
-X+!windows:!macx {
-X+    DEFINES += LINUX
-X+    LIBS += -lrt
-X+}
-X+
-X+macx:HEADERS += src/qt/macdockiconhandler.h
-X+macx:OBJECTIVE_SOURCES += src/qt/macdockiconhandler.mm
-X+macx:LIBS += -framework Foundation -framework ApplicationServices -framework AppKit
-X+macx:DEFINES += MAC_OSX MSG_NOSIGNAL=0
-X+macx:ICON = src/qt/res/icons/tekcoin.icns
-X+macx:TARGET = "tekcoin-Qt"
-X+macx:QMAKE_CFLAGS_THREAD += -pthread
-X+macx:QMAKE_LFLAGS_THREAD += -pthread
-X+macx:QMAKE_CXXFLAGS_THREAD += -pthread
-X+
-X+# Set libraries and includes at end, to use platform-defined defaults if not overridden
-X+INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-X+LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-X+LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X+# -lgdi32 has to happen after -lcrypto (see  #681)
-X+windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
-X+
 X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
-X+windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-X+
-X+contains(RELEASE, 1) {
-X+    !windows:!macx {
-X+        # Linux: turn dynamic linking back on for c/c++ runtime libraries
-X+        LIBS += -Wl,-Bdynamic
-X+    }
-X+}
-X+
-X+system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
+X windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+X 
+X contains(RELEASE, 1) {
 151442219a0af2f8d1b7855c308beef3
 echo x - tekcoin/files/tekcoin.in
 sed 's/^X//' >tekcoin/files/tekcoin.in << '95f90af0df92f1401aa6df06629ca5ce'
@@ -1104,13 +195,73 @@ Xgen=0
 Xlogtimestamps=1
 Xaddnode=63.247.147.166:8514
 6ec06b49fafdf00770a5cd5224ee8378
+echo x - tekcoin/files/patch-src__net.cpp
+sed 's/^X//' >tekcoin/files/patch-src__net.cpp << '6ec28738add682726e0c7db5f39e2077'
+X--- src/net.cpp.orig	2014-08-27 12:56:24.000000000 -0400
+X+++ src/net.cpp	2014-10-26 01:26:09.000000000 -0400
+X@@ -57,7 +57,7 @@
+X static CNode* pnodeLocalHost = NULL;
+X CAddress addrSeenByPeer(CService("0.0.0.0", 0), nLocalServices);
+X uint64 nLocalHostNonce = 0;
+X-array<int, THREAD_MAX> vnThreadsRunning;
+X+boost::array<int, THREAD_MAX> vnThreadsRunning;
+X static std::vector<SOCKET> vhListenSocket;
+X CAddrMan addrman;
+X 
+6ec28738add682726e0c7db5f39e2077
+echo x - tekcoin/files/patch-src__serialize.h
+sed 's/^X//' >tekcoin/files/patch-src__serialize.h << '94c93a0222a9f04bf276fb059ad48672'
+X--- src/serialize.h.orig	2014-08-27 12:56:24.000000000 -0400
+X+++ src/serialize.h	2014-10-26 01:19:45.000000000 -0400
+X@@ -811,19 +811,6 @@
+X     iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
+X     void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
+X 
+X-    void insert(iterator it, const_iterator first, const_iterator last)
+X-    {
+X-        assert(last - first >= 0);
+X-        if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
+X-        {
+X-            // special case for inserting at the front when there's room
+X-            nReadPos -= (last - first);
+X-            memcpy(&vch[nReadPos], &first[0], last - first);
+X-        }
+X-        else
+X-            vch.insert(it, first, last);
+X-    }
+X-
+X     void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
+X     {
+X         assert(last - first >= 0);
+X@@ -855,6 +842,7 @@
+X     iterator erase(iterator it)
+X     {
+X         if (it == vch.begin() + nReadPos)
+X+
+X         {
+X             // special case for erasing from the front
+X             if (++nReadPos >= vch.size())
+94c93a0222a9f04bf276fb059ad48672
+echo x - tekcoin/files/tekcoin-qt.desktop.in
+sed 's/^X//' >tekcoin/files/tekcoin-qt.desktop.in << '456e76078a05af2ad63d47c047518963'
+X[Desktop Entry]
+XEncoding=UTF-8
+XName=Tekcoin
+XComment=Tekcoin P2P Cryptocurrency
+XExec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
+XTerminal=false
+XType=Application
+XIcon=%%PREFIX%%/share/pixmaps/%%PORTNAME%%.png
+XMimeType=x-scheme-handler/%%PORTNAME%%;
+XCategories=Office;
+456e76078a05af2ad63d47c047518963
 echo x - tekcoin/Makefile
 sed 's/^X//' >tekcoin/Makefile << '485a14d53c5f419b3caf396b0920b095'
 X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD$
 X
 XPORTNAME=	tekcoin
-XPORTVERSION=	2.0.0.0
+XPORTVERSION=	2.1.0.0
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -1120,7 +271,7 @@ X
 XLICENSE=	MIT
 X
 XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-X    		execinfo:${PORTSDIR}/devel/libexecinfo
+X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
 X
 XOPTIONS_DEFINE=	X11 UPNP QRCODES
 XOPTIONS_DEFAULT=	X11 QRCODES
@@ -1128,15 +279,17 @@ XUPNP_DESC=	Build with UPNP support
 XQRCODES_DESC=	Build with QR code display
 X
 XUSE_GITHUB=	yes
-XGH_ACCOUNT=	maxxine
+XGH_ACCOUNT=	noise23
 XGH_PROJECT=	TEK
-XGH_COMMIT=	d05554b
-XGH_TAGNAME=	d05554b
+XGH_COMMIT=	2bc52af
+XGH_TAGNAME=	2bc52af
 X
-XUSES=		gmake
+XUSES=		gmake dos2unix
 XUSE_OPENSSL=	yes
 XUSE_BDB=	yes
 XWANT_BDB_VER=	48
+X
+XDOS2UNIX_FILES=	${WRKSRC}/src/makefile.bsd
 X
 XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
@@ -1144,10 +297,11 @@ XCXXFLAGS+=	-Wno-invalid-offsetof
 X
 X.include <bsd.port.options.mk>
 X
+XSUB_LIST+=	PORTNAME=${PORTNAME}
 X.if ${PORT_OPTIONS:MX11}
 XPLIST_SUB+=	X11=""
+XSUB_FILES=	${PORTNAME}-qt.desktop
 X.else
-XSUB_LIST+=	PORTNAME=${PORTNAME}
 XUSE_RC_SUBR=	${PORTNAME}
 XSUB_FILES=	pkg-message
 XPLIST_SUB+=	X11="@comment "
@@ -1182,6 +336,10 @@ X.endif
 X
 X.include <bsd.port.pre.mk>
 X
+Xpost-extract:
+X	@${MV} ${WRKSRC}/${PORTNAME}-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro.old
+X	@${MV} ${WRKSRC}/${PORTNAME}-qt-linux.pro ${WRKSRC}/${PORTNAME}-qt.pro
+X
 Xpost-patch:
 X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
 X.if !${PORT_OPTIONS:MX11}
@@ -1203,13 +361,9 @@ X.endif
 X
 Xdo-install:
 X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-X		-e 's,bitcoin,${PORTNAME},g' \
-X		-e 's,Bitcoin,${PORTNAME},g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/Tekcoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 X
 X.else
 X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
@@ -1223,8 +377,8 @@ X.include <bsd.port.post.mk>
 485a14d53c5f419b3caf396b0920b095
 echo x - tekcoin/distinfo
 sed 's/^X//' >tekcoin/distinfo << '4df9b9785a4c9eeff561c2bee4388064'
-XSHA256 (tekcoin-2.0.0.0.tar.gz) = b45645cc3965956eade623305453ececc7d18b4a7d294f8a5e00292b192b6801
-XSIZE (tekcoin-2.0.0.0.tar.gz) = 5033633
+XSHA256 (tekcoin-2.1.0.0.tar.gz) = 7ea7f8ab1aa99568db7ccc6d37367b33f68ad5bf0dc69f4f92ea565546b73d25
+XSIZE (tekcoin-2.1.0.0.tar.gz) = 5098297
 4df9b9785a4c9eeff561c2bee4388064
 echo x - tekcoin/pkg-descr
 sed 's/^X//' >tekcoin/pkg-descr << '6b22dd6f784d9e559e3d6bf9643da8ea'

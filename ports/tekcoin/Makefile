@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	tekcoin
-PORTVERSION=	2.0.0.0
+PORTVERSION=	2.1.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -12,7 +12,7 @@ COMMENT=	Peer-to-Peer crypto currency using SHA256D as a proof-of-work algorithm
 LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-    		libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES
 OPTIONS_DEFAULT=	X11 QRCODES
@@ -20,15 +20,17 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	maxxine
+GH_ACCOUNT=	noise23
 GH_PROJECT=	TEK
-GH_COMMIT=	d05554b
-GH_TAGNAME=	d05554b
+GH_COMMIT=	2bc52af
+GH_TAGNAME=	2bc52af
 
-USES=		gmake
+USES=		gmake dos2unix
 USE_OPENSSL=	yes
 USE_BDB=	yes
 WANT_BDB_VER=	48
+
+DOS2UNIX_FILES=	${WRKSRC}/src/makefile.bsd
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
