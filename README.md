@@ -22,6 +22,7 @@ The current supported list of crypto currencies are:
 - emerald
 - fireflycoin
 - giftcoin
+- Gimpcoin
 - GoldReserve
 - hamstercoin
 - heavycoin
