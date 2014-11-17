@@ -288,7 +288,8 @@ X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD$
 X
 XPORTNAME=	Gimpcoin
-XPORTVERSION=	1.1.0.1
+XPORTVERSION=	1.1.0.2
+XPORTREVISION=	1
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -308,8 +309,8 @@ X
 XUSE_GITHUB=	yes
 XGH_ACCOUNT=	GimpCoinDev
 XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	3283816
-XGH_TAGNAME=	3283816
+XGH_COMMIT=	5b1c57f
+XGH_TAGNAME=	5b1c57f
 X
 XUSES=		gmake
 XUSE_OPENSSL=	yes
@@ -406,8 +407,8 @@ X.include <bsd.port.post.mk>
 a9a5214f6fa5e5bbd0a07637edce6190
 echo x - Gimpcoin/distinfo
 sed 's/^X//' >Gimpcoin/distinfo << 'fbc74eb6715960a34b69eb443fd92436'
-XSHA256 (Gimpcoin-1.1.0.1.tar.gz) = 66c084c4c49ab1ac2bfa7387a4b8d6b549a318aef092b2d60f73acb80b2fa7ee
-XSIZE (Gimpcoin-1.1.0.1.tar.gz) = 4466038
+XSHA256 (Gimpcoin-1.1.0.2.tar.gz) = dfa00214e8004dae384b170beb92c6c1c6f88f0e2b752f28ab9b688901179596
+XSIZE (Gimpcoin-1.1.0.2.tar.gz) = 4503507
 fbc74eb6715960a34b69eb443fd92436
 echo x - Gimpcoin/pkg-descr
 sed 's/^X//' >Gimpcoin/pkg-descr << '4ffb5efa44b3fbb2730b3da59fa02c6e'
