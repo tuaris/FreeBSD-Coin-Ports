@@ -1,0 +1,16 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=10
+rpcallowip=127.0.0.1
+rpcport=20020
+port=20010
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=lioncoin.securepayment.cc
+addnode=23.94.27.11
+addnode=23.227.196.20
+addnode=106.187.96.214
+addnode=104.28.2.124
+addnode=84.110.81.13
