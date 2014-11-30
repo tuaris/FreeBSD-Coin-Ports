@@ -13,6 +13,8 @@
 #	mintcoin/files/mintcoin.in
 #	mintcoin/files/mintcoin.conf.sample
 #	mintcoin/files/patch-mintcoin-qt_pro
+#	mintcoin/files/patch-src__serialize.h
+#	mintcoin/files/patch-src__net.cpp
 #	mintcoin/Makefile
 #	mintcoin/distinfo
 #	mintcoin/pkg-descr
@@ -209,10 +211,14 @@ Xaddnode=84.25.66.65
 bd76f7825ad83da21d7f787368e975a9
 echo x - mintcoin/files/patch-mintcoin-qt_pro
 sed 's/^X//' >mintcoin/files/patch-mintcoin-qt_pro << '8bb434277c83174eea5967169b057ec6'
-X--- mintcoin-qt.pro.orig	2014-04-28 23:15:10.000000000 -0400
-X+++ mintcoin-qt.pro	2014-04-28 23:15:20.000000000 -0400
-X@@ -368,7 +368,7 @@
-X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+X--- mintcoin-qt.pro.orig	2014-04-28 21:18:05.000000000 -0400
+X+++ mintcoin-qt.pro	2014-11-30 12:42:32.000000000 -0500
+X@@ -365,10 +365,10 @@
+X # Set libraries and includes at end, to use platform-defined defaults if not overridden
+X INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
+X LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
+X-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+X+LIBS += -lssl -lcrypto -lexecinfo -ldb_cxx$$BDB_LIB_SUFFIX
 X # -lgdi32 has to happen after -lcrypto (see  #681)
 X windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
 X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
@@ -221,6 +227,45 @@ X windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 X 
 X contains(RELEASE, 1) {
 8bb434277c83174eea5967169b057ec6
+echo x - mintcoin/files/patch-src__serialize.h
+sed 's/^X//' >mintcoin/files/patch-src__serialize.h << 'ef6358cc9fdc073c0dfd2ab49a925b64'
+X--- ./src/serialize.h.orig	2013-09-24 01:50:35.661706153 +0000
+X+++ ./src/serialize.h	2013-09-24 01:50:52.913703572 +0000
+X@@ -895,19 +895,6 @@
+X     iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
+X     void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
+X 
+X-    void insert(iterator it, const_iterator first, const_iterator last)
+X-    {
+X-        assert(last - first >= 0);
+X-        if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
+X-        {
+X-            // special case for inserting at the front when there's room
+X-            nReadPos -= (last - first);
+X-            memcpy(&vch[nReadPos], &first[0], last - first);
+X-        }
+X-        else
+X-            vch.insert(it, first, last);
+X-    }
+X-
+X     void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
+X     {
+X         assert(last - first >= 0);
+ef6358cc9fdc073c0dfd2ab49a925b64
+echo x - mintcoin/files/patch-src__net.cpp
+sed 's/^X//' >mintcoin/files/patch-src__net.cpp << '59688f2fe8cffda5f61043397125688a'
+X--- src/net.cpp.orig	2014-04-28 21:18:05.000000000 -0400
+X+++ src/net.cpp	2014-11-30 12:51:44.000000000 -0500
+X@@ -57,7 +57,7 @@
+X static CNode* pnodeLocalHost = NULL;
+X CAddress addrSeenByPeer(CService("0.0.0.0", 0), nLocalServices);
+X uint64 nLocalHostNonce = 0;
+X-array<int, THREAD_MAX> vnThreadsRunning;
+X+boost::array<int, THREAD_MAX> vnThreadsRunning;
+X static std::vector<SOCKET> vhListenSocket;
+X CAddrMan addrman;
+X 
+59688f2fe8cffda5f61043397125688a
 echo x - mintcoin/Makefile
 sed 's/^X//' >mintcoin/Makefile << '6422ff7eb210e825171f1d2aa431ea35'
 X# Created by: Daniel Morante <daniel@morante.net>
@@ -237,7 +282,7 @@ X
 XLICENSE=	MIT
 X
 XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-X			execinfo:${PORTSDIR}/devel/libexecinfo
+X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
 X
 XOPTIONS_DEFINE=	X11 UPNP QRCODES
 XOPTIONS_DEFAULT=	X11 QRCODES
@@ -320,13 +365,13 @@ X.endif
 X
 Xdo-install:
 X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/${GH_PROJECT}d-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 X		-e 's,bitcoin,${PORTNAME},g' \
-X		-e 's,Bitcoin,Mintcoin,g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+X		-e 's,xpm,png,g' \
+X		-e 's,80,,g' ${WRKSRC}/contrib/debian/mintcoin-qt.desktop
+X	${INSTALL} ${WRKSRC}/contrib/debian/mintcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKSRC}/src/qt/res/icons/MintCoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 X
 X.else
 X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${GH_PROJECT}d ${STAGEDIR}${PREFIX}/bin/${BINARY}
