@@ -13,7 +13,10 @@
 #	mooncoin/files/mooncoin.conf.sample
 #	mooncoin/files/mooncoin.in
 #	mooncoin/files/patch-mooncoin-qt_pro
-#	mooncoin/files/patch-src-main_cpp
+#	mooncoin/files/extra-patch-src__serialize.h
+#	mooncoin/files/extra-patch-src-main_cpp
+#	mooncoin/files/extra-patch-src__net.cpp
+#	mooncoin/files/mooncoin-qt.desktop.in
 #	mooncoin/Makefile
 #	mooncoin/pkg-descr
 #	mooncoin/distinfo
@@ -40,11 +43,11 @@ X*******************************************************************
 a141589db8e5996fddc07aaa15d6f5f4
 echo x - mooncoin/files/patch-src-makefile_unix
 sed 's/^X//' >mooncoin/files/patch-src-makefile_unix << '92a96f83cc6eccb16eee330be71a5a7a'
-X--- src/makefile.unix.orig	2013-12-29 07:50:48.000000000 -0500
-X+++ src/makefile.unix	2013-12-29 07:51:02.000000000 -0500
-X@@ -6,6 +6,11 @@
+X--- src/makefile.unix.orig	2014-04-03 16:52:43.000000000 -0400
+X+++ src/makefile.unix	2014-12-01 19:23:35.000000000 -0500
+X@@ -16,6 +16,11 @@
 X 
-X DEFS=-DUSE_IPV6 -DBOOST_SPIRIT_THREADSAFE
+X DEFS=-DBOOST_SPIRIT_THREADSAFE -D_FILE_OFFSET_BITS=64
 X 
 X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
 X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
@@ -54,7 +57,7 @@ X+
 X DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
 X LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
 X 
-X@@ -29,6 +34,7 @@
+X@@ -39,6 +44,7 @@
 X    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
 X    -l boost_program_options$(BOOST_LIB_SUFFIX) \
 X    -l boost_thread$(BOOST_LIB_SUFFIX) \
@@ -62,7 +65,7 @@ X+   -l boost_chrono$(BOOST_LIB_SUFFIX) \
 X    -l db_cxx$(BDB_LIB_SUFFIX) \
 X    -l ssl \
 X    -l crypto
-X@@ -44,7 +50,6 @@
+X@@ -62,7 +68,6 @@
 X LIBS+= \
 X  -Wl,-B$(LMODE2) \
 X    -l z \
@@ -73,11 +76,33 @@ X
 92a96f83cc6eccb16eee330be71a5a7a
 echo x - mooncoin/files/extra-patch-endian
 sed 's/^X//' >mooncoin/files/extra-patch-endian << '1e3ef1a6e43b63ba1bbac0bf954949cf'
-X--- src/scrypt.cpp.orig	2013-12-09 18:10:12.046606050 +0000
-X+++ src/scrypt.cpp	2013-12-09 18:10:25.898605023 +0000
-X@@ -34,22 +34,6 @@
-X #include <string.h>
-X #include <openssl/sha.h>
+X--- src/scrypt.h.orig	2013-12-09 15:26:17.343282984 +0000
+X+++ src/scrypt.h	2013-12-09 15:45:11.032205545 +0000
+X@@ -30,19 +30,4 @@
+X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
+X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+X 
+X-static inline uint32_t le32dec(const void *pp)
+X-{
+X-        const uint8_t *p = (uint8_t const *)pp;
+X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+X-}
+X-
+X-static inline void le32enc(void *pp, uint32_t x)
+X-{
+X-        uint8_t *p = (uint8_t *)pp;
+X-        p[0] = x & 0xff;
+X-        p[1] = (x >> 8) & 0xff;
+X-        p[2] = (x >> 16) & 0xff;
+X-        p[3] = (x >> 24) & 0xff;
+X-}
+X #endif
+X--- src/scrypt.cpp.orig	2014-04-03 16:52:43.000000000 -0400
+X+++ src/scrypt.cpp	2014-12-01 19:40:11.000000000 -0500
+X@@ -47,22 +47,6 @@
+X #endif
+X #endif
 X 
 X-static inline uint32_t be32dec(const void *pp)
 X-{
@@ -98,28 +123,13 @@ X-
 X typedef struct HMAC_SHA256Context {
 X 	SHA256_CTX ictx;
 X 	SHA256_CTX octx;
-X--- src/scrypt.h.orig	2013-12-09 15:26:17.343282984 +0000
-X+++ src/scrypt.h	2013-12-09 15:45:11.032205545 +0000
-X@@ -17,19 +17,4 @@
-X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
-X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
-X 
-X-static inline uint32_t le32dec(const void *pp)
-X-{
-X-        const uint8_t *p = (uint8_t const *)pp;
-X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
-X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+X@@ -329,4 +313,4 @@
+X {
+X 	char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
+X     scrypt_1024_1_1_256_sp(input, output, scratchpad);
 X-}
-X-
-X-static inline void le32enc(void *pp, uint32_t x)
-X-{
-X-        uint8_t *p = (uint8_t *)pp;
-X-        p[0] = x & 0xff;
-X-        p[1] = (x >> 8) & 0xff;
-X-        p[2] = (x >> 16) & 0xff;
-X-        p[3] = (x >> 24) & 0xff;
-X-}
-X #endif
+X\ No newline at end of file
+X+}
 1e3ef1a6e43b63ba1bbac0bf954949cf
 echo x - mooncoin/files/mooncoin.conf.sample
 sed 's/^X//' >mooncoin/files/mooncoin.conf.sample << '9a98b91aaebb09c631f84f8beb168afa'
@@ -218,20 +228,45 @@ Xrun_rc_command "$1"
 c7d4add2592e06dacbdc0b0218d68f16
 echo x - mooncoin/files/patch-mooncoin-qt_pro
 sed 's/^X//' >mooncoin/files/patch-mooncoin-qt_pro << '4fb7f30d9bcee1086d03bb34aee9418c'
-X--- mooncoin-qt.pro.orig	2013-12-29 03:22:23.000000000 -0500
-X+++ mooncoin-qt.pro	2013-12-29 07:48:46.000000000 -0500
-X@@ -348,7 +348,7 @@
-X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+X--- mooncoin-qt.pro.orig	2014-04-03 16:52:43.000000000 -0400
+X+++ mooncoin-qt.pro	2014-12-01 19:29:27.000000000 -0500
+X@@ -450,7 +450,7 @@
+X LIBS += -lssl -lcrypto
 X # -lgdi32 has to happen after -lcrypto (see  #681)
-X windows:LIBS += -lole32 -luuid -lgdi32
-X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
+X !macx {
+X-    LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX
+X+    LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
+X     LIBS += -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_LIB_SUFFIX -ldb_cxx$$BDB_LIB_SUFFIX
+X }
 X 
-X contains(RELEASE, 1) {
-X     !windows:!macx {
 4fb7f30d9bcee1086d03bb34aee9418c
-echo x - mooncoin/files/patch-src-main_cpp
-sed 's/^X//' >mooncoin/files/patch-src-main_cpp << 'd8f7bf228e758f335f4aec21df7cf429'
+echo x - mooncoin/files/extra-patch-src__serialize.h
+sed 's/^X//' >mooncoin/files/extra-patch-src__serialize.h << 'ae203243d4a9fafb5e43b9469f6e8fbc'
+X--- ./src/serialize.h.orig	2013-09-24 01:50:35.661706153 +0000
+X+++ ./src/serialize.h	2013-09-24 01:50:52.913703572 +0000
+X@@ -895,19 +895,6 @@
+X     iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
+X     void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
+X 
+X-    void insert(iterator it, const_iterator first, const_iterator last)
+X-    {
+X-        assert(last - first >= 0);
+X-        if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
+X-        {
+X-            // special case for inserting at the front when there's room
+X-            nReadPos -= (last - first);
+X-            memcpy(&vch[nReadPos], &first[0], last - first);
+X-        }
+X-        else
+X-            vch.insert(it, first, last);
+X-    }
+X-
+X     void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
+X     {
+X         assert(last - first >= 0);
+ae203243d4a9fafb5e43b9469f6e8fbc
+echo x - mooncoin/files/extra-patch-src-main_cpp
+sed 's/^X//' >mooncoin/files/extra-patch-src-main_cpp << 'c2b403f3eaaa39c77659fd13e29de03c'
 X--- src/main.cpp.orig	2013-12-30 13:38:52.000000000 -0500
 X+++ src/main.cpp	2013-12-30 14:51:59.000000000 -0500
 X@@ -834,8 +834,8 @@
@@ -245,14 +280,41 @@ X+    boost::random::uniform_int_distribution<> dist(1, range);
 X     return dist(gen);
 X }
 X 
-d8f7bf228e758f335f4aec21df7cf429
+c2b403f3eaaa39c77659fd13e29de03c
+echo x - mooncoin/files/extra-patch-src__net.cpp
+sed 's/^X//' >mooncoin/files/extra-patch-src__net.cpp << '4e29896a3b58553d7dc6e1e807b3a33e'
+X--- src/net.cpp.orig	2014-01-18 04:31:19.000000000 +0000
+X+++ src/net.cpp	2014-01-18 04:32:57.000000000 +0000
+X@@ -58,7 +58,7 @@
+X static bool vfLimited[NET_MAX] = {};
+X static CNode* pnodeLocalHost = NULL;
+X uint64 nLocalHostNonce = 0;
+X-array<int, THREAD_MAX> vnThreadsRunning;
+X+boost::array<int, THREAD_MAX> vnThreadsRunning;
+X static std::vector<SOCKET> vhListenSocket;
+X CAddrMan addrman;
+X 
+4e29896a3b58553d7dc6e1e807b3a33e
+echo x - mooncoin/files/mooncoin-qt.desktop.in
+sed 's/^X//' >mooncoin/files/mooncoin-qt.desktop.in << 'e5856b5935ec15c467c681772fb999ec'
+X[Desktop Entry]
+XEncoding=UTF-8
+XName=Mooncoin
+XComment=Mooncoin P2P Cryptocurrency
+XExec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
+XTerminal=false
+XType=Application
+XIcon=%%PREFIX%%/share/pixmaps/%%PORTNAME%%.png
+XMimeType=x-scheme-handler/%%PORTNAME%%;
+XCategories=Office;
+e5856b5935ec15c467c681772fb999ec
 echo x - mooncoin/Makefile
 sed 's/^X//' >mooncoin/Makefile << 'a5ee4a9f412931df2888c647fab9cd74'
 X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD$
 X
 XPORTNAME=	mooncoin
-XPORTVERSION=	0.6.4.0
+XPORTVERSION=	0.8.6.0
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -271,8 +333,8 @@ X
 XUSE_GITHUB=	yes
 XGH_ACCOUNT=	realmooncoin
 XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	2f3bf9b  
-XGH_TAGNAME=	2f3bf9b 
+XGH_COMMIT=	948fabd
+XGH_TAGNAME=	948fabd 
 X
 XUSES=		gmake
 XUSE_OPENSSL=	yes
@@ -285,10 +347,11 @@ XCXXFLAGS+=	-Wno-invalid-offsetof
 X
 X.include <bsd.port.options.mk>
 X
+XSUB_LIST+=	PORTNAME=${PORTNAME}
 X.if ${PORT_OPTIONS:MX11}
 XPLIST_SUB+=	X11=""
+XSUB_FILES=	${PORTNAME}-qt.desktop
 X.else
-XSUB_LIST+=	PORTNAME=${PORTNAME}
 XUSE_RC_SUBR=	${PORTNAME}
 XSUB_FILES=	pkg-message
 XPLIST_SUB+=	X11="@comment "
@@ -329,7 +392,6 @@ X.endif
 X
 Xpost-patch:
 X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
-X	@mkdir ${WRKSRC}/src/obj
 X.if !${PORT_OPTIONS:MX11}
 X	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 X	@${REINPLACE_CMD} \
@@ -350,11 +412,7 @@ X
 Xdo-install:
 X.if ${PORT_OPTIONS:MX11}
 X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-X		-e 's,bitcoin,${PORTNAME},g' \
-X		-e 's,Bitcoin,MoonCoin,g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 X
 X.else
@@ -379,8 +437,8 @@ XWWW: http://mooncoin.info/
 3a78dc8e09b16d33f1cd1d584ee87e06
 echo x - mooncoin/distinfo
 sed 's/^X//' >mooncoin/distinfo << '0715a7c1a0a337e0fb8c9e4909a8ade1'
-XSHA256 (mooncoin-0.6.4.0.tar.gz) = 20cc8f584d39fa566c012e598d971b28c4985809049cd2b2d6f1c89db754f42c
-XSIZE (mooncoin-0.6.4.0.tar.gz) = 3161569
+XSHA256 (mooncoin-0.8.6.0.tar.gz) = 6cfad176c3824eabbcde121a1963303fc30d7a62f99109c4f79057914fd658f2
+XSIZE (mooncoin-0.8.6.0.tar.gz) = 3326307
 0715a7c1a0a337e0fb8c9e4909a8ade1
 echo x - mooncoin/pkg-plist
 sed 's/^X//' >mooncoin/pkg-plist << '6f54dbf38bb8f8b2b48d13cc930b8cd1'
