@@ -1,6 +1,6 @@
 --- src/main.cpp.orig	2014-04-28 21:18:05.000000000 -0400
 +++ src/main.cpp	2014-04-28 23:18:03.000000000 -0400
-@@ -928,8 +928,8 @@
+@@ -933,8 +933,8 @@
  
  int generateMTRandom(unsigned int s, int range)
  {

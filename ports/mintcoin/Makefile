@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	mintcoin
-PORTVERSION=	0.7.2.0
+PORTVERSION=	1.10.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -20,10 +20,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	mintcoinproject
+GH_ACCOUNT=	MintcoinCommunity
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	7b3152b
-GH_TAGNAME=	7b3152b
+GH_COMMIT=	3ff5a4b
+GH_TAGNAME=	3ff5a4b
 
 USES=		gmake
 USE_OPENSSL=	yes
