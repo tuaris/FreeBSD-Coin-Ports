@@ -1,6 +1,6 @@
 rpcuser=myname
 #rpcpassword=YOU MUST SET A PASSWORD
-maxconnection=20
+maxconnections=20
 rpcallowip=127.0.0.1
 rpcport=44663
 port=44664
@@ -8,5 +8,13 @@ server=1
 daemon=1
 listen=1
 logtimestamps=1
-addnode=63.247.147.163
+addnode=mooncoin.securepayment.cc
+addnode=5.45.105.66
+addnode=188.226.176.232
+addnode=23.20.113.24
+addnode=188.165.252.23
+addnode=148.251.70.194
+addnode=85.10.194.50
+addnode=74.91.20.250:44664
+addnode=76.14.186.38
 
