@@ -1,18 +1,17 @@
 # Created by: Daniel Morante <daniel@morante.net>
-# $FreeBSD$
+# $FreeBSD: $
 
-PORTNAME=	b1bl3coin
-PORTVERSION=	1.2.1.1
+PORTNAME=	dimecoin
+PORTVERSION=	0.8.3.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency of with PoS and X15 PoW
+COMMENT=	Peer-to-Peer crypto currency based on Bitcoin
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
 OPTIONS_DEFAULT=	X11 QRCODES
@@ -20,10 +19,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	B1bl3Coin
-GH_PROJECT=	${PORTNAME}source
-GH_COMMIT=	3737d76
-GH_TAGNAME=	3737d76
+GH_ACCOUNT=	dimecoinproject
+GH_PROJECT=	${PORTNAME}
+GH_COMMIT=	fbe4bea
+GH_TAGNAME=	fbe4bea
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -35,11 +34,11 @@ CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
-SUB_LIST+=	PORTNAME=${PORTNAME}
+
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
-SUB_FILES=	${PORTNAME}-qt.desktop
 .else
+SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -79,15 +78,13 @@ QMAKE_USE_UPNP=	-
 .include <bsd.port.pre.mk>
 
 post-extract:
-	@${MV} ${WRKSRC}/B1bl3coin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
-	@${MV} ${WRKSRC}/src/qt/res/images/Wallet_Logo.png ${WRKSRC}/src/qt/res/images/wallet_logo.png
+	@${MKDIR} -p ${WRKSRC}/src/obj
+	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
 
 post-patch:
-	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
-	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
-	@${MKDIR} -p ${WRKSRC}/src/obj
+	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}
-	@cd ${WRKSRC}/src && ${CP} -p makefile.bsd Makefile
+	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 	@${REINPLACE_CMD} \
 		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
 		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
@@ -100,17 +97,21 @@ do-configure:
 	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
 		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
 		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
-		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
+		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}.pro
 .endif
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/B1bl3Coin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/B1bl3Coin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+	${INSTALL_PROGRAM} -s ${WRKSRC}/Dimecoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+		-e 's,bitcoin,${PORTNAME},g' \
+		-e 's,Bitcoin,Dimecoin,g' \
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/B1bl3Coind ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \

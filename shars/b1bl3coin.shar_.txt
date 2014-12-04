@@ -6,36 +6,265 @@
 # This archive contains:
 #
 #	b1bl3coin
-#	b1bl3coin/files
-#	b1bl3coin/files/pkg-message.in
-#	b1bl3coin/files/patch-src-makefile_bsd
-#	b1bl3coin/files/patch-b1bl3coin-qt_pro
-#	b1bl3coin/files/b1bl3coin.in
-#	b1bl3coin/files/b1bl3coin.conf.sample
 #	b1bl3coin/Makefile
 #	b1bl3coin/distinfo
+#	b1bl3coin/files
+#	b1bl3coin/files/b1bl3coin.conf.sample
+#	b1bl3coin/files/b1bl3coin.in
+#	b1bl3coin/files/patch-b1bl3coin-qt_pro
+#	b1bl3coin/files/patch-src-makefile_bsd
+#	b1bl3coin/files/pkg-message.in
+#	b1bl3coin/files/patch-src__serialize.h
+#	b1bl3coin/files/patch-src-uint256.h
+#	b1bl3coin/files/patch-src__net.cpp
+#	b1bl3coin/files/b1bl3coin-qt.desktop.in
 #	b1bl3coin/pkg-descr
 #	b1bl3coin/pkg-plist
 #
 echo c - b1bl3coin
 mkdir -p b1bl3coin > /dev/null 2>&1
+echo x - b1bl3coin/Makefile
+sed 's/^X//' >b1bl3coin/Makefile << 'a79e20e15000d9f88ee3ea225d5ff1fa'
+X# Created by: Daniel Morante <daniel@morante.net>
+X# $FreeBSD$
+X
+XPORTNAME=	b1bl3coin
+XPORTVERSION=	1.2.1.1
+XCATEGORIES=	net-p2p finance
+XMASTER_SITES=	GH
+X
+XMAINTAINER=	daniel@morante.net
+XCOMMENT=	Peer-to-Peer crypto currency of with PoS and X15 PoW
+X
+XLICENSE=	MIT
+X
+XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
+X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+X
+XOPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
+XOPTIONS_DEFAULT=	X11 QRCODES
+XUPNP_DESC=	Build with UPNP support
+XQRCODES_DESC=	Build with QR code display
+X
+XUSE_GITHUB=	yes
+XGH_ACCOUNT=	B1bl3Coin
+XGH_PROJECT=	${PORTNAME}source
+XGH_COMMIT=	3737d76
+XGH_TAGNAME=	3737d76
+X
+XUSES=		gmake
+XUSE_OPENSSL=	yes
+XUSE_BDB=	yes
+XWANT_BDB_VER=	48
+X
+XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
+XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+XCXXFLAGS+=	-Wno-invalid-offsetof
+X
+X.include <bsd.port.options.mk>
+XSUB_LIST+=	PORTNAME=${PORTNAME}
+X.if ${PORT_OPTIONS:MX11}
+XPLIST_SUB+=	X11=""
+XSUB_FILES=	${PORTNAME}-qt.desktop
+X.else
+XUSE_RC_SUBR=	${PORTNAME}
+XSUB_FILES=	pkg-message
+XPLIST_SUB+=	X11="@comment "
+X.endif
+X
+X.if ${PORT_OPTIONS:MX11}
+XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
+XBINARY=		${PORTNAME}-qt
+XPLIST_SUB+=	HEADLESS="@comment "
+X.else
+XBINARY=		${PORTNAME}d
+XMAKE_ARGS+=	-C ${WRKSRC}/src
+XPLIST_SUB+=	HEADLESS=""
+X.endif
+X
+X.if ${PORT_OPTIONS:MSTATIC}
+XMAKE_ARGS+=	STATIC=1
+X.endif
+X
+X.if ${PORT_OPTIONS:MQRCODES}
+XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
+XQMAKE_USE_QRCODE=1
+X.else
+XQMAKE_USE_QRCODE=0
+X.endif
+X
+XPLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
+X			PORTNAME=${PORTNAME}
+X
+X.if ${PORT_OPTIONS:MUPNP}
+XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+XQMAKE_USE_UPNP=	1
+X.else
+XQMAKE_USE_UPNP=	-
+X.endif
+X
+X.include <bsd.port.pre.mk>
+X
+Xpost-extract:
+X	@${MV} ${WRKSRC}/B1bl3coin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
+X	@${MV} ${WRKSRC}/src/qt/res/images/Wallet_Logo.png ${WRKSRC}/src/qt/res/images/wallet_logo.png
+X
+Xpost-patch:
+X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
+X	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+X	@${MKDIR} -p ${WRKSRC}/src/obj
+X.if !${PORT_OPTIONS:MX11}
+X	@cd ${WRKSRC}/src && ${CP} -p makefile.bsd Makefile
+X	@${REINPLACE_CMD} \
+X		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
+X		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
+X		-e 's:-l dl::' \
+X		${WRKSRC}/src/Makefile
+X.endif
+X
+Xdo-configure:
+X.if ${PORT_OPTIONS:MX11}
+X	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
+X		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
+X		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
+X		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
+X.endif
+X
+Xdo-install:
+X.if ${PORT_OPTIONS:MX11}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/B1bl3Coin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKSRC}/src/qt/res/icons/B1bl3Coin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+X
+X.else
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/B1bl3Coind ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
+X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
+X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
+X	fi
+X.endif
+X
+X.include <bsd.port.post.mk>
+a79e20e15000d9f88ee3ea225d5ff1fa
+echo x - b1bl3coin/distinfo
+sed 's/^X//' >b1bl3coin/distinfo << '7c9b36588fc9cffde924519295e7280d'
+XSHA256 (b1bl3coin-1.2.1.1.tar.gz) = eca071e7a5e9bcc22dcca8bcd55427f6510bb6a920faebef9adc5720c4b677c7
+XSIZE (b1bl3coin-1.2.1.1.tar.gz) = 5550914
+7c9b36588fc9cffde924519295e7280d
 echo c - b1bl3coin/files
 mkdir -p b1bl3coin/files > /dev/null 2>&1
-echo x - b1bl3coin/files/pkg-message.in
-sed 's/^X//' >b1bl3coin/files/pkg-message.in << '2021aadfde010930fa3766fec810e2ee'
-X*******************************************************************
-XTo configure the B1bl3Coin server please edit: 
-X%%PREFIX%%/etc/%%PORTNAME%%.conf
+echo x - b1bl3coin/files/b1bl3coin.conf.sample
+sed 's/^X//' >b1bl3coin/files/b1bl3coin.conf.sample << '0ce884c0e262a26c7c005eb28d1a19d6'
+Xrpcuser=myname
+X#rpcpassword=YOU MUST SET A PASSWORD
+Xmaxconnections=10
+Xrpcallowip=127.0.0.1
+Xrpcport=15743
+Xport=15243
+Xserver=1
+Xdaemon=1
+Xlisten=1
+Xlogtimestamps=1
+Xaddnode=b1bl3coin.securepayment.cc
+0ce884c0e262a26c7c005eb28d1a19d6
+echo x - b1bl3coin/files/b1bl3coin.in
+sed 's/^X//' >b1bl3coin/files/b1bl3coin.in << 'ba29e61da976ffca681571dea38153c0'
+X#!/bin/sh
+X#
+X# $FreeBSD: $
+X#
 X
-XYou must at least set a "rpcpassword" in the configuration file above.
+X# PROVIDE: %%PORTNAME%%
+X# REQUIRE: LOGIN
+X# KEYWORD: shutdown
 X
-XTo run the %%PORTNAME%%d server at startup, add the following
-Xsettings to your /etc/rc.conf
+X#
+X# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+X# to enable this service:
+X#
+X# %%PORTNAME%%_enable (bool):	Set to NO by default.
+X#				Set it to YES to enable %%PORTNAME%%.
+X# %%PORTNAME%%_config (path):	Set to %%PREFIX%%/etc/%%PORTNAME%%.conf
+X#				by default.
+X# %%PORTNAME%%_user:	The user account %%PORTNAME%% daemon runs as
+X#				It uses 'root' user by default.
+X# %%PORTNAME%%_group:	The group account %%PORTNAME%% daemon runs as
+X#				It uses 'wheel' group by default.
+X# %%PORTNAME%%_datadir (str):	Default to "/var/db/%%PORTNAME%%"
+X#				Base data directory.
 X
-X%%PORTNAME%%_enable="YES"
+X. /etc/rc.subr
 X
-X*******************************************************************
-2021aadfde010930fa3766fec810e2ee
+Xname=%%PORTNAME%%
+Xrcvar=%%PORTNAME%%_enable
+X
+X: ${%%PORTNAME%%_enable:=NO}
+X: ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
+X: ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}
+X: ${%%PORTNAME%%_user="root"}
+X: ${%%PORTNAME%%_group="wheel"}
+X
+Xrequired_files=${%%PORTNAME%%_config}
+Xcommand=%%PREFIX%%/bin/%%PORTNAME%%d
+X%%PORTNAME%%_chdir=${%%PORTNAME%%_datadir}
+Xpidfile="${%%PORTNAME%%_datadir}/%%PORTNAME%%d.pid"
+Xstop_cmd=%%PORTNAME%%_stop
+Xcommand_args="-conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} -noupnp -daemon -pid=${pidfile}"
+Xstart_precmd="${name}_prestart"
+X
+X%%PORTNAME%%_create_datadir()
+X{
+X	echo "Creating data directory"
+X	eval mkdir -p ${%%PORTNAME%%_datadir}
+X	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_datadir}
+X	ln -s ${%%PORTNAME%%_datadir} /.%%PORTNAME%%
+X}
+X
+X%%PORTNAME%%_prestart()
+X{
+X	if [ ! -d "${%%PORTNAME%%_datadir}/." ]; then
+X		%%PORTNAME%%_create_datadir || return 1
+X	fi
+X}
+X
+X%%PORTNAME%%_requirepidfile()
+X{
+X	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
+X		echo "${name} not running? (check $pidfile)."
+X		exit 1
+X	fi
+X}
+X
+X%%PORTNAME%%_stop()
+X{
+X    %%PORTNAME%%_requirepidfile
+X
+X	echo "Stopping ${name}."
+X	eval ${command} -conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} stop
+X	wait_for_pids ${rc_pid}
+X}
+X
+Xload_rc_config $name
+Xrun_rc_command "$1"
+ba29e61da976ffca681571dea38153c0
+echo x - b1bl3coin/files/patch-b1bl3coin-qt_pro
+sed 's/^X//' >b1bl3coin/files/patch-b1bl3coin-qt_pro << '95094e55f30f756c065a4d960ffb5f6c'
+X--- b1bl3coin-qt.pro.orig	2014-11-01 15:13:35.000000000 -0400
+X+++ b1bl3coin-qt.pro	2014-11-01 21:58:12.000000000 -0400
+X@@ -477,10 +477,10 @@
+X # Set libraries and includes at end, to use platform-defined defaults if not overridden
+X INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
+X LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
+X-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+X+LIBS += -lssl -lcrypto -lexecinfo -ldb_cxx$$BDB_LIB_SUFFIX
+X # -lgdi32 has to happen after -lcrypto (see  #681)
+X win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
+X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
+X win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+X 
+X contains(RELEASE, 1) {
+95094e55f30f756c065a4d960ffb5f6c
 echo x - b1bl3coin/files/patch-src-makefile_bsd
 sed 's/^X//' >b1bl3coin/files/patch-src-makefile_bsd << 'dc15788fa9ba74eb9dd428cc12ca5d8a'
 X--- src/makefile.bsd.orig	2014-11-01 15:13:35.000000000 -0400
@@ -144,249 +373,93 @@ X obj/%.o: %.cpp
 X 	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
 X 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
 dc15788fa9ba74eb9dd428cc12ca5d8a
-echo x - b1bl3coin/files/patch-b1bl3coin-qt_pro
-sed 's/^X//' >b1bl3coin/files/patch-b1bl3coin-qt_pro << '95094e55f30f756c065a4d960ffb5f6c'
-X--- b1bl3coin-qt.pro.orig	2014-11-01 15:13:35.000000000 -0400
-X+++ b1bl3coin-qt.pro	2014-11-01 21:58:12.000000000 -0400
-X@@ -477,10 +477,10 @@
-X # Set libraries and includes at end, to use platform-defined defaults if not overridden
-X INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
-X LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
-X-LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X+LIBS += -lssl -lcrypto -lexecinfo -ldb_cxx$$BDB_LIB_SUFFIX
-X # -lgdi32 has to happen after -lcrypto (see  #681)
-X win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
-X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
-X win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+echo x - b1bl3coin/files/pkg-message.in
+sed 's/^X//' >b1bl3coin/files/pkg-message.in << '2021aadfde010930fa3766fec810e2ee'
+X*******************************************************************
+XTo configure the B1bl3Coin server please edit: 
+X%%PREFIX%%/etc/%%PORTNAME%%.conf
+X
+XYou must at least set a "rpcpassword" in the configuration file above.
+X
+XTo run the %%PORTNAME%%d server at startup, add the following
+Xsettings to your /etc/rc.conf
+X
+X%%PORTNAME%%_enable="YES"
+X
+X*******************************************************************
+2021aadfde010930fa3766fec810e2ee
+echo x - b1bl3coin/files/patch-src__serialize.h
+sed 's/^X//' >b1bl3coin/files/patch-src__serialize.h << '07a2d7d68707bf2c3338579d86acaeec'
+X--- ./src/serialize.h.orig	2013-09-24 01:50:35.661706153 +0000
+X+++ ./src/serialize.h	2013-09-24 01:50:52.913703572 +0000
+X@@ -895,19 +895,6 @@
+X     iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
+X     void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
 X 
-X contains(RELEASE, 1) {
-95094e55f30f756c065a4d960ffb5f6c
-echo x - b1bl3coin/files/b1bl3coin.in
-sed 's/^X//' >b1bl3coin/files/b1bl3coin.in << 'ba29e61da976ffca681571dea38153c0'
-X#!/bin/sh
-X#
-X# $FreeBSD: $
-X#
-X
-X# PROVIDE: %%PORTNAME%%
-X# REQUIRE: LOGIN
-X# KEYWORD: shutdown
-X
-X#
-X# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
-X# to enable this service:
-X#
-X# %%PORTNAME%%_enable (bool):	Set to NO by default.
-X#				Set it to YES to enable %%PORTNAME%%.
-X# %%PORTNAME%%_config (path):	Set to %%PREFIX%%/etc/%%PORTNAME%%.conf
-X#				by default.
-X# %%PORTNAME%%_user:	The user account %%PORTNAME%% daemon runs as
-X#				It uses 'root' user by default.
-X# %%PORTNAME%%_group:	The group account %%PORTNAME%% daemon runs as
-X#				It uses 'wheel' group by default.
-X# %%PORTNAME%%_datadir (str):	Default to "/var/db/%%PORTNAME%%"
-X#				Base data directory.
-X
-X. /etc/rc.subr
-X
-Xname=%%PORTNAME%%
-Xrcvar=%%PORTNAME%%_enable
-X
-X: ${%%PORTNAME%%_enable:=NO}
-X: ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
-X: ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}
-X: ${%%PORTNAME%%_user="root"}
-X: ${%%PORTNAME%%_group="wheel"}
-X
-Xrequired_files=${%%PORTNAME%%_config}
-Xcommand=%%PREFIX%%/bin/%%PORTNAME%%d
-X%%PORTNAME%%_chdir=${%%PORTNAME%%_datadir}
-Xpidfile="${%%PORTNAME%%_datadir}/%%PORTNAME%%d.pid"
-Xstop_cmd=%%PORTNAME%%_stop
-Xcommand_args="-conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} -noupnp -daemon -pid=${pidfile}"
-Xstart_precmd="${name}_prestart"
-X
-X%%PORTNAME%%_create_datadir()
-X{
-X	echo "Creating data directory"
-X	eval mkdir -p ${%%PORTNAME%%_datadir}
-X	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_datadir}
-X	ln -s ${%%PORTNAME%%_datadir} /.%%PORTNAME%%
-X}
-X
-X%%PORTNAME%%_prestart()
-X{
-X	if [ ! -d "${%%PORTNAME%%_datadir}/." ]; then
-X		%%PORTNAME%%_create_datadir || return 1
-X	fi
-X}
-X
-X%%PORTNAME%%_requirepidfile()
-X{
-X	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
-X		echo "${name} not running? (check $pidfile)."
-X		exit 1
-X	fi
-X}
-X
-X%%PORTNAME%%_stop()
-X{
-X    %%PORTNAME%%_requirepidfile
-X
-X	echo "Stopping ${name}."
-X	eval ${command} -conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} stop
-X	wait_for_pids ${rc_pid}
-X}
-X
-Xload_rc_config $name
-Xrun_rc_command "$1"
-ba29e61da976ffca681571dea38153c0
-echo x - b1bl3coin/files/b1bl3coin.conf.sample
-sed 's/^X//' >b1bl3coin/files/b1bl3coin.conf.sample << '0ce884c0e262a26c7c005eb28d1a19d6'
-Xrpcuser=myname
-X#rpcpassword=YOU MUST SET A PASSWORD
-Xmaxconnections=10
-Xrpcallowip=127.0.0.1
-Xrpcport=15743
-Xport=15243
-Xserver=1
-Xdaemon=1
-Xlisten=1
-Xlogtimestamps=1
-Xaddnode=b1bl3coin.securepayment.cc
-0ce884c0e262a26c7c005eb28d1a19d6
-echo x - b1bl3coin/Makefile
-sed 's/^X//' >b1bl3coin/Makefile << 'a79e20e15000d9f88ee3ea225d5ff1fa'
-X# Created by: Daniel Morante <daniel@morante.net>
-X# $FreeBSD$
-X
-XPORTNAME=	b1bl3coin
-XPORTVERSION=	1.2.1.1
-XCATEGORIES=	net-p2p finance
-XMASTER_SITES=	GH
-X
-XMAINTAINER=	daniel@morante.net
-XCOMMENT=	Peer-to-Peer crypto currency of with PoS and X15 PoW
-X
-XLICENSE=	MIT
-X
-XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
-X
-XOPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
-XOPTIONS_DEFAULT=	X11 QRCODES
-XUPNP_DESC=	Build with UPNP support
-XQRCODES_DESC=	Build with QR code display
-X
-XUSE_GITHUB=	yes
-XGH_ACCOUNT=	B1bl3Coin
-XGH_PROJECT=	${PORTNAME}source
-XGH_COMMIT=	3737d76
-XGH_TAGNAME=	3737d76
-X
-XUSES=		gmake
-XUSE_OPENSSL=	yes
-XUSE_BDB=	yes
-XWANT_BDB_VER=	48
-X
-XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
-XCXXFLAGS+=	-Wno-invalid-offsetof
-X
-X.include <bsd.port.options.mk>
-X
-X.if ${PORT_OPTIONS:MX11}
-XPLIST_SUB+=	X11=""
-X.else
-XSUB_LIST+=	PORTNAME=${PORTNAME}
-XUSE_RC_SUBR=	${PORTNAME}
-XSUB_FILES=	pkg-message
-XPLIST_SUB+=	X11="@comment "
-X.endif
-X
-X.if ${PORT_OPTIONS:MX11}
-XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
-XBINARY=		${PORTNAME}-qt
-XPLIST_SUB+=	HEADLESS="@comment "
-X.else
-XBINARY=		${PORTNAME}d
-XMAKE_ARGS+=	-C ${WRKSRC}/src
-XPLIST_SUB+=	HEADLESS=""
-X.endif
-X
-X.if ${PORT_OPTIONS:MSTATIC}
-XMAKE_ARGS+=	STATIC=1
-X.endif
-X
-X.if ${PORT_OPTIONS:MQRCODES}
-XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
-XQMAKE_USE_QRCODE=1
-X.else
-XQMAKE_USE_QRCODE=0
-X.endif
-X
-XPLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
-X			PORTNAME=${PORTNAME}
-X
-X.if ${PORT_OPTIONS:MUPNP}
-XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
-XQMAKE_USE_UPNP=	1
-X.else
-XQMAKE_USE_UPNP=	-
-X.endif
-X
-X.include <bsd.port.pre.mk>
-X
-Xpost-extract:
-X	@${MV} ${WRKSRC}/B1bl3coin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
-X
-Xpost-patch:
-X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
-X	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
-X	@${MKDIR} -p ${WRKSRC}/src/obj
-X.if !${PORT_OPTIONS:MX11}
-X	@cd ${WRKSRC}/src && ${CP} -p makefile.bsd Makefile
-X	@${REINPLACE_CMD} \
-X		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
-X		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
-X		-e 's:-l dl::' \
-X		${WRKSRC}/src/Makefile
-X.endif
-X
-Xdo-configure:
-X.if ${PORT_OPTIONS:MX11}
-X	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
-X		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
-X		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
-X		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
-X.endif
-X
-Xdo-install:
-X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/B1bl3Coin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-X		-e 's,bitcoin,Muniti,g' \
-X		-e 's,Bitcoin,${PORTNAME},g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
-X
-X.else
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/B1bl3Coind ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
-X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
-X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
-X	fi
-X.endif
-X
-X.include <bsd.port.post.mk>
-a79e20e15000d9f88ee3ea225d5ff1fa
-echo x - b1bl3coin/distinfo
-sed 's/^X//' >b1bl3coin/distinfo << '7c9b36588fc9cffde924519295e7280d'
-XSHA256 (b1bl3coin-1.2.1.1.tar.gz) = eca071e7a5e9bcc22dcca8bcd55427f6510bb6a920faebef9adc5720c4b677c7
-XSIZE (b1bl3coin-1.2.1.1.tar.gz) = 5550914
-7c9b36588fc9cffde924519295e7280d
+X-    void insert(iterator it, const_iterator first, const_iterator last)
+X-    {
+X-        assert(last - first >= 0);
+X-        if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
+X-        {
+X-            // special case for inserting at the front when there's room
+X-            nReadPos -= (last - first);
+X-            memcpy(&vch[nReadPos], &first[0], last - first);
+X-        }
+X-        else
+X-            vch.insert(it, first, last);
+X-    }
+X-
+X     void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
+X     {
+X         assert(last - first >= 0);
+07a2d7d68707bf2c3338579d86acaeec
+echo x - b1bl3coin/files/patch-src-uint256.h
+sed 's/^X//' >b1bl3coin/files/patch-src-uint256.h << 'a0dacaaf6f84fd373dcf1df26cbe22c8'
+X--- src/uint256.h.orig	2014-11-23 09:05:57.000000000 -0500
+X+++ src/uint256.h	2014-11-30 13:28:35.000000000 -0500
+X@@ -342,12 +342,12 @@
+X     }
+X 
+X     unsigned char* begin()
+X-    {
+X+    const {
+X         return (unsigned char*)&pn[0];
+X     }
+X 
+X     unsigned char* end()
+X-    {
+X+    const {
+X         return (unsigned char*)&pn[WIDTH];
+X     }
+X 
+a0dacaaf6f84fd373dcf1df26cbe22c8
+echo x - b1bl3coin/files/patch-src__net.cpp
+sed 's/^X//' >b1bl3coin/files/patch-src__net.cpp << '8ce22379d892528aa1299a44e712b56d'
+X--- src/net.cpp.orig	2014-04-28 21:18:05.000000000 -0400
+X+++ src/net.cpp	2014-11-30 12:51:44.000000000 -0500
+X@@ -57,7 +57,7 @@
+X static CNode* pnodeLocalHost = NULL;
+X CAddress addrSeenByPeer(CService("0.0.0.0", 0), nLocalServices);
+X uint64_t nLocalHostNonce = 0;
+X-array<int, THREAD_MAX> vnThreadsRunning;
+X+boost::array<int, THREAD_MAX> vnThreadsRunning;
+X static std::vector<SOCKET> vhListenSocket;
+X CAddrMan addrman;
+X 
+8ce22379d892528aa1299a44e712b56d
+echo x - b1bl3coin/files/b1bl3coin-qt.desktop.in
+sed 's/^X//' >b1bl3coin/files/b1bl3coin-qt.desktop.in << '899768a04414c443227ad72c95427978'
+X[Desktop Entry]
+XEncoding=UTF-8
+XName=B1bl3Coin
+XComment=B1bl3Coin P2P Cryptocurrency
+XExec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
+XTerminal=false
+XType=Application
+XIcon=%%PREFIX%%/share/pixmaps/%%PORTNAME%%.png
+XMimeType=x-scheme-handler/%%PORTNAME%%;
+XCategories=Office;
+899768a04414c443227ad72c95427978
 echo x - b1bl3coin/pkg-descr
 sed 's/^X//' >b1bl3coin/pkg-descr << '583646c1c7c27be2a3babc1dfdad2cf4'
 XB1bl3Coin is a free open source peer-to-peer electronic cash system that

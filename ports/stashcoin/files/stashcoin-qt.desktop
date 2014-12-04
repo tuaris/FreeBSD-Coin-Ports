@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Stashcoin
+Comment=Stashcoin P2P Cryptocurrency
+Comment[fr]=Stashcoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Stashcoin, eşten eşe kriptografik sanal para birimi
+Exec=stashcoin-qt %u
+Terminal=false
+Type=Application
+Icon=stashcoin
+MimeType=x-scheme-handler/stashcoin;
+Categories=Office;Finance;
