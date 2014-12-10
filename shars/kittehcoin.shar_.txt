@@ -6,104 +6,222 @@
 # This archive contains:
 #
 #	kittehcoin
-#	kittehcoin/files
-#	kittehcoin/files/patch-src-main_cpp
-#	kittehcoin/files/pkg-message.in
-#	kittehcoin/files/patch-kittehcoin-qt_pro
-#	kittehcoin/files/patch-src-makefile_unix
-#	kittehcoin/files/kittehcoin.in
-#	kittehcoin/files/kittehcoin.conf.sample
-#	kittehcoin/files/extra-patch-endian
-#	kittehcoin/files/patch-src__scrypt.h
-#	kittehcoin/files/patch-src__scrypt.cpp
 #	kittehcoin/Makefile
 #	kittehcoin/distinfo
+#	kittehcoin/files
+#	kittehcoin/files/extra-patch-endian
+#	kittehcoin/files/kittehcoin.conf.sample
+#	kittehcoin/files/kittehcoin.in
+#	kittehcoin/files/patch-kittehcoin-qt_pro
+#	kittehcoin/files/patch-src-main_cpp
+#	kittehcoin/files/patch-src-makefile_unix
+#	kittehcoin/files/patch-src__scrypt.cpp
+#	kittehcoin/files/patch-src__scrypt.h
+#	kittehcoin/files/pkg-message.in
 #	kittehcoin/pkg-descr
 #	kittehcoin/pkg-plist
 #
 echo c - kittehcoin
 mkdir -p kittehcoin > /dev/null 2>&1
+echo x - kittehcoin/Makefile
+sed 's/^X//' >kittehcoin/Makefile << '1ddc83ffd8ad54adc25ba3b756b81ace'
+X# Created by: Daniel Morante <daniel@morante.net>
+X# $FreeBSD$
+X
+XPORTNAME=	kittehcoin
+XPORTVERSION=	0.8.6.2
+XCATEGORIES=	net-p2p finance
+XMASTER_SITES=	GH
+X
+XMAINTAINER=	daniel@morante.net
+XCOMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
+X
+XLICENSE=	MIT
+X
+XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
+X
+XOPTIONS_DEFINE=	X11 UPNP QRCODES
+XOPTIONS_DEFAULT=	X11 QRCODES
+XUPNP_DESC=	Build with UPNP support
+XQRCODES_DESC=	Build with QR code display
+X
+XUSE_GITHUB=	yes
+XGH_ACCOUNT=	${PORTNAME}
+XGH_PROJECT=	${PORTNAME}
+XGH_COMMIT=	4beaaf2
+XGH_TAGNAME=	4beaaf2
+X
+XUSES=		gmake
+XUSE_OPENSSL=	yes
+XUSE_BDB=	yes
+XWANT_BDB_VER=	48
+X
+XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
+XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+XCXXFLAGS+=	-Wno-invalid-offsetof
+X
+X.include <bsd.port.options.mk>
+X
+X.if ${PORT_OPTIONS:MX11}
+XPLIST_SUB+=	X11=""
+X.else
+XSUB_LIST+=	PORTNAME=${PORTNAME}
+XUSE_RC_SUBR=	${PORTNAME}
+XSUB_FILES=	pkg-message
+XPLIST_SUB+=	X11="@comment "
+X.endif
+X
+X.if ${PORT_OPTIONS:MX11}
+XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
+XBINARY=		${PORTNAME}-qt
+XPLIST_SUB+=	HEADLESS="@comment "
+X.else
+XBINARY=		${PORTNAME}d
+XMAKE_ARGS+=	-C ${WRKSRC}/src
+XPLIST_SUB+=	HEADLESS=""
+X.endif
+X
+X.if ${PORT_OPTIONS:MQRCODES}
+XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
+XQMAKE_USE_QRCODE=1
+X.else
+XQMAKE_USE_QRCODE=0
+X.endif
+X
+XPLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
+X			PORTNAME=${PORTNAME}
+X
+X.if ${PORT_OPTIONS:MUPNP}
+XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+XQMAKE_USE_UPNP=	1
+X.else
+XQMAKE_USE_UPNP=	-
+X.endif
+X
+X.include <bsd.port.pre.mk>
+X
+X.if ${ARCH} == "i386"
+XUSE_GCC=yes
+X.endif
+X
+Xpost-patch:
+X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
+X.if !${PORT_OPTIONS:MX11}
+X	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
+X	@${REINPLACE_CMD} \
+X		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
+X		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
+X		-e 's:-l dl::' \
+X		${WRKSRC}/src/Makefile
+X.endif
+X
+Xdo-configure:
+X.if ${PORT_OPTIONS:MX11}
+X	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
+X		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
+X		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
+X		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
+X.endif
+X
+Xdo-install:
+X.if ${PORT_OPTIONS:MX11}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+X		-e 's,bitcoin,${PORTNAME},g' \
+X		-e 's,Bitcoin,Kittehcoin,g' \
+X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+X
+X.else
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
+X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
+X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
+X	fi
+X.endif
+X
+X.include <bsd.port.post.mk>
+1ddc83ffd8ad54adc25ba3b756b81ace
+echo x - kittehcoin/distinfo
+sed 's/^X//' >kittehcoin/distinfo << '12c2720ecd44ed9844f71090dfa69cb1'
+XSHA256 (kittehcoin-0.8.6.2.tar.gz) = 31d8c7c8265c836a3170cdc1aa62fa44ae04e91c538f2ac72c1a1e194b25eef5
+XSIZE (kittehcoin-0.8.6.2.tar.gz) = 4365569
+12c2720ecd44ed9844f71090dfa69cb1
 echo c - kittehcoin/files
 mkdir -p kittehcoin/files > /dev/null 2>&1
-echo x - kittehcoin/files/patch-src-main_cpp
-sed 's/^X//' >kittehcoin/files/patch-src-main_cpp << '0ca756f1f4786ce247a352663922b9d7'
-X--- src/main.cpp.orig	2014-02-13 22:56:31.000000000 -0500
-X+++ src/main.cpp	2014-02-14 01:44:25.000000000 -0500
-X@@ -1071,8 +1071,8 @@
+echo x - kittehcoin/files/extra-patch-endian
+sed 's/^X//' >kittehcoin/files/extra-patch-endian << 'c074dee0d2f1084e781b3ce0aabc03e1'
+X--- src/scrypt.cpp.orig	2014-02-13 22:56:31.000000000 -0500
+X+++ src/scrypt.cpp	2014-04-14 15:28:42.000000000 -0400
+X@@ -44,22 +44,6 @@
+X #endif
+X #endif
 X 
-X int static generateMTRandom(unsigned int s, int range)
-X {
-X-    random::mt19937 gen(s);
-X-    random::uniform_int_distribution<> dist(1, range);
-X+    boost::random::mt19937 gen(s);
-X+    boost::random::uniform_int_distribution<> dist(1, range);
-X     return dist(gen);
-X }
+X-static inline uint32_t be32dec(const void *pp)
+X-{
+X-	const uint8_t *p = (uint8_t const *)pp;
+X-	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
+X-	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
+X-}
+X-
+X-static inline void be32enc(void *pp, uint32_t x)
+X-{
+X-	uint8_t *p = (uint8_t *)pp;
+X-	p[3] = x & 0xff;
+X-	p[2] = (x >> 8) & 0xff;
+X-	p[1] = (x >> 16) & 0xff;
+X-	p[0] = (x >> 24) & 0xff;
+X-}
+X-
+X typedef struct HMAC_SHA256Context {
+X 	SHA256_CTX ictx;
+X 	SHA256_CTX octx;
+X--- src/scrypt.h.orig	2014-02-13 22:56:31.000000000 -0500
+X+++ src/scrypt.h	2014-04-14 15:28:54.000000000 -0400
+X@@ -27,19 +27,4 @@
+X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
+X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
 X 
-0ca756f1f4786ce247a352663922b9d7
-echo x - kittehcoin/files/pkg-message.in
-sed 's/^X//' >kittehcoin/files/pkg-message.in << '6b8f647c3e0b4113433884fce12a8925'
-X*******************************************************************
-XTo configure the Kittehcoin server please edit: 
-X%%PREFIX%%/etc/%%PORTNAME%%.conf
-X
-XYou must at least set a "rpcpassword" in the configuration file above.
-X
-XTo run the %%PORTNAME%%d server at startup, add the following
-Xsettings to your /etc/rc.conf
-X
-X%%PORTNAME%%_enable="YES"
-X
-X*******************************************************************
-6b8f647c3e0b4113433884fce12a8925
-echo x - kittehcoin/files/patch-kittehcoin-qt_pro
-sed 's/^X//' >kittehcoin/files/patch-kittehcoin-qt_pro << 'a3f5633b7460c42cba245bcd1d485baf'
-X--- kittehcoin-qt.pro.orig	2014-02-13 22:56:31.000000000 -0500
-X+++ kittehcoin-qt.pro	2014-02-14 01:53:50.000000000 -0500
-X@@ -447,7 +447,7 @@
-X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X # -lgdi32 has to happen after -lcrypto (see  #681)
-X win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
-X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
-X win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-X macx:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-X 
-a3f5633b7460c42cba245bcd1d485baf
-echo x - kittehcoin/files/patch-src-makefile_unix
-sed 's/^X//' >kittehcoin/files/patch-src-makefile_unix << 'd405149c64056619767f69a296765e49'
-X--- src/makefile.unix.orig	2014-02-13 22:56:31.000000000 -0500
-X+++ src/makefile.unix	2014-02-14 01:48:41.000000000 -0500
-X@@ -7,8 +7,10 @@
-X # :=- --> No UPnP support - miniupnp not required
-X USE_UPNP:=0
-X 
-X-BOOST_LIB_PATH=/usr/local/lib
-X-BOOST_INCLUDE_PATH=/usr/local/lib/boost
-X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
-X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
-X+BOOST_LIB_PATH=%%PREFIX%%/lib
-X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
-X 
-X # :=1 --> Enable IPv6 support
-X # :=0 --> Disable IPv6 support
-X@@ -41,6 +43,7 @@
-X    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
-X    -l boost_program_options$(BOOST_LIB_SUFFIX) \
-X    -l boost_thread$(BOOST_LIB_SUFFIX) \
-X+   -l boost_chrono$(BOOST_LIB_SUFFIX) \
-X    -l db_cxx$(BDB_LIB_SUFFIX) \
-X    -l ssl \
-X    -l crypto
-X@@ -64,7 +67,6 @@
-X LIBS+= \
-X  -Wl,-B$(LMODE2) \
-X    -l z \
-X-   -l dl \
-X    -l pthread
-X 
-X 
-d405149c64056619767f69a296765e49
+X-static inline uint32_t le32dec(const void *pp)
+X-{
+X-        const uint8_t *p = (uint8_t const *)pp;
+X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+X-}
+X-
+X-static inline void le32enc(void *pp, uint32_t x)
+X-{
+X-        uint8_t *p = (uint8_t *)pp;
+X-        p[0] = x & 0xff;
+X-        p[1] = (x >> 8) & 0xff;
+X-        p[2] = (x >> 16) & 0xff;
+X-        p[3] = (x >> 24) & 0xff;
+X-}
+X #endif
+c074dee0d2f1084e781b3ce0aabc03e1
+echo x - kittehcoin/files/kittehcoin.conf.sample
+sed 's/^X//' >kittehcoin/files/kittehcoin.conf.sample << 'd5ce51ae7e8f2b1fdd7158e6d6a43a65'
+Xrpcuser=myname
+X#rpcpassword=YOU MUST SET A PASSWORD
+Xmaxconnection=20
+Xrpcallowip=127.0.0.1
+Xrpcport=22565
+Xport=22566
+Xserver=1
+Xdaemon=1
+Xlisten=1
+Xlogtimestamps=1
+Xaddnode=63.247.147.163:22566
+Xaddnode=198.199.117.221:22566
+Xaddnode=24.184.43.249:22566
+Xaddnode=78.188.9.117:22566
+Xaddnode=24.125.252.211:22566
+Xaddnode=93.78.120.235:22566
+Xaddnode=120.147.85.204:22566
+Xaddnode=27.33.1.58:22566
+Xaddnode=31.17.57.59:22566
+d5ce51ae7e8f2b1fdd7158e6d6a43a65
 echo x - kittehcoin/files/kittehcoin.in
 sed 's/^X//' >kittehcoin/files/kittehcoin.in << 'e5b5c11db83a8c742589999d1ddc463d'
 X#!/bin/sh
@@ -184,103 +302,70 @@ X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 e5b5c11db83a8c742589999d1ddc463d
-echo x - kittehcoin/files/kittehcoin.conf.sample
-sed 's/^X//' >kittehcoin/files/kittehcoin.conf.sample << 'd5ce51ae7e8f2b1fdd7158e6d6a43a65'
-Xrpcuser=myname
-X#rpcpassword=YOU MUST SET A PASSWORD
-Xmaxconnection=20
-Xrpcallowip=127.0.0.1
-Xrpcport=22565
-Xport=22566
-Xserver=1
-Xdaemon=1
-Xlisten=1
-Xlogtimestamps=1
-Xaddnode=63.247.147.163:22566
-Xaddnode=198.199.117.221:22566
-Xaddnode=24.184.43.249:22566
-Xaddnode=78.188.9.117:22566
-Xaddnode=24.125.252.211:22566
-Xaddnode=93.78.120.235:22566
-Xaddnode=120.147.85.204:22566
-Xaddnode=27.33.1.58:22566
-Xaddnode=31.17.57.59:22566
-d5ce51ae7e8f2b1fdd7158e6d6a43a65
-echo x - kittehcoin/files/extra-patch-endian
-sed 's/^X//' >kittehcoin/files/extra-patch-endian << 'c074dee0d2f1084e781b3ce0aabc03e1'
-X--- src/scrypt.cpp.orig	2014-02-13 22:56:31.000000000 -0500
-X+++ src/scrypt.cpp	2014-04-14 15:28:42.000000000 -0400
-X@@ -44,22 +44,6 @@
-X #endif
-X #endif
+echo x - kittehcoin/files/patch-kittehcoin-qt_pro
+sed 's/^X//' >kittehcoin/files/patch-kittehcoin-qt_pro << 'a3f5633b7460c42cba245bcd1d485baf'
+X--- kittehcoin-qt.pro.orig	2014-02-13 22:56:31.000000000 -0500
+X+++ kittehcoin-qt.pro	2014-02-14 01:53:50.000000000 -0500
+X@@ -447,7 +447,7 @@
+X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+X # -lgdi32 has to happen after -lcrypto (see  #681)
+X win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
+X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
+X win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+X macx:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
 X 
-X-static inline uint32_t be32dec(const void *pp)
-X-{
-X-	const uint8_t *p = (uint8_t const *)pp;
-X-	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
-X-	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
-X-}
-X-
-X-static inline void be32enc(void *pp, uint32_t x)
-X-{
-X-	uint8_t *p = (uint8_t *)pp;
-X-	p[3] = x & 0xff;
-X-	p[2] = (x >> 8) & 0xff;
-X-	p[1] = (x >> 16) & 0xff;
-X-	p[0] = (x >> 24) & 0xff;
-X-}
-X-
-X typedef struct HMAC_SHA256Context {
-X 	SHA256_CTX ictx;
-X 	SHA256_CTX octx;
-X--- src/scrypt.h.orig	2014-02-13 22:56:31.000000000 -0500
-X+++ src/scrypt.h	2014-04-14 15:28:54.000000000 -0400
-X@@ -27,19 +27,4 @@
-X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
-X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+a3f5633b7460c42cba245bcd1d485baf
+echo x - kittehcoin/files/patch-src-main_cpp
+sed 's/^X//' >kittehcoin/files/patch-src-main_cpp << '0ca756f1f4786ce247a352663922b9d7'
+X--- src/main.cpp.orig	2014-02-13 22:56:31.000000000 -0500
+X+++ src/main.cpp	2014-02-14 01:44:25.000000000 -0500
+X@@ -1071,8 +1071,8 @@
 X 
-X-static inline uint32_t le32dec(const void *pp)
-X-{
-X-        const uint8_t *p = (uint8_t const *)pp;
-X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
-X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
-X-}
-X-
-X-static inline void le32enc(void *pp, uint32_t x)
-X-{
-X-        uint8_t *p = (uint8_t *)pp;
-X-        p[0] = x & 0xff;
-X-        p[1] = (x >> 8) & 0xff;
-X-        p[2] = (x >> 16) & 0xff;
-X-        p[3] = (x >> 24) & 0xff;
-X-}
-X #endif
-c074dee0d2f1084e781b3ce0aabc03e1
-echo x - kittehcoin/files/patch-src__scrypt.h
-sed 's/^X//' >kittehcoin/files/patch-src__scrypt.h << '7d7fd6116741f0986ae8319c5aa052fc'
-X--- ./src/scrypt.h.orig	2014-01-10 01:38:53.000000000 +0000
-X+++ ./src/scrypt.h	2014-02-09 05:45:03.133009188 +0000
-X@@ -27,19 +27,4 @@
-X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
-X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+X int static generateMTRandom(unsigned int s, int range)
+X {
+X-    random::mt19937 gen(s);
+X-    random::uniform_int_distribution<> dist(1, range);
+X+    boost::random::mt19937 gen(s);
+X+    boost::random::uniform_int_distribution<> dist(1, range);
+X     return dist(gen);
+X }
 X 
-X-static inline uint32_t le32dec(const void *pp)
-X-{
-X-        const uint8_t *p = (uint8_t const *)pp;
-X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
-X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
-X-}
-X-
-X-static inline void le32enc(void *pp, uint32_t x)
-X-{
-X-        uint8_t *p = (uint8_t *)pp;
-X-        p[0] = x & 0xff;
-X-        p[1] = (x >> 8) & 0xff;
-X-        p[2] = (x >> 16) & 0xff;
-X-        p[3] = (x >> 24) & 0xff;
-X-}
-X #endif
-7d7fd6116741f0986ae8319c5aa052fc
+0ca756f1f4786ce247a352663922b9d7
+echo x - kittehcoin/files/patch-src-makefile_unix
+sed 's/^X//' >kittehcoin/files/patch-src-makefile_unix << 'd405149c64056619767f69a296765e49'
+X--- src/makefile.unix.orig	2014-02-13 22:56:31.000000000 -0500
+X+++ src/makefile.unix	2014-02-14 01:48:41.000000000 -0500
+X@@ -7,8 +7,10 @@
+X # :=- --> No UPnP support - miniupnp not required
+X USE_UPNP:=0
+X 
+X-BOOST_LIB_PATH=/usr/local/lib
+X-BOOST_INCLUDE_PATH=/usr/local/lib/boost
+X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
+X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
+X+BOOST_LIB_PATH=%%PREFIX%%/lib
+X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
+X 
+X # :=1 --> Enable IPv6 support
+X # :=0 --> Disable IPv6 support
+X@@ -41,6 +43,7 @@
+X    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
+X    -l boost_program_options$(BOOST_LIB_SUFFIX) \
+X    -l boost_thread$(BOOST_LIB_SUFFIX) \
+X+   -l boost_chrono$(BOOST_LIB_SUFFIX) \
+X    -l db_cxx$(BDB_LIB_SUFFIX) \
+X    -l ssl \
+X    -l crypto
+X@@ -64,7 +67,6 @@
+X LIBS+= \
+X  -Wl,-B$(LMODE2) \
+X    -l z \
+X-   -l dl \
+X    -l pthread
+X 
+X 
+d405149c64056619767f69a296765e49
 echo x - kittehcoin/files/patch-src__scrypt.cpp
 sed 's/^X//' >kittehcoin/files/patch-src__scrypt.cpp << '7f67a8243af1d2aabccefd9165e25f67'
 X--- ./src/scrypt.cpp.orig	2014-01-10 01:38:53.000000000 +0000
@@ -317,135 +402,46 @@ X typedef struct HMAC_SHA256Context {
 X 	SHA256_CTX ictx;
 X 	SHA256_CTX octx;
 7f67a8243af1d2aabccefd9165e25f67
-echo x - kittehcoin/Makefile
-sed 's/^X//' >kittehcoin/Makefile << '1ddc83ffd8ad54adc25ba3b756b81ace'
-X# Created by: Daniel Morante <daniel@morante.net>
-X# $FreeBSD$
+echo x - kittehcoin/files/patch-src__scrypt.h
+sed 's/^X//' >kittehcoin/files/patch-src__scrypt.h << '7d7fd6116741f0986ae8319c5aa052fc'
+X--- ./src/scrypt.h.orig	2014-01-10 01:38:53.000000000 +0000
+X+++ ./src/scrypt.h	2014-02-09 05:45:03.133009188 +0000
+X@@ -27,19 +27,4 @@
+X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
+X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+X 
+X-static inline uint32_t le32dec(const void *pp)
+X-{
+X-        const uint8_t *p = (uint8_t const *)pp;
+X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+X-}
+X-
+X-static inline void le32enc(void *pp, uint32_t x)
+X-{
+X-        uint8_t *p = (uint8_t *)pp;
+X-        p[0] = x & 0xff;
+X-        p[1] = (x >> 8) & 0xff;
+X-        p[2] = (x >> 16) & 0xff;
+X-        p[3] = (x >> 24) & 0xff;
+X-}
+X #endif
+7d7fd6116741f0986ae8319c5aa052fc
+echo x - kittehcoin/files/pkg-message.in
+sed 's/^X//' >kittehcoin/files/pkg-message.in << '6b8f647c3e0b4113433884fce12a8925'
+X*******************************************************************
+XTo configure the Kittehcoin server please edit: 
+X%%PREFIX%%/etc/%%PORTNAME%%.conf
 X
-XPORTNAME=	kittehcoin
-XPORTVERSION=	0.8.6.2
-XCATEGORIES=	net-p2p finance
-XMASTER_SITES=	GH
+XYou must at least set a "rpcpassword" in the configuration file above.
 X
-XMAINTAINER=	daniel@morante.net
-XCOMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
+XTo run the %%PORTNAME%%d server at startup, add the following
+Xsettings to your /etc/rc.conf
 X
-XLICENSE=	MIT
+X%%PORTNAME%%_enable="YES"
 X
-XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
-X
-XOPTIONS_DEFINE=	X11 UPNP QRCODES
-XOPTIONS_DEFAULT=	X11 QRCODES
-XUPNP_DESC=	Build with UPNP support
-XQRCODES_DESC=	Build with QR code display
-X
-XUSE_GITHUB=	yes
-XGH_ACCOUNT=	${PORTNAME}
-XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	4beaaf2
-XGH_TAGNAME=	4beaaf2
-X
-XUSES=		gmake
-XUSE_OPENSSL=	yes
-XUSE_BDB=	yes
-XWANT_BDB_VER=	48
-X
-XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
-XCXXFLAGS+=	-Wno-invalid-offsetof
-X
-X.include <bsd.port.options.mk>
-X
-X.if ${PORT_OPTIONS:MX11}
-XPLIST_SUB+=	X11=""
-X.else
-XSUB_LIST+=	PORTNAME=${PORTNAME}
-XUSE_RC_SUBR=	${PORTNAME}
-XSUB_FILES=	pkg-message
-XPLIST_SUB+=	X11="@comment "
-X.endif
-X
-X.if ${PORT_OPTIONS:MX11}
-XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
-XBINARY=		${PORTNAME}-qt
-XPLIST_SUB+=	HEADLESS="@comment "
-X.else
-XBINARY=		${PORTNAME}d
-XMAKE_ARGS+=	-C ${WRKSRC}/src
-XPLIST_SUB+=	HEADLESS=""
-X.endif
-X
-X.if ${PORT_OPTIONS:MQRCODES}
-XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
-XQMAKE_USE_QRCODE=1
-X.else
-XQMAKE_USE_QRCODE=0
-X.endif
-X
-XPLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
-X			PORTNAME=${PORTNAME}
-X
-X.if ${PORT_OPTIONS:MUPNP}
-XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
-XQMAKE_USE_UPNP=	1
-X.else
-XQMAKE_USE_UPNP=	-
-X.endif
-X
-X.include <bsd.port.pre.mk>
-X
-X.if ${OSVERSION} >= 1000000
-XEXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
-X.endif
-X
-X.if ${ARCH} == "i386"
-XUSE_GCC=yes
-X.endif
-X
-Xpost-patch:
-X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
-X.if !${PORT_OPTIONS:MX11}
-X	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
-X	@${REINPLACE_CMD} \
-X		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
-X		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
-X		-e 's:-l dl::' \
-X		${WRKSRC}/src/Makefile
-X.endif
-X
-Xdo-configure:
-X.if ${PORT_OPTIONS:MX11}
-X	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
-X		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
-X		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
-X		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
-X.endif
-X
-Xdo-install:
-X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-X		-e 's,bitcoin,${PORTNAME},g' \
-X		-e 's,Bitcoin,Kittehcoin,g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
-X
-X.else
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
-X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
-X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
-X	fi
-X.endif
-X
-X.include <bsd.port.post.mk>
-1ddc83ffd8ad54adc25ba3b756b81ace
-echo x - kittehcoin/distinfo
-sed 's/^X//' >kittehcoin/distinfo << '12c2720ecd44ed9844f71090dfa69cb1'
-XSHA256 (kittehcoin-0.8.6.2.tar.gz) = 31d8c7c8265c836a3170cdc1aa62fa44ae04e91c538f2ac72c1a1e194b25eef5
-XSIZE (kittehcoin-0.8.6.2.tar.gz) = 4365569
-12c2720ecd44ed9844f71090dfa69cb1
+X*******************************************************************
+6b8f647c3e0b4113433884fce12a8925
 echo x - kittehcoin/pkg-descr
 sed 's/^X//' >kittehcoin/pkg-descr << 'b188dac943ba21408abb8832d68d26f8'
 XKittehcoin is a free open source peer-to-peer electronic cash system that

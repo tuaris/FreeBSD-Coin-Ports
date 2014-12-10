@@ -73,10 +73,6 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
-.if ${OSVERSION} >= 1000000
-EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
-.endif
-
 .if ${ARCH} == "i386"
 USE_GCC=yes
 .endif
