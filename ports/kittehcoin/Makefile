@@ -77,6 +77,10 @@ QMAKE_USE_UPNP=	-
 EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
 .endif
 
+.if ${ARCH} == "i386"
+USE_GCC=yes
+.endif
+
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}

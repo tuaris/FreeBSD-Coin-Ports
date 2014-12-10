@@ -398,6 +398,10 @@ X.if ${OSVERSION} >= 1000000
 XEXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
 X.endif
 X
+X.if ${ARCH} == "i386"
+XUSE_GCC=yes
+X.endif
+X
 Xpost-patch:
 X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 X.if !${PORT_OPTIONS:MX11}
