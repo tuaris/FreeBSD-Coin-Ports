@@ -42,6 +42,7 @@ The current supported list of crypto currencies are:
 - orangecat
 - Peercoin
 - Rainbowcoin
+- Riecoin
 - starcoin
 - stashcoin
 - suncoin
