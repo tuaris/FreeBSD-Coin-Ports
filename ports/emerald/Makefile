@@ -73,10 +73,6 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
-.if ${OSVERSION} >= 1000000
-EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
-.endif
-
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 	@${MKDIR} ${WRKSRC}/src/obj
