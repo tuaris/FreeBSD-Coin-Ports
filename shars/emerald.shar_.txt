@@ -124,7 +124,8 @@ X	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 X		-e 's,bitcoin,${PORTNAME},g' \
 X		-e 's,Bitcoin,Emerald,g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+X		-e 's,xpn,png,g' \
+X		-e 's,80,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 X
