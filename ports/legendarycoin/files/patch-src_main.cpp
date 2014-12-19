@@ -1,6 +1,6 @@
---- src/main.cpp.org	2014-04-19 09:47:35.000000000 -0400
-+++ src/main.cpp	2014-04-23 17:57:21.000000000 -0400
-@@ -934,8 +934,8 @@
+--- src/main.cpp.orig	2014-05-02 02:16:19 UTC
++++ src/main.cpp
+@@ -934,8 +934,8 @@ uint256 WantedByOrphan(const CBlock* pbl
  
  int generateMTRandom(unsigned int s, int range)
  {
