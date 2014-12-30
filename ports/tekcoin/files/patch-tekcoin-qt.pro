@@ -1,6 +1,6 @@
---- tekcoin-qt.pro.orig	2014-08-27 12:56:24.000000000 -0400
-+++ tekcoin-qt.pro	2014-10-26 02:04:02.000000000 -0400
-@@ -374,11 +374,11 @@
+--- tekcoin-qt.pro.orig	2014-12-29 16:35:22 UTC
++++ tekcoin-qt.pro
+@@ -377,11 +377,11 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
  # Set libraries and includes at end, to use platform-defined defaults if not overridden
  INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
  LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)

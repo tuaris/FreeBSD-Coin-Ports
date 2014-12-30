@@ -1,6 +1,6 @@
---- src/serialize.h.orig	2014-08-27 12:56:24.000000000 -0400
-+++ src/serialize.h	2014-10-26 01:19:45.000000000 -0400
-@@ -811,19 +811,6 @@
+--- src/serialize.h.orig	2014-12-29 16:35:22 UTC
++++ src/serialize.h
+@@ -811,19 +811,6 @@ public:
      iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
      void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
  
@@ -20,7 +20,7 @@
      void insert(iterator it, std::vector<char>::const_iterator first, std::vector<char>::const_iterator last)
      {
          assert(last - first >= 0);
-@@ -855,6 +842,7 @@
+@@ -855,6 +842,7 @@ public:
      iterator erase(iterator it)
      {
          if (it == vch.begin() + nReadPos)
