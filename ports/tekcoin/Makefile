@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	tekcoin
-PORTVERSION=	2.1.1.0
+PORTVERSION=	2.2.1.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -22,8 +22,8 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	noise23
 GH_PROJECT=	TEK
-GH_COMMIT=	b87a43a
-GH_TAGNAME=	b87a43a
+GH_COMMIT=	ed75e64
+GH_TAGNAME=	ed75e64
 
 USES=		gmake dos2unix
 USE_OPENSSL=	yes
