@@ -1,6 +1,6 @@
---- mooncoin-qt.pro.orig	2014-04-03 16:52:43.000000000 -0400
-+++ mooncoin-qt.pro	2014-12-01 19:29:27.000000000 -0500
-@@ -450,7 +450,7 @@
+--- mooncoin-qt.pro.orig	2014-04-03 20:52:43 UTC
++++ mooncoin-qt.pro
+@@ -450,7 +450,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto
  # -lgdi32 has to happen after -lcrypto (see  #681)
  !macx {
