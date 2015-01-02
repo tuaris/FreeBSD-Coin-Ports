@@ -238,7 +238,7 @@ X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD: $
 X
 XPORTNAME=	dimecoin
-XPORTVERSION=	0.8.3.0
+XPORTVERSION=	1.5.0.14
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -255,10 +255,10 @@ XUPNP_DESC=	Build with UPNP support
 XQRCODES_DESC=	Build with QR code display
 X
 XUSE_GITHUB=	yes
-XGH_ACCOUNT=	dimecoinproject
+XGH_ACCOUNT=	Dimelord
 XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	fbe4bea
-XGH_TAGNAME=	fbe4bea
+XGH_COMMIT=	c6a48e5
+XGH_TAGNAME=	c6a48e5
 X
 XUSES=		gmake
 XUSE_OPENSSL=	yes
@@ -316,6 +316,12 @@ X
 Xpost-extract:
 X	@${MKDIR} -p ${WRKSRC}/src/obj
 X	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+X	@${RM} -f  ${WRKSRC}/src/leveldb/*.a
+X	@${RM} -f  ${WRKSRC}/src/leveldb/helpers/memenv/*.o
+X	@${RM} -f  ${WRKSRC}/src/leveldb/db/*.o
+X	@${RM} -f  ${WRKSRC}/src/leveldb/port/*.o
+X	@${RM} -f  ${WRKSRC}/src/leveldb/table/*.o
+X	@${RM} -f  ${WRKSRC}/src/leveldb/util/*.o
 X
 Xpost-patch:
 X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
@@ -358,8 +364,8 @@ X.include <bsd.port.post.mk>
 3cb2f924bf8cbf3efddb11f453e83044
 echo x - dimecoin/distinfo
 sed 's/^X//' >dimecoin/distinfo << '523b7e89ba30c59ba4b31301ac2d37f0'
-XSHA256 (dimecoin-0.8.3.0.tar.gz) = f146b76d9c0825636dfe59cba5dd6bb18c523858dc1c3a4ddf8f719b3e828d2a
-XSIZE (dimecoin-0.8.3.0.tar.gz) = 4150082
+XSHA256 (dimecoin-1.5.0.14.tar.gz) = 0c948f2972e084377b2606599bd7c295aafad44d58069eb9ea258ae330a77096
+XSIZE (dimecoin-1.5.0.14.tar.gz) = 6351342
 523b7e89ba30c59ba4b31301ac2d37f0
 echo x - dimecoin/pkg-descr
 sed 's/^X//' >dimecoin/pkg-descr << 'b835922d752b13a108d229a24098bf4d'

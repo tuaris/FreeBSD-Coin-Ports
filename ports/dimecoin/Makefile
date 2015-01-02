@@ -2,7 +2,7 @@
 # $FreeBSD: $
 
 PORTNAME=	dimecoin
-PORTVERSION=	0.8.3.0
+PORTVERSION=	1.5.0.14
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -19,10 +19,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	dimecoinproject
+GH_ACCOUNT=	Dimelord
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	fbe4bea
-GH_TAGNAME=	fbe4bea
+GH_COMMIT=	c6a48e5
+GH_TAGNAME=	c6a48e5
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -80,6 +80,12 @@ QMAKE_USE_UPNP=	-
 post-extract:
 	@${MKDIR} -p ${WRKSRC}/src/obj
 	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+	@${RM} -f  ${WRKSRC}/src/leveldb/*.a
+	@${RM} -f  ${WRKSRC}/src/leveldb/helpers/memenv/*.o
+	@${RM} -f  ${WRKSRC}/src/leveldb/db/*.o
+	@${RM} -f  ${WRKSRC}/src/leveldb/port/*.o
+	@${RM} -f  ${WRKSRC}/src/leveldb/table/*.o
+	@${RM} -f  ${WRKSRC}/src/leveldb/util/*.o
 
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
