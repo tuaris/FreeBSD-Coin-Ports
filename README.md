@@ -19,6 +19,7 @@ The current supported list of crypto currencies are:
 - cryptobuck
 - dimecoin
 - dogecoin
+- eccoin
 - emerald
 - fireflycoin
 - giftcoin
