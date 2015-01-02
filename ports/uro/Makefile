@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	uro
-PORTVERSION=	1.0.0.1
+PORTVERSION=	1.0.2.4
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -20,10 +20,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}-
+GH_ACCOUNT=	${PORTNAME}coin
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	7da3b49
-GH_TAGNAME=	7da3b49
+GH_COMMIT=	319de97
+GH_TAGNAME=	319de97
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -36,10 +36,11 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
+SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
+SUB_FILES=	${PORTNAME}-qt.desktop
 .else
-SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -102,11 +103,7 @@ do-configure:
 do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/Uro-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,Uro,g' \
-		-e 's,Bitcoin,${PORTNAME},g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else

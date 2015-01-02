@@ -1,6 +1,6 @@
---- uro-qt.pro.orig	2014-06-07 10:50:06.000000000 -0400
-+++ uro-qt.pro	2014-07-13 12:49:37.000000000 -0400
-@@ -444,7 +444,7 @@
+--- uro-qt.pro.orig	2014-12-13 06:31:18 UTC
++++ uro-qt.pro
+@@ -432,7 +432,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32

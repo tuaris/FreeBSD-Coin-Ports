@@ -1,6 +1,6 @@
 rpcuser=myname
 #rpcpassword=YOU MUST SET A PASSWORD
-maxconnections=10
+maxconnections=20
 rpcallowip=127.0.0.1
 rpcport=36348
 port=36347

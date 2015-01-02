@@ -6,21 +6,194 @@
 # This archive contains:
 #
 #	uro
-#	uro/files
-#	uro/files/pkg-message.in
-#	uro/files/patch-uro-qt_pro
-#	uro/files/patch-src-makefile_unix
-#	uro/files/uro.in
-#	uro/files/uro.conf.sample
 #	uro/Makefile
 #	uro/distinfo
+#	uro/files
+#	uro/files/patch-src_makefile.unix
+#	uro/files/patch-uro-qt.pro
+#	uro/files/pkg-message.in
+#	uro/files/uro.conf.sample
+#	uro/files/uro.in
+#	uro/files/uro-qt.desktop.in
 #	uro/pkg-descr
 #	uro/pkg-plist
 #
 echo c - uro
 mkdir -p uro > /dev/null 2>&1
+echo x - uro/Makefile
+sed 's/^X//' >uro/Makefile << '766714471cd431dbd8c8800f91011b2a'
+X# Created by: Daniel Morante <daniel@morante.net>
+X# $FreeBSD$
+X
+XPORTNAME=	uro
+XPORTVERSION=	1.0.2.4
+XCATEGORIES=	net-p2p finance
+XMASTER_SITES=	GH
+X
+XMAINTAINER=	daniel@morante.net
+XCOMMENT=	Peer-to-Peer crypto currency backed to the value of Urea
+X
+XLICENSE=	MIT
+X
+XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
+X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+X
+XOPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
+XOPTIONS_DEFAULT=	X11 QRCODES
+XUPNP_DESC=	Build with UPNP support
+XQRCODES_DESC=	Build with QR code display
+X
+XUSE_GITHUB=	yes
+XGH_ACCOUNT=	${PORTNAME}coin
+XGH_PROJECT=	${PORTNAME}
+XGH_COMMIT=	319de97
+XGH_TAGNAME=	319de97
+X
+XUSES=		gmake
+XUSE_OPENSSL=	yes
+XUSE_BDB=	yes
+XWANT_BDB_VER=	48
+X
+XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
+XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+XCXXFLAGS+=	-Wno-invalid-offsetof
+X
+X.include <bsd.port.options.mk>
+X
+XSUB_LIST+=	PORTNAME=${PORTNAME}
+X.if ${PORT_OPTIONS:MX11}
+XPLIST_SUB+=	X11=""
+XSUB_FILES=	${PORTNAME}-qt.desktop
+X.else
+XUSE_RC_SUBR=	${PORTNAME}
+XSUB_FILES=	pkg-message
+XPLIST_SUB+=	X11="@comment "
+X.endif
+X
+X.if ${PORT_OPTIONS:MX11}
+XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
+XBINARY=		${PORTNAME}-qt
+XPLIST_SUB+=	HEADLESS="@comment "
+X.else
+XBINARY=		${PORTNAME}d
+XMAKE_ARGS+=	-C ${WRKSRC}/src
+XPLIST_SUB+=	HEADLESS=""
+X.endif
+X
+X.if ${PORT_OPTIONS:MSTATIC}
+XMAKE_ARGS+=	STATIC=1
+X.endif
+X
+X.if ${PORT_OPTIONS:MQRCODES}
+XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
+XQMAKE_USE_QRCODE=1
+X.else
+XQMAKE_USE_QRCODE=0
+X.endif
+X
+XPLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
+X			PORTNAME=${PORTNAME}
+X
+X.if ${PORT_OPTIONS:MUPNP}
+XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+XQMAKE_USE_UPNP=	1
+X.else
+XQMAKE_USE_UPNP=	-
+X.endif
+X
+X.include <bsd.port.pre.mk>
+X
+Xpost-patch:
+X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
+X	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+X	@${MKDIR} -p ${WRKSRC}/src/obj/zerocoin
+X.if !${PORT_OPTIONS:MX11}
+X	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
+X	@${REINPLACE_CMD} \
+X		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
+X		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
+X		-e 's:-l dl::' \
+X		${WRKSRC}/src/Makefile
+X.endif
+X
+Xdo-configure:
+X.if ${PORT_OPTIONS:MX11}
+X	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
+X		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
+X		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
+X		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
+X.endif
+X
+Xdo-install:
+X.if ${PORT_OPTIONS:MX11}
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/Uro-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+X
+X.else
+X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/Urod ${STAGEDIR}${PREFIX}/bin/${BINARY}
+X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
+X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
+X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
+X	fi
+X.endif
+X
+X.include <bsd.port.post.mk>
+766714471cd431dbd8c8800f91011b2a
+echo x - uro/distinfo
+sed 's/^X//' >uro/distinfo << 'c44cf4abe41936cf7d322bd1f1fd8963'
+XSHA256 (uro-1.0.2.4.tar.gz) = eadabd15d6bee6572f654ccf51853ec7dbab5526c77e920811903b3f35cc91f5
+XSIZE (uro-1.0.2.4.tar.gz) = 5268882
+c44cf4abe41936cf7d322bd1f1fd8963
 echo c - uro/files
 mkdir -p uro/files > /dev/null 2>&1
+echo x - uro/files/patch-src_makefile.unix
+sed 's/^X//' >uro/files/patch-src_makefile.unix << 'cd0988949c60250f5d8636d860b15d40'
+X--- src/makefile.unix.orig	2014-12-13 06:31:18 UTC
+X+++ src/makefile.unix
+X@@ -15,6 +15,11 @@ LINK:=$(CXX)
+X 
+X DEFS=-DBOOST_SPIRIT_THREADSAFE -D_FILE_OFFSET_BITS=64
+X 
+X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
+X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
+X+BOOST_LIB_PATH=%%PREFIX%%/lib
+X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
+X+
+X DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
+X LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
+X 
+X@@ -34,6 +39,7 @@ LIBS += \
+X    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
+X    -l boost_program_options$(BOOST_LIB_SUFFIX) \
+X    -l boost_thread$(BOOST_LIB_SUFFIX) \
+X+   -l boost_chrono$(BOOST_LIB_SUFFIX) \
+X    -l db_cxx$(BDB_LIB_SUFFIX) \
+X    -l ssl \
+X    -l crypto
+X@@ -53,7 +59,6 @@ endif
+X LIBS+= \
+X  -Wl,-B$(LMODE2) \
+X    -l z \
+X-   -l dl \
+X    -l pthread
+X 
+X 
+cd0988949c60250f5d8636d860b15d40
+echo x - uro/files/patch-uro-qt.pro
+sed 's/^X//' >uro/files/patch-uro-qt.pro << '31662961d397309c64a3d450a13f5ee6'
+X--- uro-qt.pro.orig	2014-12-13 06:31:18 UTC
+X+++ uro-qt.pro
+X@@ -432,7 +432,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
+X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+X # -lgdi32 has to happen after -lcrypto (see  #681)
+X win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
+X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
+X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_LIB_SUFFIX
+X win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+X macx:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
+X 
+31662961d397309c64a3d450a13f5ee6
 echo x - uro/files/pkg-message.in
 sed 's/^X//' >uro/files/pkg-message.in << '468c3a36d21134e7ad6eb4c11e8a2878'
 X*******************************************************************
@@ -36,53 +209,20 @@ X%%PORTNAME%%_enable="YES"
 X
 X*******************************************************************
 468c3a36d21134e7ad6eb4c11e8a2878
-echo x - uro/files/patch-uro-qt_pro
-sed 's/^X//' >uro/files/patch-uro-qt_pro << '7489a6a71ff4b4074b2be25a68180174'
-X--- uro-qt.pro.orig	2014-06-07 10:50:06.000000000 -0400
-X+++ uro-qt.pro	2014-07-13 12:49:37.000000000 -0400
-X@@ -444,7 +444,7 @@
-X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
-X # -lgdi32 has to happen after -lcrypto (see  #681)
-X win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
-X-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-X+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_LIB_SUFFIX
-X win32:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-X macx:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
-X 
-7489a6a71ff4b4074b2be25a68180174
-echo x - uro/files/patch-src-makefile_unix
-sed 's/^X//' >uro/files/patch-src-makefile_unix << 'b548dbb0f924e95f18a54f555b7d999a'
-X--- src/makefile.unix.orig	2014-06-07 10:50:06.000000000 -0400
-X+++ src/makefile.unix	2014-07-13 12:52:47.000000000 -0400
-X@@ -15,6 +15,11 @@
-X 
-X DEFS=-DBOOST_SPIRIT_THREADSAFE -D_FILE_OFFSET_BITS=64
-X 
-X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
-X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
-X+BOOST_LIB_PATH=%%PREFIX%%/lib
-X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
-X+
-X DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
-X LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
-X 
-X@@ -34,6 +39,7 @@
-X    -l boost_filesystem$(BOOST_LIB_SUFFIX) \
-X    -l boost_program_options$(BOOST_LIB_SUFFIX) \
-X    -l boost_thread$(BOOST_LIB_SUFFIX) \
-X+   -l boost_chrono$(BOOST_LIB_SUFFIX) \
-X    -l db_cxx$(BDB_LIB_SUFFIX) \
-X    -l ssl \
-X    -l crypto
-X@@ -53,7 +59,6 @@
-X LIBS+= \
-X  -Wl,-B$(LMODE2) \
-X    -l z \
-X-   -l dl \
-X    -l pthread
-X 
-X 
-b548dbb0f924e95f18a54f555b7d999a
+echo x - uro/files/uro.conf.sample
+sed 's/^X//' >uro/files/uro.conf.sample << '14b8fdab325b63304462e11f2691b11c'
+Xrpcuser=myname
+X#rpcpassword=YOU MUST SET A PASSWORD
+Xmaxconnections=20
+Xrpcallowip=127.0.0.1
+Xrpcport=36348
+Xport=36347
+Xserver=1
+Xdaemon=1
+Xlisten=1
+Xlogtimestamps=1
+Xaddnode=uro.securepayment.cc
+14b8fdab325b63304462e11f2691b11c
 echo x - uro/files/uro.in
 sed 's/^X//' >uro/files/uro.in << 'f8a9a840c12cf300f26d83f3580887d1'
 X#!/bin/sh
@@ -163,148 +303,19 @@ X
 Xload_rc_config $name
 Xrun_rc_command "$1"
 f8a9a840c12cf300f26d83f3580887d1
-echo x - uro/files/uro.conf.sample
-sed 's/^X//' >uro/files/uro.conf.sample << '14b8fdab325b63304462e11f2691b11c'
-Xrpcuser=myname
-X#rpcpassword=YOU MUST SET A PASSWORD
-Xmaxconnections=10
-Xrpcallowip=127.0.0.1
-Xrpcport=36348
-Xport=36347
-Xserver=1
-Xdaemon=1
-Xlisten=1
-Xlogtimestamps=1
-Xaddnode=uro.securepayment.cc
-14b8fdab325b63304462e11f2691b11c
-echo x - uro/Makefile
-sed 's/^X//' >uro/Makefile << '766714471cd431dbd8c8800f91011b2a'
-X# Created by: Daniel Morante <daniel@morante.net>
-X# $FreeBSD$
-X
-XPORTNAME=	uro
-XPORTVERSION=	1.0.0.1
-XCATEGORIES=	net-p2p finance
-XMASTER_SITES=	GH
-X
-XMAINTAINER=	daniel@morante.net
-XCOMMENT=	Peer-to-Peer crypto currency backed to the value of Urea
-X
-XLICENSE=	MIT
-X
-XLIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-X				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
-X
-XOPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
-XOPTIONS_DEFAULT=	X11 QRCODES
-XUPNP_DESC=	Build with UPNP support
-XQRCODES_DESC=	Build with QR code display
-X
-XUSE_GITHUB=	yes
-XGH_ACCOUNT=	${PORTNAME}-
-XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	7da3b49
-XGH_TAGNAME=	7da3b49
-X
-XUSES=		gmake
-XUSE_OPENSSL=	yes
-XUSE_BDB=	yes
-XWANT_BDB_VER=	48
-X
-XCXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-XCXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
-XCXXFLAGS+=	-Wno-invalid-offsetof
-X
-X.include <bsd.port.options.mk>
-X
-X.if ${PORT_OPTIONS:MX11}
-XPLIST_SUB+=	X11=""
-X.else
-XSUB_LIST+=	PORTNAME=${PORTNAME}
-XUSE_RC_SUBR=	${PORTNAME}
-XSUB_FILES=	pkg-message
-XPLIST_SUB+=	X11="@comment "
-X.endif
-X
-X.if ${PORT_OPTIONS:MX11}
-XUSE_QT4=	corelib gui qmake_build linguist uic moc rcc
-XBINARY=		${PORTNAME}-qt
-XPLIST_SUB+=	HEADLESS="@comment "
-X.else
-XBINARY=		${PORTNAME}d
-XMAKE_ARGS+=	-C ${WRKSRC}/src
-XPLIST_SUB+=	HEADLESS=""
-X.endif
-X
-X.if ${PORT_OPTIONS:MSTATIC}
-XMAKE_ARGS+=	STATIC=1
-X.endif
-X
-X.if ${PORT_OPTIONS:MQRCODES}
-XLIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
-XQMAKE_USE_QRCODE=1
-X.else
-XQMAKE_USE_QRCODE=0
-X.endif
-X
-XPLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
-X			PORTNAME=${PORTNAME}
-X
-X.if ${PORT_OPTIONS:MUPNP}
-XLIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
-XQMAKE_USE_UPNP=	1
-X.else
-XQMAKE_USE_UPNP=	-
-X.endif
-X
-X.include <bsd.port.pre.mk>
-X
-Xpost-patch:
-X	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
-X	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
-X	@${MKDIR} -p ${WRKSRC}/src/obj/zerocoin
-X.if !${PORT_OPTIONS:MX11}
-X	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
-X	@${REINPLACE_CMD} \
-X		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
-X		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
-X		-e 's:-l dl::' \
-X		${WRKSRC}/src/Makefile
-X.endif
-X
-Xdo-configure:
-X.if ${PORT_OPTIONS:MX11}
-X	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
-X		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
-X		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
-X		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
-X.endif
-X
-Xdo-install:
-X.if ${PORT_OPTIONS:MX11}
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/Uro-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-X		-e 's,bitcoin,Uro,g' \
-X		-e 's,Bitcoin,${PORTNAME},g' \
-X		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-X	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-X	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
-X
-X.else
-X	${INSTALL_PROGRAM} -s ${WRKSRC}/src/Urod ${STAGEDIR}${PREFIX}/bin/${BINARY}
-X	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
-X	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
-X		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
-X	fi
-X.endif
-X
-X.include <bsd.port.post.mk>
-766714471cd431dbd8c8800f91011b2a
-echo x - uro/distinfo
-sed 's/^X//' >uro/distinfo << 'c44cf4abe41936cf7d322bd1f1fd8963'
-XSHA256 (uro-1.0.0.1.tar.gz) = f41342adbd4a37b0d72d8d6bac96b5196a9f79e4cd13e1417597ca409009a902
-XSIZE (uro-1.0.0.1.tar.gz) = 3018228
-c44cf4abe41936cf7d322bd1f1fd8963
+echo x - uro/files/uro-qt.desktop.in
+sed 's/^X//' >uro/files/uro-qt.desktop.in << '4c4070e8249319010ad57661afd76fe4'
+X[Desktop Entry]
+XEncoding=UTF-8
+XName=Uro
+XComment=Uro P2P Cryptocurrency
+XExec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
+XTerminal=false
+XType=Application
+XIcon=%%PREFIX%%/share/pixmaps/%%PORTNAME%%.png
+XMimeType=x-scheme-handler/%%PORTNAME%%;
+XCategories=Office;
+4c4070e8249319010ad57661afd76fe4
 echo x - uro/pkg-descr
 sed 's/^X//' >uro/pkg-descr << '1e4777f874932e3ceafb8b6ec0adcabb'
 XUro is a free open source peer-to-peer electronic cash system that
