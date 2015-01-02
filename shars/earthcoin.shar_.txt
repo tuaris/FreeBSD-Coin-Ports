@@ -7,12 +7,13 @@
 #
 #	earthcoin
 #	earthcoin/files
-#	earthcoin/files/extra-patch-endian
+#	earthcoin/files/patch-src_scrypt.cpp
 #	earthcoin/files/pkg-message.in
 #	earthcoin/files/earthcoin.in
 #	earthcoin/files/earthcoin.conf.sample
 #	earthcoin/files/patch-earthcoin-qt.pro
 #	earthcoin/files/patch-src_makefile.unix
+#	earthcoin/files/patch-src_scrypt.h
 #	earthcoin/Makefile
 #	earthcoin/pkg-descr
 #	earthcoin/pkg-plist
@@ -22,33 +23,19 @@ echo c - earthcoin
 mkdir -p earthcoin > /dev/null 2>&1
 echo c - earthcoin/files
 mkdir -p earthcoin/files > /dev/null 2>&1
-echo x - earthcoin/files/extra-patch-endian
-sed 's/^X//' >earthcoin/files/extra-patch-endian << 'd6554067281171dc6b2f550285930412'
-X--- src/scrypt.h.orig	2013-12-09 15:26:17.343282984 +0000
-X+++ src/scrypt.h	2013-12-09 15:45:11.032205545 +0000
-X@@ -30,19 +30,4 @@
-X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
-X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+echo x - earthcoin/files/patch-src_scrypt.cpp
+sed 's/^X//' >earthcoin/files/patch-src_scrypt.cpp << '69a0bd0bf054108aa3d449d77bf41439'
+X--- src/scrypt.cpp.orig	2014-11-01 19:25:51 UTC
+X+++ src/scrypt.cpp
+X@@ -33,6 +33,7 @@
+X #include <stdint.h>
+X #include <string.h>
+X #include <openssl/sha.h>
+X+#include <boost/lexical_cast.hpp>
 X 
-X-static inline uint32_t le32dec(const void *pp)
-X-{
-X-        const uint8_t *p = (uint8_t const *)pp;
-X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
-X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
-X-}
-X-
-X-static inline void le32enc(void *pp, uint32_t x)
-X-{
-X-        uint8_t *p = (uint8_t *)pp;
-X-        p[0] = x & 0xff;
-X-        p[1] = (x >> 8) & 0xff;
-X-        p[2] = (x >> 16) & 0xff;
-X-        p[3] = (x >> 24) & 0xff;
-X-}
-X #endif
-X--- src/scrypt.cpp.orig	2014-04-03 16:52:43.000000000 -0400
-X+++ src/scrypt.cpp	2014-12-01 19:40:11.000000000 -0500
-X@@ -47,22 +47,6 @@
+X #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
+X #ifdef _MSC_VER
+X@@ -44,22 +45,6 @@
 X #endif
 X #endif
 X 
@@ -71,14 +58,7 @@ X-
 X typedef struct HMAC_SHA256Context {
 X 	SHA256_CTX ictx;
 X 	SHA256_CTX octx;
-X@@ -329,4 +313,4 @@
-X {
-X 	char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
-X     scrypt_1024_1_1_256_sp(input, output, scratchpad);
-X-}
-X\ No newline at end of file
-X+}
-d6554067281171dc6b2f550285930412
+69a0bd0bf054108aa3d449d77bf41439
 echo x - earthcoin/files/pkg-message.in
 sed 's/^X//' >earthcoin/files/pkg-message.in << '2108284ca96e826bcbd22d04be146bd5'
 X*******************************************************************
@@ -194,7 +174,7 @@ Xaddnode=24.151.4.241
 47395cd1576552cf08fedea6c1054774
 echo x - earthcoin/files/patch-earthcoin-qt.pro
 sed 's/^X//' >earthcoin/files/patch-earthcoin-qt.pro << '68e9ad6dd72f4e4211078fec41adf9c2'
-X--- earthcoin-qt.pro.orig	2014-11-01 19:35:03 UTC
+X--- earthcoin-qt.pro.orig	2014-11-01 19:25:51 UTC
 X+++ earthcoin-qt.pro
 X@@ -431,7 +431,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
 X LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
@@ -208,16 +188,16 @@ X
 68e9ad6dd72f4e4211078fec41adf9c2
 echo x - earthcoin/files/patch-src_makefile.unix
 sed 's/^X//' >earthcoin/files/patch-src_makefile.unix << 'f80ba147a89873f25cdb93fa0db581e5'
-X--- src/makefile.unix.orig	2014-11-01 19:35:03 UTC
+X--- src/makefile.unix.orig	2014-11-01 19:25:51 UTC
 X+++ src/makefile.unix
 X@@ -15,6 +15,11 @@ LINK:=$(CXX)
 X 
 X DEFS=-DBOOST_SPIRIT_THREADSAFE -D_FILE_OFFSET_BITS=64
 X 
-X+BOOST_INCLUDE_PATH=%%PREFIX%%/include
-X+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
-X+BOOST_LIB_PATH=%%PREFIX%%/lib
-X+BDB_LIB_PATH=%%PREFIX%%/lib/db48
+X+BOOST_INCLUDE_PATH=/usr/local/include
+X+BDB_INCLUDE_PATH=/usr/local/include/db48
+X+BOOST_LIB_PATH=/usr/local/lib
+X+BDB_LIB_PATH=/usr/local/lib/db48
 X+
 X DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
 X LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
@@ -239,13 +219,39 @@ X    -l pthread
 X 
 X 
 f80ba147a89873f25cdb93fa0db581e5
+echo x - earthcoin/files/patch-src_scrypt.h
+sed 's/^X//' >earthcoin/files/patch-src_scrypt.h << '90694a95880d7ee2fe2b40842b9f3ea8'
+X--- src/scrypt.h.orig	2014-11-01 19:25:51 UTC
+X+++ src/scrypt.h
+X@@ -27,19 +27,4 @@ void
+X PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
+X     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+X 
+X-static inline uint32_t le32dec(const void *pp)
+X-{
+X-        const uint8_t *p = (uint8_t const *)pp;
+X-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+X-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+X-}
+X-
+X-static inline void le32enc(void *pp, uint32_t x)
+X-{
+X-        uint8_t *p = (uint8_t *)pp;
+X-        p[0] = x & 0xff;
+X-        p[1] = (x >> 8) & 0xff;
+X-        p[2] = (x >> 16) & 0xff;
+X-        p[3] = (x >> 24) & 0xff;
+X-}
+X #endif
+90694a95880d7ee2fe2b40842b9f3ea8
 echo x - earthcoin/Makefile
 sed 's/^X//' >earthcoin/Makefile << 'a04a3b7e98c32ef602a47e97e82a1bd3'
 X# Created by: Daniel Morante <daniel@morante.net>
 X# $FreeBSD$
 X
 XPORTNAME=	earthcoin
-XPORTVERSION=	1.4.0.0
+XPORTVERSION=	1.3.2.0
+XPORTREVISION=	1
 XCATEGORIES=	net-p2p finance
 XMASTER_SITES=	GH
 X
@@ -264,8 +270,8 @@ X
 XUSE_GITHUB=	yes
 XGH_ACCOUNT=	${PORTNAME}project
 XGH_PROJECT=	${PORTNAME}
-XGH_COMMIT=	d684d7b
-XGH_TAGNAME=	d684d7b
+XGH_COMMIT=	b3743b6
+XGH_TAGNAME=	b3743b6
 X
 XUSES=		gmake
 XUSE_OPENSSL=	yes
@@ -315,10 +321,6 @@ XQMAKE_USE_UPNP=	-
 X.endif
 X
 X.include <bsd.port.pre.mk>
-X
-X.if ${OSVERSION} >= 1000000
-XEXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
-X.endif
 X
 Xpost-extract:
 X	${MV} ${WRKSRC}/bitcoin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
@@ -383,8 +385,8 @@ X%%HEADLESS%%@exec if [ ! -f %D/etc/%%PORTNAME%%.conf ] ; then cp -p %D/%F %B/%%
 13de6ce6492f4cc0b58271ad614f961d
 echo x - earthcoin/distinfo
 sed 's/^X//' >earthcoin/distinfo << '9d51aae5ce62e12251c21ebfb638283d'
-XSHA256 (earthcoin-1.4.0.0.tar.gz) = 368b1544eef45d020078bf159acaf2ee4826ce44c47ed57cf64feeb2e73d9ad3
-XSIZE (earthcoin-1.4.0.0.tar.gz) = 4381638
+XSHA256 (earthcoin-1.3.2.0.tar.gz) = 43bc71669d8d94336946062d21c083a6514d4f7477b465ddaccb818d225a05f1
+XSIZE (earthcoin-1.3.2.0.tar.gz) = 4381622
 9d51aae5ce62e12251c21ebfb638283d
 exit
 
