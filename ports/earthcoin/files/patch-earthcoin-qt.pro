@@ -1,4 +1,4 @@
---- earthcoin-qt.pro.orig	2014-11-01 19:35:03 UTC
+--- earthcoin-qt.pro.orig	2014-11-01 19:25:51 UTC
 +++ earthcoin-qt.pro
 @@ -431,7 +431,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX

@@ -3,6 +3,7 @@
 
 PORTNAME=	earthcoin
 PORTVERSION=	1.3.2.0
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -72,10 +73,6 @@ QMAKE_USE_UPNP=	-
 .endif
 
 .include <bsd.port.pre.mk>
-
-.if ${OSVERSION} >= 1000000
-EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
-.endif
 
 post-extract:
 	${MV} ${WRKSRC}/bitcoin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
