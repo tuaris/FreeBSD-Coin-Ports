@@ -1,0 +1,17 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=19119
+port=19118
+server=1
+daemon=1
+listen=1
+gen=0
+logtimestamps=1
+addnode=129.21.141.135
+addnode=38.93.234.100
+addnode=54.72.236.49
+addnode=88.20.74.221
+addnode=23.251.134.93
+
