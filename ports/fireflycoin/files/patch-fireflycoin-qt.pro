@@ -1,6 +1,14 @@
---- fireflycoin-qt.pro.orig	2013-11-21 18:13:49.000000000 -0500
-+++ fireflycoin-qt.pro	2013-12-31 04:08:55.000000000 -0500
-@@ -413,7 +413,7 @@
+--- fireflycoin-qt.pro.orig	2013-11-21 23:13:49 UTC
++++ fireflycoin-qt.pro
+@@ -107,6 +107,7 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
+ 
+ INCLUDEPATH += src/leveldb/include src/leveldb/helpers
+ LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
++genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
+ genleveldb.target = $$PWD/src/leveldb/libleveldb.a
+ genleveldb.depends = FORCE
+ PRE_TARGETDEPS += $$PWD/src/leveldb/libleveldb.a
+@@ -413,7 +414,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
