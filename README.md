@@ -23,6 +23,7 @@ The current supported list of crypto currencies are:
 - earthcoin
 - eccoin
 - emerald
+- emoticoin
 - fireflycoin
 - giftcoin
 - Gimpcoin

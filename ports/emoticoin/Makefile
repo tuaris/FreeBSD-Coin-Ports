@@ -1,8 +1,8 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	dnotes
-PORTVERSION=	1.1.0.0
+PORTNAME=	emoticoin
+PORTVERSION=	0.8.6.3
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -19,10 +19,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	DNotesCoin
-GH_PROJECT=	DNotes
-GH_COMMIT=	e8031b0
-GH_TAGNAME=	e8031b0
+GH_ACCOUNT=	${PORTNAME}s
+GH_PROJECT=	${PORTNAME}
+GH_COMMIT=	67aaaa8
+GH_TAGNAME=	67aaaa8
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -73,6 +73,9 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+post-extract:
+	${MV} ${WRKSRC}/bitcoin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
+
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}
@@ -97,14 +100,13 @@ do-install:
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,DNotes,g' \
-		-e 's,xpm,png,g' \
-		-e 's,80,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+		-e 's,Bitcoin,EmotiCoin,g' \
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/DNotesd ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
