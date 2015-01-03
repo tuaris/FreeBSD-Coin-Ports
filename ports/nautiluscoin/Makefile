@@ -1,8 +1,8 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD $
 
-PORTNAME=	zetacoin
-PORTVERSION=	0.9.2.4
+PORTNAME=	nautiluscoin
+PORTVERSION=	1.2.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -17,8 +17,8 @@ LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	22ddb9b
-GH_TAGNAME=	22ddb9b
+GH_COMMIT=	536087d
+GH_TAGNAME=	536087d
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -63,7 +63,7 @@ WANT_BDB_VER=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include
 CXXFLAGS+=	-L${LOCALBASE}/lib
-CXXFLAGS+=	-Wno-invalid-offsetof
+CXXFLAGS+=	-Wno-invalid-offsetof -Qunused-arguments
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
@@ -89,9 +89,11 @@ BROKEN=	automated testing fails
 USE_RC_SUBR=	${PORTNAME}
 SUB_LIST+=	PORTNAME=${PORTNAME}
 SUB_FILES=	pkg-message
-USERS=		${PORTNAME}
-GROUPS=		${PORTNAME}
 .endif
+
+post-extract:
+	@${RM} -f ${WRKSRC}/src/qt/paymentrequest.pb.cc
+	@${RM} -f ${WRKSRC}/src/qt/paymentrequest.pb.h
 
 post-patch:
 	${MKDIR} ${WRKSRC}/src/build-aux
@@ -104,11 +106,9 @@ do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${QT_BINARY} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,zetacoin,g' \
-		-e 's,Bitcoin,Zetacoin,g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+		-e 's,128,.png,g' ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
 	${INSTALL_DATA} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample

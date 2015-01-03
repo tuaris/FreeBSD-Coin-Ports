@@ -41,6 +41,7 @@ The current supported list of crypto currencies are:
 - mustachecoin
 - muniti
 - Nanite
+- nautiluscoin
 - nbcoin
 - octocoin
 - orangecat

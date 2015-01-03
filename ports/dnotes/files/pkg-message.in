@@ -1,5 +1,5 @@
 *******************************************************************
-To configure the Earthcoin server please edit: 
+To configure the DNotes server please edit: 
 %%PREFIX%%/etc/%%PORTNAME%%.conf
 
 You must at least set a "rpcpassword" in the configuration file above.
