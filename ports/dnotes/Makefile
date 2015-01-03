@@ -1,8 +1,8 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	tetcoin
-PORTVERSION=	0.8.7.3
+PORTNAME=	dnotes
+PORTVERSION=	1.1.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -19,17 +19,15 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	Tetcoin
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	8be971f
-GH_TAGNAME=	8be971f
+GH_ACCOUNT=	DNotesCoin
+GH_PROJECT=	DNotes
+GH_COMMIT=	e8031b0
+GH_TAGNAME=	e8031b0
 
 USES=		gmake
 USE_OPENSSL=	yes
 USE_BDB=	yes
 WANT_BDB_VER=	48
-
-WRKSRC= ${WRKDIR}/${GH_ACCOUNT}-${GH_PROJECT}-${GH_TAGNAME}/${PORTNAME}d
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
@@ -99,10 +97,10 @@ do-install:
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,Tetcoin,g' \
+		-e 's,Bitcoin,Earthcoin,g' \
 		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
