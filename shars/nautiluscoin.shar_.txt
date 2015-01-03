@@ -289,7 +289,7 @@ XWANT_BDB_VER=	48
 X
 XCXXFLAGS+=	-I${LOCALBASE}/include
 XCXXFLAGS+=	-L${LOCALBASE}/lib
-XCXXFLAGS+=	-Wno-invalid-offsetof -Qunused-arguments
+XCXXFLAGS+=	-Wno-invalid-offsetof
 X
 XQT_BINARY=		${PORTNAME}-qt
 XCLI_BINARY=		${PORTNAME}-cli
@@ -315,6 +315,10 @@ X.if ! ${PORT_OPTIONS:MX11}
 XUSE_RC_SUBR=	${PORTNAME}
 XSUB_LIST+=	PORTNAME=${PORTNAME}
 XSUB_FILES=	pkg-message
+X.endif
+X
+X.if ${OSVERSION} >= 1000000
+XCXXFLAGS+=	-Qunused-arguments
 X.endif
 X
 Xpost-extract:

@@ -63,7 +63,7 @@ WANT_BDB_VER=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include
 CXXFLAGS+=	-L${LOCALBASE}/lib
-CXXFLAGS+=	-Wno-invalid-offsetof -Qunused-arguments
+CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
@@ -89,6 +89,10 @@ BROKEN=	automated testing fails
 USE_RC_SUBR=	${PORTNAME}
 SUB_LIST+=	PORTNAME=${PORTNAME}
 SUB_FILES=	pkg-message
+.endif
+
+.if ${OSVERSION} >= 1000000
+CXXFLAGS+=	-Qunused-arguments
 .endif
 
 post-extract:
