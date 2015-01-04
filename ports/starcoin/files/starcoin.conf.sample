@@ -1,0 +1,16 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=18217
+port=18216
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=starcoin.securepayment.cc
+addnode=198.199.110.176
+addnode=124.198.136.100
+addnode=107.170.195.237
+addnode=173.255.216.229
+addnode=95.27.95.182
