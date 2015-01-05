@@ -20,6 +20,7 @@ The current supported list of crypto currencies are:
 - dimecoin
 - dnotes
 - dogecoin
+- eMark
 - earthcoin
 - eags
 - eccoin
