@@ -21,6 +21,7 @@ The current supported list of crypto currencies are:
 - dnotes
 - dogecoin
 - earthcoin
+- eags
 - eccoin
 - emerald
 - emoticoin

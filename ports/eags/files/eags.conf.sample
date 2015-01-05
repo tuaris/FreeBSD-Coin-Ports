@@ -1,0 +1,12 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=29060
+port=29080
+server=1
+daemon=1
+listen=1
+gen=0
+logtimestamps=1
+addnode=eags.securepayment.cc

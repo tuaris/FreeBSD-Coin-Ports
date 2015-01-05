@@ -1,0 +1,15 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=10
+rpcallowip=127.0.0.1
+rpcport=8152
+port=8151
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=porkcoin.securepayment.cc
+addnode=113.11.214.81
+addnode=61.147.91.25
+addnode=61.132.13.28
+addnode=121.40.35.171
