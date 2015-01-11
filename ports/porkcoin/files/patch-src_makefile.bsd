@@ -1,4 +1,4 @@
---- src/makefile.bsd.orig	2015-01-04 07:06:38 UTC
+--- src/makefile.bsd.orig	2015-01-08 09:27:59 UTC
 +++ src/makefile.bsd
 @@ -9,6 +9,11 @@ LINK:=$(CXX)
  
@@ -37,7 +37,7 @@
      $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
  
  # LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
-@@ -131,15 +136,23 @@ OBJS= \
+@@ -131,15 +136,22 @@ OBJS= \
      obj/noui.o \
      obj/kernel.o \
      obj/pbkdf2.o \
@@ -63,12 +63,11 @@
  
 -test check: test_scattercoin FORCE
 -	./test_BottleCaps
-+test check: test_porkcoin FORCE
-+	./test_porkcoin
++test check: test_porkcoin FORCE ./test_porkcoin
  
  # auto-generated dependencies:
  -include obj/*.P
-@@ -163,11 +176,19 @@ obj/%.o: %.cpp
+@@ -163,27 +175,29 @@ obj/%.o: %.cpp
  	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
  	  rm -f $(@:%.o=%.d)
  
@@ -89,7 +88,8 @@
  obj-test/%.o: test/%.cpp
  	$(CXX) -c $(TESTDEFS) $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
  	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
-@@ -175,7 +196,7 @@ obj-test/%.o: test/%.cpp
+-	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
++          sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
  	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
  	  rm -f $(@:%.o=%.d)
  
@@ -98,3 +98,11 @@
  	$(LINK) $(xCXXFLAGS) -o $@ $(LIBPATHS) $^ -Wl,-B$(LMODE) -lboost_unit_test_framework $(xLDFLAGS) $(LIBS)
  
  clean:
+-	-rm -f scattercoind test_scattercoin
+-	-rm -f obj/*.o
+-	-rm -f obj-test/*.o
+-	-rm -f obj/*.P
+-	-rm -f obj-test/*.P
+-	-rm -f obj/build.h
+ 
+ FORCE:

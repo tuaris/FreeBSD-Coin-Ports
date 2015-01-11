@@ -12,6 +12,7 @@ The current supported list of crypto currencies are:
 - bitcoindark
 - binarycoin
 - bonuscoin
+- bytecoin
 - camcoin
 - catcoin
 - chococoin

@@ -1,29 +1,28 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	porkcoin
-PORTVERSION=	0.8.2.6
+PORTNAME=	bytecoin
+PORTVERSION=	0.8.1.1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency of with PoS and X11 PoW
+COMMENT=	Peer to peer decentralized digital currency with no central authority.
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
-OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
+OPTIONS_DEFINE=	X11 UPNP QRCODES
 OPTIONS_DEFAULT=	X11 QRCODES
 UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
+GH_ACCOUNT=	bryan-mills
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	d448cf8
-GH_TAGNAME=	d448cf8
+GH_COMMIT=	3684830
+GH_TAGNAME=	3684830
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -55,10 +54,6 @@ MAKE_ARGS+=	-C ${WRKSRC}/src
 PLIST_SUB+=	HEADLESS=""
 .endif
 
-.if ${PORT_OPTIONS:MSTATIC}
-MAKE_ARGS+=	STATIC=1
-.endif
-
 .if ${PORT_OPTIONS:MQRCODES}
 LIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
 QMAKE_USE_QRCODE=1
@@ -76,20 +71,15 @@ QMAKE_USE_UPNP=	1
 QMAKE_USE_UPNP=	-
 .endif
 
-.if ${OSVERSION} >= 1000000
-USE_GCC=yes
-.endif
-
 .include <bsd.port.pre.mk>
 
 post-extract:
-	@${MV} ${WRKSRC}/PorkCoin.pro ${WRKSRC}/${PORTNAME}-qt.pro
+	@${MV} ${WRKSRC}/bitcoin-qt.pro ${WRKSRC}/bytecoin-qt.pro
 
 post-patch:
-	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
-	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}
-	@cd ${WRKSRC}/src && ${CP} -p makefile.bsd Makefile
+	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 	@${REINPLACE_CMD} \
 		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
 		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
@@ -107,16 +97,16 @@ do-configure:
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/PorkCoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/bitcoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,Porkcoin,g' \
-		-e 's,Bitcoin,${PORTNAME},g' \
+		-e 's,bitcoin,${PORTNAME},g' \
+		-e 's,Bitcoin,Bytecoin,g' \
 		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/bitcoind ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
