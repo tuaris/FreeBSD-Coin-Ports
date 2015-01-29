@@ -61,6 +61,7 @@ The current supported list of crypto currencies are:
 - tetcoin
 - thorcoin
 - Unobtanium
+- unbreakablecoin
 - uro
 - VeniVidiVici
 - xmascoin
