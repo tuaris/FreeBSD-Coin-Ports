@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=FireFlyCoin
-Comment=FireFlyCoin P2P Cryptocurrency
+Name=UnbreakableCoin
+Comment=UnbreakableCoin P2P Cryptocurrency
 Exec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
 Terminal=false
 Type=Application

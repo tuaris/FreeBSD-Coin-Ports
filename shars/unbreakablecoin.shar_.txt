@@ -317,8 +317,8 @@ echo x - unbreakablecoin/files/unbreakablecoin-qt.desktop.in
 sed 's/^X//' >unbreakablecoin/files/unbreakablecoin-qt.desktop.in << 'eaad3bf1f666488550e0bffa37f796e7'
 X[Desktop Entry]
 XEncoding=UTF-8
-XName=FireFlyCoin
-XComment=FireFlyCoin P2P Cryptocurrency
+XName=UnbreakableCoin
+XComment=UnbreakableCoin P2P Cryptocurrency
 XExec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
 XTerminal=false
 XType=Application
