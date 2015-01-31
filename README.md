@@ -18,6 +18,7 @@ The current supported list of crypto currencies are:
 - chococoin
 - continuumcoin
 - cryptobuck
+- darkcoin
 - dimecoin
 - dnotes
 - dogecoin
