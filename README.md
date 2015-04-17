@@ -18,7 +18,7 @@ The current supported list of crypto currencies are:
 - chococoin
 - continuumcoin
 - cryptobuck
-- darkcoin
+- dash
 - dimecoin
 - dnotes
 - dogecoin
@@ -42,6 +42,7 @@ The current supported list of crypto currencies are:
 - mintcoin
 - MMXIVCoin
 - mooncoin
+- mobiuscoin
 - mustachecoin
 - muniti
 - Nanite
