@@ -1,0 +1,14 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=21012
+port=11012
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=mobiuscoin.securepayment.cc
+addnode=54.194.99.126
+addnode=142.0.37.234
+addnode=142.0.37.237
