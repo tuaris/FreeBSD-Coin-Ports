@@ -36,6 +36,7 @@ The current supported list of crypto currencies are:
 - heavycoin
 - joulecoin
 - kittehcoin
+- KolschCoin
 - legendarycoin
 - mazacoin
 - microcoin
