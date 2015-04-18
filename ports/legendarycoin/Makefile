@@ -2,7 +2,8 @@
 # $FreeBSD$
 
 PORTNAME=	legendarycoin
-PORTVERSION=	1.0.4.1
+PORTVERSION=	1.0.4.3
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -14,16 +15,17 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
 				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
 
-OPTIONS_DEFINE=	X11 UPNP QRCODES
+OPTIONS_DEFINE=	X11 UPNP QRCODES ZEROFEE
 OPTIONS_DEFAULT=	X11 QRCODES
 UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
+ZEROFEE_DESC=	Zero Transaction Fee Hack
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	cb05cfc
-GH_TAGNAME=	cb05cfc
+GH_COMMIT=	07fa736
+GH_TAGNAME=	07fa736
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -70,6 +72,10 @@ LIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
 QMAKE_USE_UPNP=	1
 .else
 QMAKE_USE_UPNP=	-
+.endif
+
+.if ${PORT_OPTIONS:MZEROFEE}
+EXTRA_PATCHES+=	${FILESDIR}/extra-patch-zero-fee.patch
 .endif
 
 .include <bsd.port.pre.mk>
