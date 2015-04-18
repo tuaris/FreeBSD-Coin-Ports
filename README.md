@@ -66,6 +66,7 @@ The current supported list of crypto currencies are:
 - unbreakablecoin
 - uro
 - VeniVidiVici
+- xaucoin
 - xmascoin
 
 It's possible some of these coins may eventually be submitted into the ports tree after they gain enough demand and popularity.  If you found this work helpful and would like to show your thanks you may send
