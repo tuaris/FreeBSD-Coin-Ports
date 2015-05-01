@@ -27,6 +27,8 @@
 name=%%PORTNAME%%
 rcvar=%%PORTNAME%%_enable
 
+load_rc_config $name
+
 : ${%%PORTNAME%%_enable:=NO}
 : ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
 : ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}

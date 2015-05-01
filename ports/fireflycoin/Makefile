@@ -3,6 +3,7 @@
 
 PORTNAME=	fireflycoin
 PORTVERSION=	0.9.1.0
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 

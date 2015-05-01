@@ -3,6 +3,7 @@
 
 PORTNAME=	mobiuscoin
 PORTVERSION=	0.8.6.1
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
