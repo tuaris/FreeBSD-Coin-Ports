@@ -51,6 +51,7 @@ The current supported list of crypto currencies are:
 - nbcoin
 - octocoin
 - orangecat
+- Orangecoin
 - Peercoin
 - Rainbowcoin
 - Riecoin
