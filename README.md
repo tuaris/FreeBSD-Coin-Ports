@@ -32,6 +32,7 @@ The current supported list of crypto currencies are:
 - giftcoin
 - Gimpcoin
 - GoldReserve
+- Guldencoin
 - hamstercoin
 - heavycoin
 - joulecoin
