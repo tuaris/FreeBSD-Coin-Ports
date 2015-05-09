@@ -3,7 +3,7 @@
 
 PORTNAME=	unobtanium
 PORTVERSION=	0.10.0.0
-PORTREVISION=	1
+PORTREVISION=	3
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -14,7 +14,7 @@ LICENSE=	MIT
 BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
-USES=	autoreconf gmake libtool pkgconfig
+USES=	autoreconf compiler:c++0x gmake libtool pkgconfig
 GNU_CONFIGURE=	yes
 
 USE_GITHUB=	yes
@@ -59,7 +59,10 @@ CLI_CONFIGURE_WITH=	cli
 TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
-CONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/include" CRYPTO_CFLAGS="-I/usr/include"
+CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
+				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
+CONFIGURE_ARGS?=	--disable-reduce-exports
+MAKE_ENV+=	V=1
 
 USE_OPENSSL=	yes
 WANT_BDB_VER=	48
