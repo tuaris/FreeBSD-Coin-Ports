@@ -4,7 +4,6 @@
 PORTNAME=	zetacoin
 PORTVERSION=	0.9.2.4
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency with quick transactions
@@ -15,9 +14,6 @@ BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	22ddb9b
 GH_TAGNAME=	22ddb9b
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
@@ -42,7 +38,8 @@ X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
-WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR} -L${BDB_LIB_DIR}
+WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
+WALLET_LIBS=		-L${BDB_LIB_DIR}
 WALLET_USE=	bdb=yes
 
 QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode

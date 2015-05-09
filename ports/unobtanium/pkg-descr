@@ -1,7 +1,6 @@
-Unobtanium is a free open source peer-to-peer electronic cash system that
-is completely decentralized, without the need for a central server or
-trusted parties. Users hold the crypto keys to their own money and
-transact directly with each other, with the help of a P2P network to
-check for double-spending.
+Unobtanium is a rare, SHA256 Proof of Work only cryptocurrency. 
+The maximum supply is 250,000 kgs (coins) ever. Block target time is 3 minutes,
+which makes it very fast. UNO uses KGW and a progressive difficulty adjustment 
+to protect miners.
 
-WWW: http://www.unobtanium.uno/
+WWW: http://unobtanium.uno/
