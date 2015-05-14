@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	guldencoin
-PORTVERSION=	1.3.1.0
+PORTVERSION=	1.4.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -21,8 +21,8 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	nlgcoin
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	d5d0156
-GH_TAGNAME=	d5d0156
+GH_COMMIT=	d1a0a76
+GH_TAGNAME=	d1a0a76
 
 USES=		gmake
 USE_OPENSSL=	yes
