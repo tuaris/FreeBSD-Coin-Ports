@@ -3,6 +3,7 @@
 
 PORTNAME=	nautiluscoin
 PORTVERSION=	1.2.0.0
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 

@@ -3,6 +3,7 @@
 
 PORTNAME=	bitcoindark
 PORTVERSION=	0.9.1.2
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
