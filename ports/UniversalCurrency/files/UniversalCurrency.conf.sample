@@ -1,0 +1,11 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=14157
+port=14158
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=universalcurrency.securepayment.cc
