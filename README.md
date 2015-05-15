@@ -5,6 +5,9 @@ These are FreeBSD Ports for several alternative crypto currencies (Altcoins) tha
 
 http://www.unibia.com/unibianet/freebsd/freebsd-ports-many-alternative-crypto-currencies
 
+Some of these ports have an external dependency on the secp256k1 library.  It may be satisfied with the following port:
+https://github.com/tuaris/secp256k1-freebsd
+
 The current supported list of crypto currencies are:
 
 - aricoin
@@ -19,6 +22,7 @@ The current supported list of crypto currencies are:
 - continuumcoin
 - cryptobuck
 - dash
+- DarkCrave
 - dimecoin
 - dnotes
 - dogecoin
@@ -65,6 +69,7 @@ The current supported list of crypto currencies are:
 - terracoin
 - tetcoin
 - thorcoin
+- UniversalCurrency
 - Unobtanium
 - unbreakablecoin
 - uro
