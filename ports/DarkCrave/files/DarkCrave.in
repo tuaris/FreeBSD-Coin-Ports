@@ -26,7 +26,6 @@
 
 name=%%PORTNAME%%
 rcvar=%%PORTNAME%%_enable
-
 load_rc_config $name
 
 : ${%%PORTNAME%%_enable:=NO}
@@ -48,7 +47,6 @@ start_precmd="${name}_prestart"
 	echo "Creating data directory"
 	eval mkdir -p ${%%PORTNAME%%_datadir}
 	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_datadir}
-	#n -s ${%%PORTNAME%%_datadir} /.%%PORTNAME%%
 }
 
 %%PORTNAME%%_prestart()
@@ -75,5 +73,4 @@ start_precmd="${name}_prestart"
 	wait_for_pids ${rc_pid}
 }
 
-load_rc_config $name
 run_rc_command "$1"

@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	DarkCrave
-PORTVERSION=	1.0.0.1
+PORTVERSION=	1.0.1.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -25,8 +25,8 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	a3889e5
-GH_TAGNAME=	a3889e5
+GH_COMMIT=	5f6eed3
+GH_TAGNAME=	5f6eed3
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -50,7 +50,7 @@ PLIST_SUB+=	X11="@comment "
 .endif
 
 .if ${PORT_OPTIONS:MX11}
-USE_QT4=	corelib gui qmake_build linguist uic moc rcc
+USE_QT5=	core gui dbus widgets network qmake_build linguisttools buildtools_build
 BINARY=		${PORTNAME}-qt
 PLIST_SUB+=	HEADLESS="@comment "
 .else

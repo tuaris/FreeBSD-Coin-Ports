@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Tekcoin
-Comment=Tekcoin P2P Cryptocurrency
+Name=DarkCrave
+Comment=DarkCrave P2P Cryptocurrency
 Exec=%%PREFIX%%/bin/%%PORTNAME%%-qt %u
 Terminal=false
 Type=Application
