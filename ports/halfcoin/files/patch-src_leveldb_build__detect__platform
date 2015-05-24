@@ -1,0 +1,20 @@
+--- src/leveldb/build_detect_platform.orig	2015-05-20 09:16:27 UTC
++++ src/leveldb/build_detect_platform
+@@ -176,7 +176,7 @@ else
+     CXXOUTPUT="${TMPDIR}/leveldb_build_detect_platform-cxx.$$"
+ 
+     # If -std=c++0x works, use <cstdatomic>.  Otherwise use port_posix.h.
+-    $CXX $CXXFLAGS -std=c++0x -x c++ - -o $CXXOUTPUT 2>/dev/null  <<EOF
++    $CXX $CXXFLAGS -std=c++0x -x c++ - -o - > /dev/null 2>/dev/null  <<EOF
+       #include <cstdatomic>
+       int main() {}
+ EOF
+@@ -188,7 +188,7 @@ EOF
+     fi
+ 
+     # Test whether tcmalloc is available
+-    $CXX $CXXFLAGS -x c++ - -o $CXXOUTPUT -ltcmalloc 2>/dev/null  <<EOF
++    $CXX $CXXFLAGS -x c++ -ltcmalloc - -o - > /dev/null 2>/dev/null  <<EOF
+       int main() {}
+ EOF
+     if [ "$?" = 0 ]; then

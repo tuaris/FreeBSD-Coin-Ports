@@ -1,32 +1,28 @@
 # Created by: Daniel Morante <daniel@morante.net>
-# $FreeBSD$
+# $FreeBSD: head/net-p2p/zetacoin/Makefile 356387 2014-06-03 18:33:48Z cs $
 
-PORTNAME=	DarkCrave
-PORTVERSION=	1.0.2.0
+PORTNAME=	halfcoin
+PORTVERSION=	0.8.6.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency of with PoS
+COMMENT=	Peer-to-Peer crypto currency with quick transactions
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo \
-				libsecp256k1.so:${PORTSDIR}/security/secp256k1
+LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
-BUILD_DEPENDS+=   ${LOCALBASE}/include/secp256k1.h:${PORTSDIR}/security/secp256k1
-
-OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
+OPTIONS_DEFINE=	X11 UPNP QRCODES
 OPTIONS_DEFAULT=	X11 QRCODES
 UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
+GH_ACCOUNT=	halfdev
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	d9a10d6
-GH_TAGNAME=	d9a10d6
+GH_COMMIT=	90a0874
+GH_TAGNAME=	90a0874
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -39,28 +35,23 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
-SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
-SUB_FILES=	${PORTNAME}-qt.desktop
 .else
+SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
 .endif
 
 .if ${PORT_OPTIONS:MX11}
-USE_QT5=	core gui dbus widgets network qmake_build linguisttools buildtools_build
+USE_QT4=	corelib gui qmake_build linguist uic moc rcc
 BINARY=		${PORTNAME}-qt
 PLIST_SUB+=	HEADLESS="@comment "
 .else
 BINARY=		${PORTNAME}d
 MAKE_ARGS+=	-C ${WRKSRC}/src
 PLIST_SUB+=	HEADLESS=""
-.endif
-
-.if ${PORT_OPTIONS:MSTATIC}
-MAKE_ARGS+=	STATIC=1
 .endif
 
 .if ${PORT_OPTIONS:MQRCODES}
@@ -80,23 +71,15 @@ QMAKE_USE_UPNP=	1
 QMAKE_USE_UPNP=	-
 .endif
 
-
-
 .include <bsd.port.pre.mk>
 
-.if ${OSVERSION} < 1000000
-EXTRA_PATCHES+=	${FILESDIR}/extra-patch-src-smessage.patch
-.endif
-
 post-extract:
-	@${RM} -f ${WRKSRC}/build/*.o
+	@${CP} ${FILESDIR}/leveldb_Makefile ${WRKSRC}/src/leveldb/Makefile
 
 post-patch:
-	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
-	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
-	@${MKDIR} -p ${WRKSRC}/src/obj/crypto
+	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}
-	@cd ${WRKSRC}/src && ${CP} -p makefile.bsd Makefile
+	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 	@${REINPLACE_CMD} \
 		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
 		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
@@ -109,14 +92,18 @@ do-configure:
 	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
 		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
 		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
-		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}.pro
+		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
 .endif
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/novacoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+		-e 's,bitcoin,${PORTNAME},g' \
+		-e 's,Bitcoin,Halfcoin,g' \
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
