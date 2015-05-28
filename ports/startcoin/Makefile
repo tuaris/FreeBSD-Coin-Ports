@@ -1,29 +1,28 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	Greed
-PORTVERSION=	2.1.0.0
+PORTNAME=	startcoin
+PORTVERSION=	2.0.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency of with PoS and X11 PoW
+COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
-OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
+OPTIONS_DEFINE=	X11 UPNP QRCODES
 OPTIONS_DEFAULT=	X11 QRCODES
 UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}Dev
-GH_PROJECT=	greed
-GH_COMMIT=	a16cdb1
-GH_TAGNAME=	a16cdb1
+GH_ACCOUNT=	${PORTNAME}-project
+GH_PROJECT=	${PORTNAME}
+GH_COMMIT=	155c590
+GH_TAGNAME=	155c590
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -47,16 +46,13 @@ PLIST_SUB+=	X11="@comment "
 
 .if ${PORT_OPTIONS:MX11}
 USE_QT4=	corelib gui qmake_build linguist uic moc rcc
+USES+=	desktop-file-utils
 BINARY=		${PORTNAME}-qt
 PLIST_SUB+=	HEADLESS="@comment "
 .else
 BINARY=		${PORTNAME}d
 MAKE_ARGS+=	-C ${WRKSRC}/src
 PLIST_SUB+=	HEADLESS=""
-.endif
-
-.if ${PORT_OPTIONS:MSTATIC}
-MAKE_ARGS+=	STATIC=1
 .endif
 
 .if ${PORT_OPTIONS:MQRCODES}
@@ -79,14 +75,13 @@ QMAKE_USE_UPNP=	-
 .include <bsd.port.pre.mk>
 
 post-extract:
-	@${RM} -f ${WRKSRC}/src/Makefile
-	@${RM} -f ${WRKSRC}/src/Makefile.in
+	@${RM} -f ${WRKSRC}/Makefile
 
 post-patch:
-	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
-	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
+	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
+	@${MKDIR} ${WRKSRC}/src/obj
 .if !${PORT_OPTIONS:MX11}
-	@cd ${WRKSRC}/src && ${CP} -p makefile.bsd Makefile
+	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 	@${REINPLACE_CMD} \
 		-e 's|^USE_UPNP.*$$|USE_UPNP=${QMAKE_USE_UPNP}|' \
 		-e 's|-l pthread|${PTHREAD_LIBS}|g' \
@@ -106,15 +101,14 @@ do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,novacoin,${PORTNAME},g' \
-		-e 's,Novacoin,${PORTNAME},g' \
-		-e 's,NovaCoin,${PORTNAME},g' \
-		-e 's,bitcoin80\.xpm,${PORTNAME}.png,g' ${WRKSRC}/contrib/debian/novacoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/novacoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/novacoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+		-e 's,bitcoin,${PORTNAME},g' \
+		-e 's,Bitcoin,Startcoin,g' \
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${GH_PROJECT}d ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \

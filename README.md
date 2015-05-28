@@ -63,6 +63,7 @@ The current supported list of crypto currencies are:
 - Rainbowcoin
 - Riecoin
 - starcoin
+- startcoin
 - stashcoin
 - suncoin
 - takeicoin
