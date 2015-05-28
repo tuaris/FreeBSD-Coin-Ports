@@ -1,0 +1,15 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnections=20
+rpcallowip=127.0.0.1
+rpcport=65535
+port=65534
+server=1
+daemon=1
+listen=1
+#algo=scrypt
+#algo=x11
+algo=sha
+logtimestamps=1
+addnode=digitalcoin.securepayment.cc
+addnode=178.237.35.34

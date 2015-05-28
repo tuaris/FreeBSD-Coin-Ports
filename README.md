@@ -24,6 +24,7 @@ The current supported list of crypto currencies are:
 - dash
 - DarkCrave
 - dimecoin
+- digitalcoin
 - dnotes
 - dogecoin
 - eMark
