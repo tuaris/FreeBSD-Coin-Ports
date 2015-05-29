@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	Greed
-PORTVERSION=	2.1.0.0
+PORTVERSION=	3.0.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -22,8 +22,8 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}Dev
 GH_PROJECT=	greed
-GH_COMMIT=	a16cdb1
-GH_TAGNAME=	a16cdb1
+GH_COMMIT=	b1cb8a0
+GH_TAGNAME=	b1cb8a0
 
 USES=		gmake
 USE_OPENSSL=	yes
