@@ -8,6 +8,9 @@ http://www.unibia.com/unibianet/freebsd/freebsd-ports-many-alternative-crypto-cu
 Some of these ports have an external dependency on the secp256k1 library.  It may be satisfied with the following port:
 https://github.com/tuaris/secp256k1-freebsd
 
+Build logs for some of the ports for select FreeBSD releases can be seen at:
+http://pkg.morante.net/poudriere/data/93amd64-default-wallets/latest-per-pkg/
+
 The current supported list of crypto currencies are:
 
 - aricoin
