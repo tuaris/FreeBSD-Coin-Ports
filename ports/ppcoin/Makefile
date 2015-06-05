@@ -35,6 +35,8 @@ CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
+#USE_GCC=yes
+
 .include <bsd.port.options.mk>
 
 .if ${PORT_OPTIONS:MX11}
@@ -102,10 +104,11 @@ do-install:
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,${PORTNAME},g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+		-e 's,Bitcoin,Peercoin,g' \
+		-e 's,xpm,png,g' \
+		-e 's,80,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/ppcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
