@@ -1,0 +1,11 @@
+--- binarycoin-qt.pro.orig	2013-12-29 03:22:23.000000000 -0500
++++ binarycoin-qt.pro	2013-12-29 07:48:46.000000000 -0500
+@@ -348,7 +348,7 @@
+ LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
+ # -lgdi32 has to happen after -lcrypto (see  #681)
+ windows:LIBS += -lole32 -luuid -lgdi32
+-LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
++LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
+ 
+ contains(RELEASE, 1) {
+     !windows:!macx {
