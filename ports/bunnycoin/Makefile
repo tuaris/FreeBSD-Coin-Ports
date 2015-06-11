@@ -1,14 +1,13 @@
 # Created by: Daniel Morante <daniel@morante.net>
-# $FreeBSD: head/net-p2p/bonuscoin/Makefile 356387 2014-06-03 18:33:48Z cs $
+# $FreeBSD$
 
-PORTNAME=	bonuscoin
-PORTVERSION=	0.9.8.1
-PORTREVISION=	1
+PORTNAME=	bunnycoin
+PORTVERSION=	1.0.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer Proof of Work SHA256D Cryptocurrency
+COMMENT=	Cryptocurrency to spread love, peace, happiness and economic freedom
 
 LICENSE=	MIT
 
@@ -22,8 +21,8 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	7d8b8fd
-GH_TAGNAME=	7d8b8fd
+GH_COMMIT=	801c89a
+GH_TAGNAME=	801c89a
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -36,11 +35,10 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
-SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
-SUB_FILES=	${PORTNAME}-qt.desktop
 .else
+SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -75,8 +73,9 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
-post-extract:
-	@${MV} ${WRKSRC}/bonus.pro ${WRKSRC}/${PORTNAME}-qt.pro
+.if ${ARCH} == "i386"
+USE_GCC=yes
+.endif
 
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
@@ -99,12 +98,16 @@ do-configure:
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/bonus-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+		-e 's,dogecoin,${PORTNAME},g' \
+		-e 's,Dogecoin,Bunnycoin,g' \
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bunnycoin-qt.desktop.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/bonusd ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \

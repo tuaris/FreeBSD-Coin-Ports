@@ -1,0 +1,47 @@
+--- src/scrypt.cpp.orig	2014-02-13 22:56:31.000000000 -0500
++++ src/scrypt.cpp	2014-04-14 15:28:42.000000000 -0400
+@@ -44,22 +44,6 @@
+ #endif
+ #endif
+ 
+-static inline uint32_t be32dec(const void *pp)
+-{
+-	const uint8_t *p = (uint8_t const *)pp;
+-	return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
+-	    ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
+-}
+-
+-static inline void be32enc(void *pp, uint32_t x)
+-{
+-	uint8_t *p = (uint8_t *)pp;
+-	p[3] = x & 0xff;
+-	p[2] = (x >> 8) & 0xff;
+-	p[1] = (x >> 16) & 0xff;
+-	p[0] = (x >> 24) & 0xff;
+-}
+-
+ typedef struct HMAC_SHA256Context {
+ 	SHA256_CTX ictx;
+ 	SHA256_CTX octx;
+--- src/scrypt.h.orig	2014-02-13 22:56:31.000000000 -0500
++++ src/scrypt.h	2014-04-14 15:28:54.000000000 -0400
+@@ -27,19 +27,4 @@
+ PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
+     size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
+ 
+-static inline uint32_t le32dec(const void *pp)
+-{
+-        const uint8_t *p = (uint8_t const *)pp;
+-        return ((uint32_t)(p[0]) + ((uint32_t)(p[1]) << 8) +
+-            ((uint32_t)(p[2]) << 16) + ((uint32_t)(p[3]) << 24));
+-}
+-
+-static inline void le32enc(void *pp, uint32_t x)
+-{
+-        uint8_t *p = (uint8_t *)pp;
+-        p[0] = x & 0xff;
+-        p[1] = (x >> 8) & 0xff;
+-        p[2] = (x >> 16) & 0xff;
+-        p[3] = (x >> 24) & 0xff;
+-}
+ #endif
