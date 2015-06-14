@@ -1,0 +1,77 @@
+--- src/smessage.cpp.orig	2015-05-15 06:43:49 UTC
++++ src/smessage.cpp
+@@ -3115,13 +3115,13 @@ int SecureMsgValidate(uint8_t *pHeader, 
+     HMAC_CTX_init(&ctx);
+ 
+     uint32_t nBytes;
+-    if (!HMAC_Init_ex(&ctx, &civ[0], 32, EVP_sha256(), NULL)
+-        || !HMAC_Update(&ctx, (uint8_t*) pHeader+4, SMSG_HDR_LEN-4)
+-        || !HMAC_Update(&ctx, (uint8_t*) pPayload, nPayload)
+-        || !HMAC_Update(&ctx, pPayload, nPayload)
+-        || !HMAC_Final(&ctx, sha256Hash, &nBytes)
+-        || nBytes != 32)
+-    {
++	HMAC_Init_ex(&ctx, &civ[0], 32, EVP_sha256(), NULL);
++	HMAC_Update(&ctx, (unsigned char*) pHeader+4, SMSG_HDR_LEN-4);
++	HMAC_Update(&ctx, (unsigned char*) pPayload, nPayload);
++	HMAC_Update(&ctx, pPayload, nPayload);
++	HMAC_Final(&ctx, sha256Hash, &nBytes);
++	if (nBytes != 32)
++	{
+         if (fDebugSmsg)
+             LogPrintf("HMAC error.\n");
+         rv = 1; // error
+@@ -3190,13 +3190,12 @@ int SecureMsgSetHash(uint8_t *pHeader, u
+             memcpy(civ+i, &nonse, 4);
+ 
+         uint32_t nBytes;
+-        if (!HMAC_Init_ex(&ctx, &civ[0], 32, EVP_sha256(), NULL)
+-            || !HMAC_Update(&ctx, (uint8_t*) pHeader+4, SMSG_HDR_LEN-4)
+-            || !HMAC_Update(&ctx, (uint8_t*) pPayload, nPayload)
+-            || !HMAC_Update(&ctx, pPayload, nPayload)
+-            || !HMAC_Final(&ctx, sha256Hash, &nBytes)
+-            //|| !HMAC_Final(&ctx, &vchHash[0], &nBytes)
+-            || nBytes != 32)
++		HMAC_Init_ex(&ctx, &civ[0], 32, EVP_sha256(), NULL);
++		HMAC_Update(&ctx, (unsigned char*) pHeader+4, SMSG_HDR_LEN-4);
++		HMAC_Update(&ctx, (unsigned char*) pPayload, nPayload);
++		HMAC_Update(&ctx, pPayload, nPayload);
++		HMAC_Final(&ctx, sha256Hash, &nBytes);
++		if (nBytes != 32)
+             break;
+ 
+         /*
+@@ -3514,11 +3513,11 @@ int SecureMsgEncrypt(SecureMessage& smsg
+     HMAC_CTX ctx;
+     HMAC_CTX_init(&ctx);
+ 
+-    if (!HMAC_Init_ex(&ctx, &key_m[0], 32, EVP_sha256(), NULL)
+-        || !HMAC_Update(&ctx, (uint8_t*) &smsg.timestamp, sizeof(smsg.timestamp))
+-        || !HMAC_Update(&ctx, &vchCiphertext[0], vchCiphertext.size())
+-        || !HMAC_Final(&ctx, smsg.mac, &nBytes)
+-        || nBytes != 32)
++    HMAC_Init_ex(&ctx, &key_m[0], 32, EVP_sha256(), NULL);
++    HMAC_Update(&ctx, (uint8_t*) &smsg.timestamp, sizeof(smsg.timestamp));
++    HMAC_Update(&ctx, &vchCiphertext[0], vchCiphertext.size());
++    HMAC_Final(&ctx, smsg.mac, &nBytes);
++    if (nBytes != 32)
+         fHmacOk = false;
+ 
+     HMAC_CTX_cleanup(&ctx);
+@@ -3810,11 +3809,11 @@ int SecureMsgDecrypt(bool fTestOnly, std
+     HMAC_CTX ctx;
+     HMAC_CTX_init(&ctx);
+ 
+-    if (!HMAC_Init_ex(&ctx, &key_m[0], 32, EVP_sha256(), NULL)
+-        || !HMAC_Update(&ctx, (uint8_t*) &psmsg->timestamp, sizeof(psmsg->timestamp))
+-        || !HMAC_Update(&ctx, pPayload, nPayload)
+-        || !HMAC_Final(&ctx, MAC, &nBytes)
+-        || nBytes != 32)
++    HMAC_Init_ex(&ctx, &key_m[0], 32, EVP_sha256(), NULL);
++    HMAC_Update(&ctx, (uint8_t*) &psmsg->timestamp, sizeof(psmsg->timestamp));
++    HMAC_Update(&ctx, pPayload, nPayload);
++    HMAC_Final(&ctx, MAC, &nBytes);
++    if (nBytes != 32)
+         fHmacOk = false;
+ 
+     HMAC_CTX_cleanup(&ctx);
