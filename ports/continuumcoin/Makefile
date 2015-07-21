@@ -4,7 +4,6 @@
 PORTNAME=	continuumcoin
 PORTVERSION=	0.9.0.3
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer to peer decentralized digital currency with no central authority.
@@ -21,7 +20,6 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	slayersher
 GH_PROJECT=	CTM
-GH_COMMIT=	d3a3e42
 GH_TAGNAME=	d3a3e42
 
 USES=		gmake
@@ -89,7 +87,7 @@ do-configure:
 	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
 		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
 		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
-		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
+		QMAKE_LIBDIR+=${BDB_LIB_DIR} continuum.pro
 .endif
 
 do-install:

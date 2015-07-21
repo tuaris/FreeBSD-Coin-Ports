@@ -4,7 +4,6 @@
 PORTNAME=	takeicoin
 PORTVERSION=	0.9.1.3
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency with quick transactions
@@ -21,7 +20,6 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	09ed0b6
 GH_TAGNAME=	09ed0b6
 
 USES=		gmake
