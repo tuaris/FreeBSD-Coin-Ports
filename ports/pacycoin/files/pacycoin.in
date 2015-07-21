@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# $FreeBSD$
+#
+
+# PROVIDE: pacycoin
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# pacycoin_enable (bool):	Set to NO by default.
+#				Set it to YES to enable pacycoin.
+# pacycoin_config (path):	Set to %%PREFIX%%/etc/pacycoin.conf
+#				by default.
+# pacycoin_datadir (str):	Default to "/var/db/pacycoin"
+#				Base data directory.
+
+. /etc/rc.subr
+
+name=pacycoin
+rcvar=pacycoin_enable
+
+load_rc_config $name
+
+: ${pacycoin_enable:=NO}
+: ${pacycoin_config=%%PREFIX%%/etc/pacycoin.conf}
+: ${pacycoin_datadir=/var/db/pacycoin}
+
+required_files=${pacycoin_config}
+command=%%PREFIX%%/bin/pacycoind
+pacycoin_chdir=${pacycoin_datadir}
+pidfile="${pacycoin_datadir}/pacycoind.pid"
+stop_cmd=pacycoin_stop
+command_args="-conf=${pacycoin_config} -datadir=${pacycoin_datadir} -noupnp -daemon -pid=${pidfile}"
+start_precmd="${name}_prestart"
+
+pacycoin_create_datadir()
+{
+	echo "Creating data directory"
+	eval mkdir -p ${pacycoin_datadir}
+}
+
+pacycoin_prestart()
+{
+	if [ ! -d "${pacycoin_datadir}/." ]; then
+		pacycoin_create_datadir || return 1
+	fi
+}
+
+pacycoin_requirepidfile()
+{
+	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
+		echo "${name} not running? (check $pidfile)."
+		exit 1
+	fi
+}
+
+pacycoin_stop()
+{
+    pacycoin_requirepidfile
+
+    if checkyesno ${rcvar}; then
+		echo "Stopping ${name}."
+		eval ${command} -conf=${pacycoin_config} -datadir=${pacycoin_datadir} stop
+		wait_for_pids ${pidfile}
+    fi
+}
+
+run_rc_command "$1"
+

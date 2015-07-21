@@ -1,0 +1,7 @@
+%%EXECUTABLE%%
+%%X11%%share/applications/pacycoin-qt.desktop
+%%X11%%share/pixmaps/pacycoin.png
+%%HEADLESS%%@unexec if cmp -s %D/etc/pacycoin.conf.sample %D/etc/pacycoin.conf; then rm -f %D/etc/pacycoin.conf; fi
+%%HEADLESS%%etc/pacycoin.conf.sample
+%%HEADLESS%%@exec if [ ! -f %D/etc/pacycoin.conf ] ; then cp -p %D/%F %B/pacycoin.conf; fi
+

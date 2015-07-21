@@ -1,0 +1,13 @@
+*******************************************************************
+To configure the PacyCoin server please edit: 
+%%PREFIX%%/etc/pacycoin.conf
+
+You must at least set a "rpcpassword" in the configuration file above.
+
+To run the pacycoind server at startup, add the following
+settings to your /etc/rc.conf
+
+pacycoin_enable="YES"
+
+*******************************************************************
+

@@ -1,14 +1,13 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	suncoin
-PORTVERSION=	1.2.1.0
-PORTREVISION=	2
+PORTNAME=	mazacoin
+PORTVERSION=	0.9.0.1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
+COMMENT=	Peer-to-Peer crypto currency with quick transactions
 
 LICENSE=	MIT
 
@@ -20,10 +19,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	70ae078
-GH_TAGNAME=	70ae078
+GH_ACCOUNT=	MazaCoin
+GH_PROJECT=	${GH_ACCOUNT}
+GH_COMMIT=	cc6530d
+GH_TAGNAME=	cc6530d
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -54,6 +53,8 @@ BINARY=		${PORTNAME}d
 MAKE_ARGS+=	-C ${WRKSRC}/src
 PLIST_SUB+=	HEADLESS=""
 .endif
+
+MAKE_ARGS+=	STATIC=1
 
 .if ${PORT_OPTIONS:MQRCODES}
 LIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
@@ -95,10 +96,10 @@ do-configure:
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/SUNcoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,Suncoin,g' \
+		-e 's,Bitcoin,${GH_ACCOUNT},g' \
 		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png

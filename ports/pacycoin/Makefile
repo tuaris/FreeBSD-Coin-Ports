@@ -1,11 +1,9 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	suncoin
-PORTVERSION=	1.2.1.0
-PORTREVISION=	2
+PORTNAME=	pacycoin
+PORTVERSION=	0.6.4.0
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
@@ -20,10 +18,9 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
+GH_ACCOUNT=	tuaris
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	70ae078
-GH_TAGNAME=	70ae078
+GH_TAGNAME=	ed7401c
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -36,10 +33,10 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
+SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
 .else
-SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -62,8 +59,7 @@ QMAKE_USE_QRCODE=1
 QMAKE_USE_QRCODE=0
 .endif
 
-PLIST_SUB+=	EXECUTABLE="bin/${BINARY}" \
-			PORTNAME=${PORTNAME}
+PLIST_SUB+=	EXECUTABLE="bin/${BINARY}"
 
 .if ${PORT_OPTIONS:MUPNP}
 LIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
@@ -95,12 +91,9 @@ do-configure:
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/SUNcoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,Suncoin,g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${REINPLACE_CMD} -e 's,=%%PREFIX%%,=${PREFIX},' ${WRKSRC}/contrib/freebsd/pacycoin-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/freebsd/pacycoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
@@ -112,3 +105,4 @@ do-install:
 .endif
 
 .include <bsd.port.post.mk>
+
