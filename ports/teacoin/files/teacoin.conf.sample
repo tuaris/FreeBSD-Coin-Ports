@@ -1,0 +1,14 @@
+rpcuser=myname
+#rpcpassword=YOU MUST SET A PASSWORD
+maxconnection=20
+rpcallowip=127.0.0.1
+rpcport=7920
+port=7921
+server=1
+daemon=1
+listen=1
+logtimestamps=1
+addnode=63.247.147.163
+addnode=66.85.164.76
+addnode=emiko.dyndns.info
+addnode=184.95.40.150

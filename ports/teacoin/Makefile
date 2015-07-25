@@ -1,13 +1,12 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	pacycoin
-PORTVERSION=	0.6.4.0
-PORTREVISION=	1
+PORTNAME=	teacoin
+PORTVERSION=	0.8.99.7
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
+COMMENT=	Peer-to-Peer crypto currency with quick transactions
 
 LICENSE=	MIT
 
@@ -19,9 +18,9 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	tuaris
+GH_ACCOUNT=	${PORTNAME}d
 GH_PROJECT=	${PORTNAME}
-GH_TAGNAME=	ed7401c
+GH_TAGNAME=	bfa3fcb
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -34,10 +33,10 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
-SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
 .else
+SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -94,8 +93,11 @@ do-configure:
 do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${REINPLACE_CMD} -e 's,=%%PREFIX%%,=${PREFIX},' ${WRKSRC}/contrib/freebsd/pacycoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/freebsd/pacycoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+		-e 's,bitcoin,${PORTNAME},g' \
+		-e 's,Bitcoin,Teacoin,g' \
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
@@ -107,4 +109,3 @@ do-install:
 .endif
 
 .include <bsd.port.post.mk>
-

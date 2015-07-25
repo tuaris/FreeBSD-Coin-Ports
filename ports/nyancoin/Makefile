@@ -1,9 +1,8 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	pacycoin
-PORTVERSION=	0.6.4.0
-PORTREVISION=	1
+PORTNAME=	nyancoin
+PORTVERSION=	1.2.0.0
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -19,9 +18,9 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	tuaris
+GH_ACCOUNT=	${PORTNAME}-release
 GH_PROJECT=	${PORTNAME}
-GH_TAGNAME=	ed7401c
+GH_TAGNAME=	ad585a6
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -34,10 +33,10 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
-SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
 .else
+SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -72,6 +71,13 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+.if ${OSVERSION} >= 1000000
+#EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
+.endif
+
+post-extract:
+	@${RM} -f ${WRKSRC}/src/${PORTNAME}d
+
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}
@@ -93,13 +99,17 @@ do-configure:
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${REINPLACE_CMD} -e 's,=%%PREFIX%%,=${PREFIX},' ${WRKSRC}/contrib/freebsd/pacycoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/freebsd/pacycoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL_PROGRAM} -s ${WRKSRC}/Nyancoin-qt ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+		-e 's,bitcoin,${PORTNAME},g' \
+		-e 's,Bitcoin,NyanCoin,g' \
+		-e 's,xpm,png,g' \
+		-e 's,80,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
@@ -107,4 +117,3 @@ do-install:
 .endif
 
 .include <bsd.port.post.mk>
-
