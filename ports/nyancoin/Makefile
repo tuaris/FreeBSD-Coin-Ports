@@ -77,6 +77,7 @@ QMAKE_USE_UPNP=	-
 
 post-extract:
 	@${RM} -f ${WRKSRC}/src/${PORTNAME}d
+	@${RM} -f ${WRKSRC}/src/${PORTNAME}
 
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
@@ -109,7 +110,7 @@ do-install:
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \

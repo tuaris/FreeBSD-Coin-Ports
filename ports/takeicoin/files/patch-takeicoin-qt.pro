@@ -1,6 +1,14 @@
---- takeicoin-qt.pro.orig	2014-03-15 20:10:07.000000000 -0400
-+++ takeicoin-qt.pro	2014-03-31 14:32:14.000000000 -0400
-@@ -413,7 +413,7 @@
+--- takeicoin-qt.pro.orig	2014-03-16 00:10:07 UTC
++++ takeicoin-qt.pro
+@@ -107,6 +107,7 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
+ 
+ INCLUDEPATH += src/leveldb/include src/leveldb/helpers
+ LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
++genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
+ genleveldb.target = $$PWD/src/leveldb/libleveldb.a
+ genleveldb.depends = FORCE
+ PRE_TARGETDEPS += $$PWD/src/leveldb/libleveldb.a
+@@ -413,7 +414,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
