@@ -3,6 +3,7 @@
 
 PORTNAME=	continuumcoin
 PORTVERSION=	0.9.0.3
+PORTTREVISION=	1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -33,10 +34,11 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
 
+SUB_LIST+=	PORTNAME=${PORTNAME}
 .if ${PORT_OPTIONS:MX11}
 PLIST_SUB+=	X11=""
+SUB_FILES=	${PORTNAME}-qt.desktop
 .else
-SUB_LIST+=	PORTNAME=${PORTNAME}
 USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
@@ -71,6 +73,9 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+post-extract:
+	@${RM} -f ${WRKSRC}/build/*.o
+
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
 .if !${PORT_OPTIONS:MX11}
@@ -93,11 +98,7 @@ do-configure:
 do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,Continuumcoin,g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else

@@ -1,6 +1,14 @@
---- continuum.pro.orig	2014-04-22 02:27:33.000000000 -0400
-+++ continuum.pro	2014-05-03 03:55:51.000000000 -0400
-@@ -422,7 +422,7 @@
+--- continuum.pro.orig	2014-04-22 06:27:33 UTC
++++ continuum.pro
+@@ -107,6 +107,7 @@ contains(BITCOIN_NEED_QT_PLUGINS, 1) {
+ 
+ INCLUDEPATH += src/leveldb/include src/leveldb/helpers
+ LIBS += $$PWD/src/leveldb/libleveldb.a $$PWD/src/leveldb/libmemenv.a
++genleveldb.commands = cd $$PWD/src/leveldb && CC=$$QMAKE_CC CXX=$$QMAKE_CXX $(MAKE) OPT=\"$$QMAKE_CXXFLAGS $$QMAKE_CXXFLAGS_RELEASE\" libleveldb.a libmemenv.a
+ genleveldb.target = $$PWD/src/leveldb/libleveldb.a
+ genleveldb.depends = FORCE
+ PRE_TARGETDEPS += $$PWD/src/leveldb/libleveldb.a
+@@ -422,7 +423,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
