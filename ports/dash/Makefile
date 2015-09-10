@@ -2,24 +2,24 @@
 # $FreeBSD $
 
 PORTNAME=	dash
-PORTVERSION=	0.11.2.22
-PORTREVISION=	1
+PORTVERSION=	0.12.0.53
+DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Open sourced, privacy-centric digital currency
 
 LICENSE=	MIT
 
-BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
+USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix
+SHEBANG_FILES= src/test/*.py
+GNU_CONFIGURE=	yes
+
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}pay
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	a79196b
-GH_TAGNAME=	a79196b
+GH_ACCOUNT=	${PORTNAME}pay
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -54,11 +54,11 @@ CLI_CONFIGURE_WITH=	cli
 TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
-AUTOMAKE_ARGS+=	--add-missing
-USE_AUTOTOOLS=	aclocal autoheader automake autoconf
-CONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/include" CRYPTO_CFLAGS="-I/usr/include"
+CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
+				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
+CONFIGURE_ARGS?=	--disable-reduce-exports
+MAKE_ENV+=	V=1
 
-USES=		gmake
 USE_OPENSSL=	yes
 WANT_BDB_VER=	48
 
