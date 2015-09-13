@@ -1,14 +1,14 @@
---- src/scrypt.cpp.orig	2014-05-28 18:12:14.000000000 -0400
-+++ src/scrypt.cpp	2014-06-29 23:59:37.000000000 -0400
-@@ -35,6 +35,7 @@
+--- src/crypto/scrypt.cpp.orig	2015-08-04 13:27:49 UTC
++++ src/crypto/scrypt.cpp
+@@ -32,6 +32,7 @@
+ #include <stdlib.h>
  #include <stdint.h>
  #include <string.h>
++#include <sys/endian.h>
  #include <openssl/sha.h>
-+#include <boost/lexical_cast.hpp>
  
  #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
- #ifdef _MSC_VER
-@@ -46,22 +47,6 @@
+@@ -44,22 +45,6 @@
  #endif
  #endif
  
@@ -31,3 +31,4 @@
  typedef struct HMAC_SHA256Context {
  	SHA256_CTX ictx;
  	SHA256_CTX octx;
+

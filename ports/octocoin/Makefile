@@ -2,10 +2,8 @@
 # $FreeBSD$
 
 PORTNAME=	octocoin
-PORTVERSION=	1.8.0.0
-PORTREVISION=	1
+PORTVERSION=	1.10.2.2
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
@@ -15,105 +13,103 @@ LICENSE=	MIT
 BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
-OPTIONS_DEFINE=	X11 WALLET UPNP QRCODES
-OPTIONS_DEFAULT=	X11 WALLET QRCODES
-UPNP_DESC=	Build with UPNP support
-WALLET_DESC=	Build the binaries with support to create and manage a wallet.
-QRCODES_DESC=	Build with QR code display
-
-AUTOMAKE_ARGS+=	--add-missing
-USE_AUTOTOOLS=	aclocal autoheader automake autoconf
-CONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/include" CRYPTO_CFLAGS="-I/usr/include"
+USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix
+SHEBANG_FILES= src/test/*.py
+GNU_CONFIGURE=	yes
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	9afdcf3
-GH_TAGNAME=	9afdcf3
+GH_ACCOUNT=	${PORTNAME}-project
+GH_COMMIT=	61ba3dc
+GH_TAGNAME=	61ba3dc
 
-USES=		gmake
+#WRKSRC=	${WRKDIR}/${GH_ACCOUNT}-${GH_PROJECT}-${GH_TAGNAME}
+
+OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
+OPTIONS_SUB=	yes
+
+WALLET_DESC=	Build wallet or P2P server node only
+QRCODES_DESC=	Enable QR code display when building graphical interface
+CLI_DESC=	Build command line RPC client
+
+OPTIONS_DEFAULT=	X11 WALLET QRCODES
+OPTIONS_GROUP=	X11
+OPTIONS_GROUP_X11=	QRCODES
+
+UPNP_CONFIGURE_WITH=	miniupnpc
+UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+
+X11_CONFIGURE_WITH=	gui
+X11_CONFIGURE_ON=	--without-daemon
+X11_CONFIGURE_OFF=	--with-daemon
+X11_BUILD_DEPENDS=	protoc:${PORTSDIR}/devel/protobuf
+X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
+X11_USES=	desktop-file-utils
+
+WALLET_CONFIGURE_ENABLE=	wallet
+WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
+WALLET_LIBS=		-L${BDB_LIB_DIR}
+WALLET_USE=	bdb=yes
+
+QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
+QRCODES_CONFIGURE_WITH=	qrencode
+
+CLI_CONFIGURE_WITH=	cli
+
+TEST_CONFIGURE_ENABLE=	tests
+TEST_ALL_TARGET=	check
+
+CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
+				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
+CONFIGURE_ARGS?=	--disable-reduce-exports
+CONFIGURE_ARGS+=	--with-incompatible-bdb
+MAKE_ENV+=	V=1
+
 USE_OPENSSL=	yes
-USE_BDB=	yes
 WANT_BDB_VER=	5
 
-CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+CXXFLAGS+=	-I${LOCALBASE}/include
+CXXFLAGS+=	-L${LOCALBASE}/lib
 CXXFLAGS+=	-Wno-invalid-offsetof
 
-.include <bsd.port.options.mk>
-
-CONFIGURE_ARGS+=--disable-tests
-CONFIGURE_ARGS+=--with-incompatible-bdb
-
-.if ${PORT_OPTIONS:MX11}
-PLIST_SUB+=	X11=""
-.else
-SUB_LIST+=	PORTNAME=${PORTNAME}
-USE_RC_SUBR=	${PORTNAME}
-SUB_FILES=	pkg-message
-PLIST_SUB+=	X11="@comment "
-.endif
-
+QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
 DAEMON=		${PORTNAME}d
-
-.if ${PORT_OPTIONS:MX11}
-USE_QT4=	corelib gui qmake_build linguist uic moc rcc qtestlib_build
-USES+=		desktop-file-utils
-QT_BINARY=		${PORTNAME}-qt
-BUILD_DEPENDS+=	protoc:${PORTSDIR}/devel/protobuf
-CONFIGURE_ARGS+=--with-gui
-PLIST_SUB+=	HEADLESS="@comment "
-.else
-CONFIGURE_ARGS+=--without-gui
-PLIST_SUB+=	HEADLESS=""
-.endif
-
-.if ${PORT_OPTIONS:MQRCODES}
-LIB_DEPENDS+=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
-CONFIGURE_ARGS+=--with-qrencode
-.else
-CONFIGURE_ARGS+=--without-qrencode
-.endif
 
 PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 			EXECUTABLE_CLI=bin/${CLI_BINARY} \
 			EXECUTABLE_DAEMON=bin/${DAEMON} \
 			PORTNAME=${PORTNAME}
 
-.if ${PORT_OPTIONS:MUPNP}
-LIB_DEPENDS+=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
-CONFIGURE_ARGS+=--with-miniupnpc
-.else
-CONFIGURE_ARGS+=--without-miniupnpc
+.include <bsd.port.options.mk>
+
+.if empty(PORT_OPTIONS:MX11) && !empty(PORT_OPTIONS:MQRCODES)
+BROKEN=	QRCODES requires X11 support.  Run 'make config' again!
 .endif
 
-.if ${PORT_OPTIONS:MWALLET}
-CONFIGURE_ARGS+=--enable-wallet
-.else
-CONFIGURE_ARGS+=--disable-wallet
+# tests will currently fail
+.if ${PORT_OPTIONS:MTEST}
+BROKEN=	automated testing fails
 .endif
 
-.include <bsd.port.pre.mk>
-
-post-patch:
-	${MKDIR} ${WRKSRC}/src/build-aux
+.if ! ${PORT_OPTIONS:MX11}
+USE_RC_SUBR=	${PORTNAME}
+SUB_LIST+=	PORTNAME=${PORTNAME}
+SUB_FILES=	pkg-message
+.endif
 
 do-install:
+.if ${PORT_OPTIONS:MCLI}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${CLI_BINARY} ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
+.endif
 
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${QT_BINARY} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
-	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,128,,g' ${FILESDIR}/${PORTNAME}-qt.desktop
-	${INSTALL} ${FILESDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else
-	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
-	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
-		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
-	fi
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
+	${INSTALL_DATA} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 .endif
 
-.include <bsd.port.post.mk>
+.include <bsd.port.mk>
