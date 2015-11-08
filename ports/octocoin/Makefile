@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	octocoin
-PORTVERSION=	1.10.2.2
+PORTVERSION=	1.10.3.0
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -13,17 +13,16 @@ LICENSE=	MIT
 BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
-USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix
-SHEBANG_FILES= src/test/*.py
-GNU_CONFIGURE=	yes
+USES+=		autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix
+SHEBANG_FILES=	src/test/*.py
+
+BROKEN_armv6=	AtomicPointer not implemented
 
 USE_GITHUB=	yes
 GH_PROJECT=	${PORTNAME}
 GH_ACCOUNT=	${PORTNAME}-project
-GH_COMMIT=	61ba3dc
-GH_TAGNAME=	61ba3dc
-
-#WRKSRC=	${WRKDIR}/${GH_ACCOUNT}-${GH_PROJECT}-${GH_TAGNAME}
+GH_COMMIT=	fea2926
+GH_TAGNAME=	fea2926
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -33,22 +32,22 @@ QRCODES_DESC=	Enable QR code display when building graphical interface
 CLI_DESC=	Build command line RPC client
 
 OPTIONS_DEFAULT=	X11 WALLET QRCODES
-OPTIONS_GROUP=	X11
+OPTIONS_GROUP=		X11
 OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
-UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+UPNP_LIB_DEPENDS=		libminiupnpc.so:${PORTSDIR}/net/miniupnpc
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:${PORTSDIR}/devel/protobuf
-X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
+X11_USE=	qt4=corelib,network,gui,qmake_build,linguisttools_build \
+			qt4=uic_build,moc_build,rcc_build,qtestlib_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
-WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
-WALLET_LIBS=		-L${BDB_LIB_DIR}
+WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR} -L${BDB_LIB_DIR}
 WALLET_USE=	bdb=yes
 
 QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
@@ -59,10 +58,11 @@ CLI_CONFIGURE_WITH=	cli
 TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
+GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
 				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
-CONFIGURE_ARGS?=	--disable-reduce-exports
-CONFIGURE_ARGS+=	--with-incompatible-bdb
+CONFIGURE_ARGS?=	--disable-reduce-exports \
+					--with-incompatible-bdb
 MAKE_ENV+=	V=1
 
 USE_OPENSSL=	yes
