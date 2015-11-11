@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	octocoin
-PORTVERSION=	1.10.3.0
+PORTVERSION=	0.10.3.0
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -21,8 +21,8 @@ BROKEN_armv6=	AtomicPointer not implemented
 USE_GITHUB=	yes
 GH_PROJECT=	${PORTNAME}
 GH_ACCOUNT=	${PORTNAME}-project
-GH_COMMIT=	fea2926
-GH_TAGNAME=	fea2926
+GH_COMMIT=	da27dd4
+GH_TAGNAME=	da27dd4
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
