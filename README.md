@@ -12,9 +12,10 @@ https://github.com/tuaris/secp256k1-freebsd
 ## Build Logs
 
 Build logs for some of the ports for select FreeBSD releases can be seen at:
-http://pkg.morante.net/poudriere/data/93amd64-default-wallets/latest-per-pkg/
-http://pkg.morante.net/poudriere/data/10amd64-default-qtwallets/latest-per-pkg/
-http://pkg.morante.net/poudriere/data/93amd64-default-qtwallets/latest-per-pkg/
+
+http://pkg.morante.net/poudriere/data/93amd64-default-wallets/latest-per-pkg  
+http://pkg.morante.net/poudriere/data/10amd64-default-qtwallets/latest-per-pkg  
+http://pkg.morante.net/poudriere/data/93amd64-default-qtwallets/latest-per-pkg  
 
 ## PKG Repository
 
