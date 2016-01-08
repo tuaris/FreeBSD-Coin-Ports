@@ -1,5 +1,5 @@
---- src/guldencoin/scrypt.h.orig	2015-06-15 08:51:30 UTC
-+++ src/guldencoin/scrypt.h
+--- src/Gulden/scrypt.h.orig	2015-06-15 08:51:30 UTC
++++ src/Gulden/scrypt.h
 @@ -27,19 +27,4 @@ void
  PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
      size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);

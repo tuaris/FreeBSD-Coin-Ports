@@ -36,8 +36,8 @@ load_rc_config $name
 : ${%%PORTNAME%%_group="wheel"}
 
 required_files=${%%PORTNAME%%_config}
-command=%%PREFIX%%/bin/%%PORTNAME%%d
-cli_command=%%PREFIX%%/bin/%%PORTNAME%%-cli
+command=%%PREFIX%%/bin/%%DAEMON%%
+cli_command=%%PREFIX%%/bin/%%CLI_BINARY%%
 %%PORTNAME%%_chdir=${%%PORTNAME%%_datadir}
 pidfile="${%%PORTNAME%%_datadir}/%%PORTNAME%%d.pid"
 stop_cmd=%%PORTNAME%%_stop

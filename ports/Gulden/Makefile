@@ -1,8 +1,9 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	guldencoin
-PORTVERSION=	1.5.0.0
+PORTNAME=	Gulden
+PORTVERSION=	1.5.5.0
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -18,10 +19,10 @@ SHEBANG_FILES= src/test/*.py
 GNU_CONFIGURE=	yes
 
 USE_GITHUB=	yes
-GH_PROJECT=	${PORTNAME}-official
-GH_ACCOUNT=	nlgcoin
-GH_COMMIT=	dff8177
-GH_TAGNAME=	dff8177
+GH_PROJECT=	gulden-official
+GH_ACCOUNT=	${PORTNAME}
+GH_COMMIT=	 e6b6223
+GH_TAGNAME=	 e6b6223
 
 #WRKSRC=	${WRKDIR}/${GH_ACCOUNT}-${GH_PROJECT}-${GH_TAGNAME}
 
@@ -73,7 +74,7 @@ CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
-DAEMON=		${PORTNAME}d
+DAEMON=		${PORTNAME}D
 
 PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 			EXECUTABLE_CLI=bin/${CLI_BINARY} \
@@ -93,7 +94,9 @@ BROKEN=	automated testing fails
 
 .if ! ${PORT_OPTIONS:MX11}
 USE_RC_SUBR=	${PORTNAME}
-SUB_LIST+=	PORTNAME=${PORTNAME}
+SUB_LIST+=	PORTNAME=${PORTNAME} \
+			DAEMON=${DAEMON} \
+			CLI_BINARY=${CLI_BINARY}
 SUB_FILES=	pkg-message
 .endif
 
@@ -103,8 +106,9 @@ do-install:
 .endif
 
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${QT_BINARY} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${PORTNAME} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
+		-e 's,guldencoin,${PORTNAME},' \
 		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png

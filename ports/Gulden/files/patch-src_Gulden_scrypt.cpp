@@ -1,5 +1,5 @@
---- src/guldencoin/scrypt.cpp.orig	2015-08-04 13:27:49 UTC
-+++ src/guldencoin/scrypt.cpp
+--- src/Gulden/scrypt.cpp.orig	2015-08-04 13:27:49 UTC
++++ src/Gulden/scrypt.cpp
 @@ -32,6 +32,7 @@
  #include <stdlib.h>
  #include <stdint.h>
