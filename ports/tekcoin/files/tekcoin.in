@@ -75,5 +75,4 @@ start_precmd="${name}_prestart"
 	wait_for_pids ${rc_pid}
 }
 
-load_rc_config $name
 run_rc_command "$1"
