@@ -80,6 +80,7 @@ OctoPkg can be used instead if you prefer a GUI.
 - halfcoin
 - hamstercoin
 - heavycoin
+- html5coin
 - joulecoin
 - kittehcoin
 - KolschCoin
