@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	binarycoin
-PORTVERSION=	0.6.3.0
+PORTVERSION=	0.6.4.1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -19,10 +19,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	BlackBinary
-GH_PROJECT=	biccoin
-GH_COMMIT=	71e26a7 
-GH_TAGNAME=	71e26a7 
+GH_ACCOUNT=	Binarycoin
+GH_PROJECT=	binarycoin
+GH_COMMIT=	14645e1 
+GH_TAGNAME=	14645e1 
 
 USES=		gmake
 USE_OPENSSL=	yes
@@ -98,7 +98,7 @@ do-configure:
 
 do-install:
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/${PORTNAME} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,bitcoin,${PORTNAME},g' \
 		-e 's,Bitcoin,BinaryCoin,g' \
