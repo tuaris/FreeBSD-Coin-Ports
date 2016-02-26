@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	octocoin
-PORTVERSION=	0.10.3.1
+PORTVERSION=	0.10.3.2
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -21,8 +21,8 @@ BROKEN_armv6=	AtomicPointer not implemented
 USE_GITHUB=	yes
 GH_PROJECT=	${PORTNAME}
 GH_ACCOUNT=	${PORTNAME}-project
-GH_COMMIT=	68ff25b
-GH_TAGNAME=	68ff25b
+GH_COMMIT=	18634ad
+GH_TAGNAME=	18634ad
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -36,14 +36,14 @@ OPTIONS_GROUP=		X11
 OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
-UPNP_LIB_DEPENDS=		libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:${PORTSDIR}/devel/protobuf
 X11_USE=	qt4=corelib,network,gui,qmake_build,linguisttools_build \
-			qt4=uic_build,moc_build,rcc_build,qtestlib_build
+		qt4=uic_build,moc_build,rcc_build,qtestlib_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
@@ -60,9 +60,9 @@ TEST_ALL_TARGET=	check
 
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
-				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
+		SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
 CONFIGURE_ARGS?=	--disable-reduce-exports \
-					--with-incompatible-bdb
+			--with-incompatible-bdb
 MAKE_ENV+=	V=1
 
 USE_OPENSSL=	yes
