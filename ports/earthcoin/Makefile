@@ -2,8 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	earthcoin
-PORTVERSION=	1.3.2.0
-PORTREVISION=	2
+PORTVERSION=	1.3.3.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -22,16 +21,15 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}project
 GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	b3743b6
-GH_TAGNAME=	b3743b6
+GH_COMMIT=	68dd23e
+GH_TAGNAME=	68dd23e
 
 USES=		gmake
 USE_OPENSSL=	yes
-USE_BDB=	yes
-WANT_BDB_VER=	48
+USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
