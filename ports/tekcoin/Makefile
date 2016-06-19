@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	tekcoin
-PORTVERSION=	2.3.0.3
+PORTVERSION=	2.4.1.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -20,20 +20,19 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	noise23
+GH_ACCOUNT=	maxxine
 GH_PROJECT=	TEK
-GH_COMMIT=	0219add
-GH_TAGNAME=	0219add
+GH_COMMIT=	94e314c
+GH_TAGNAME=	94e314c
 
 USES=		gmake dos2unix
 USE_OPENSSL=	yes
-USE_BDB=	yes
-WANT_BDB_VER=	48
+USE_BDB=	48
 
 DOS2UNIX_FILES=	${WRKSRC}/src/makefile.bsd
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
