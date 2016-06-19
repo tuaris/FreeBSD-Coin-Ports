@@ -1,6 +1,6 @@
---- src/net.cpp.orig	2014-01-18 04:31:19.000000000 +0000
-+++ src/net.cpp	2014-01-18 04:32:57.000000000 +0000
-@@ -58,7 +58,7 @@
+--- src/net.cpp.orig	2014-02-27 08:51:00 UTC
++++ src/net.cpp
+@@ -49,7 +49,7 @@ static bool vfReachable[NET_MAX] = {};
  static bool vfLimited[NET_MAX] = {};
  static CNode* pnodeLocalHost = NULL;
  uint64 nLocalHostNonce = 0;

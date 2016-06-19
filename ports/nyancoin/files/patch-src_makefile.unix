@@ -28,3 +28,12 @@
     -l pthread
  
  
+@@ -127,7 +132,7 @@ all: nyancoind
+ -include obj-test/*.P
+ 
+ obj/scrypt.o: scrypt.c
+-	gcc -c -o $@ $^
++	$(CC) -c $(xCXXFLAGS) -c -o $@ $^
+ 
+ obj/build.h: FORCE
+ 	/bin/sh ../share/genbuild.sh obj/build.h
