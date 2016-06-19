@@ -1,18 +1,18 @@
---- src/makefile.unix.orig	2014-07-30 15:48:08.000000000 -0400
-+++ src/makefile.unix	2014-10-13 20:50:07.000000000 -0400
-@@ -7,6 +7,11 @@
+--- src/makefile.unix.orig	2016-05-05 20:11:35 UTC
++++ src/makefile.unix
+@@ -7,6 +7,11 @@ USE_UPNP:=0
  
  DEFS=-DBOOST_SPIRIT_THREADSAFE
  
-+BOOST_INCLUDE_PATH=/usr/local/include
-+BDB_INCLUDE_PATH=/usr/local/include/db48
-+BOOST_LIB_PATH=/usr/local/lib
-+BDB_LIB_PATH=/usr/local/lib/db48
++BOOST_INCLUDE_PATH=%%PREFIX%%/include
++BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
++BOOST_LIB_PATH=%%PREFIX%%/lib
++BDB_LIB_PATH=%%PREFIX%%/lib/db48
 +
  DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
  LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
  
-@@ -30,9 +35,11 @@
+@@ -30,9 +35,11 @@ LIBS += \
     -l boost_filesystem$(BOOST_LIB_SUFFIX) \
     -l boost_program_options$(BOOST_LIB_SUFFIX) \
     -l boost_thread$(BOOST_LIB_SUFFIX) \
@@ -25,7 +25,7 @@
  
  ifndef USE_UPNP
  	override USE_UPNP = -
-@@ -45,7 +52,6 @@
+@@ -45,7 +52,6 @@ endif
  LIBS+= \
   -Wl,-B$(LMODE2) \
     -l z \

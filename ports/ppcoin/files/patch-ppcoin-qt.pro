@@ -1,4 +1,4 @@
---- ppcoin-qt.pro.orig	2014-07-30 19:48:08 UTC
+--- ppcoin-qt.pro.orig	2016-05-05 20:11:35 UTC
 +++ ppcoin-qt.pro
 @@ -337,10 +337,10 @@ macx:TARGET = "PPcoin-Qt"
  # Set libraries and includes at end, to use platform-defined defaults if not overridden
@@ -9,7 +9,7 @@
  # -lgdi32 has to happen after -lcrypto (see  #681)
  windows:LIBS += -lole32 -luuid -lgdi32
 -LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX
-+LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX  -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
++LIBS += -lboost_system$$BOOST_LIB_SUFFIX -lboost_filesystem$$BOOST_LIB_SUFFIX -lboost_program_options$$BOOST_LIB_SUFFIX -lboost_thread$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX -lboost_chrono$$BOOST_THREAD_LIB_SUFFIX
  
  contains(RELEASE, 1) {
      !windows:!macx {
