@@ -1,6 +1,6 @@
---- aricoin-qt.pro.orig	2014-08-30 05:49:14.000000000 -0400
-+++ aricoin-qt.pro	2014-10-16 20:39:48.000000000 -0400
-@@ -351,7 +351,7 @@
+--- aricoin-qt.pro.orig	2014-08-30 09:49:14 UTC
++++ aricoin-qt.pro
+@@ -351,7 +351,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  windows:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32

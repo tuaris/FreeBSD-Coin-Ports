@@ -28,3 +28,12 @@
     -l pthread
  
  
+@@ -194,7 +199,7 @@ obj/%.o: %.cpp
+ 	  rm -f $(@:%.o=%.d)
+ 
+ obj/%.o: %.c
+-	$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
++	$(CC) -c $(xCXXFLAGS) -fpermissive -o $@ $<
+ 
+ startcoind: $(OBJS:obj/%=obj/%)
+ 	$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)

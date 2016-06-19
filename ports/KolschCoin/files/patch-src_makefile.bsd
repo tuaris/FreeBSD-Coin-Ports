@@ -1,6 +1,18 @@
 --- src/makefile.bsd.orig	2015-04-18 01:21:15 UTC
 +++ src/makefile.bsd
-@@ -28,6 +28,7 @@ LIBS += \
+@@ -9,6 +9,11 @@ LINK:=$(CXX)
+ 
+ DEFS=-DBOOST_SPIRIT_THREADSAFE
+ 
++BOOST_INCLUDE_PATH=%%PREFIX%%/include
++BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
++BOOST_LIB_PATH=%%PREFIX%%/lib
++BDB_LIB_PATH=%%PREFIX%%/lib/db48
++
+ DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
+ LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
+ 
+@@ -28,6 +33,7 @@ LIBS += \
     -l boost_filesystem$(BOOST_LIB_SUFFIX) \
     -l boost_program_options$(BOOST_LIB_SUFFIX) \
     -l boost_thread$(BOOST_LIB_SUFFIX) \
@@ -8,7 +20,7 @@
     -l db_cxx$(BDB_LIB_SUFFIX) \
     -l ssl \
     -l crypto \
-@@ -48,7 +49,6 @@ endif
+@@ -48,7 +54,6 @@ endif
  LIBS+= \
   -Wl,-B$(LMODE2) \
     -l z \
@@ -16,7 +28,7 @@
     -l pthread
  
  
-@@ -90,7 +90,7 @@ DEBUGFLAGS=-g
+@@ -90,7 +95,7 @@ DEBUGFLAGS=-g
  
  # CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
  # adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
@@ -25,7 +37,7 @@
      $(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
  
  # LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
-@@ -98,6 +98,17 @@ xCXXFLAGS=-O0 -msse2 -pthread -Wall -Wex
+@@ -98,6 +103,17 @@ xCXXFLAGS=-O0 -msse2 -pthread -Wall -Wex
  xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
  
  OBJS= \
@@ -43,7 +55,7 @@
      obj/alert.o \
      obj/version.o \
      obj/checkpoints.o \
-@@ -109,8 +120,8 @@ OBJS= \
+@@ -109,8 +125,8 @@ OBJS= \
      obj/init.o \
      obj/irc.o \
      obj/keystore.o \
@@ -53,7 +65,7 @@
      obj/net.o \
      obj/protocol.o \
      obj/bitcoinrpc.o \
-@@ -150,7 +161,7 @@ DEFS += $(addprefix -I,$(CURDIR)/leveldb
+@@ -150,7 +166,7 @@ DEFS += $(addprefix -I,$(CURDIR)/leveldb
  DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
  OBJS += obj/txdb-leveldb.o
  leveldb/libleveldb.a:
@@ -62,19 +74,17 @@
  obj/txdb-leveldb.o: leveldb/libleveldb.a
  
  # auto-generated dependencies:
-@@ -169,7 +180,14 @@ obj/scrypt-x86_64.o: scrypt-x86_64.S
+@@ -169,6 +185,13 @@ obj/scrypt-x86_64.o: scrypt-x86_64.S
  
  obj/scrypt-arm.o: scrypt-arm.S
  	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
--
 +	
 +obj/%.o: %.c
-+	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
++	$(CC) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
 +	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
 +	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 +              -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
-+	      
 +	rm -f $(@:%.o=%.d)
+ 
  obj/%.o: %.cpp
  	$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
- 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \

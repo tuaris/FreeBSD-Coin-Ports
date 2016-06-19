@@ -3,7 +3,7 @@
 
 PORTNAME=	pacycoin
 PORTVERSION=	0.6.4.0
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -25,11 +25,10 @@ GH_TAGNAME=	ed7401c
 
 USES=		gmake
 USE_OPENSSL=	yes
-USE_BDB=	yes
-WANT_BDB_VER=	48
+USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>

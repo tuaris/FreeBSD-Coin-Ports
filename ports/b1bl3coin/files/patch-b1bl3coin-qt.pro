@@ -1,6 +1,6 @@
---- b1bl3coin-qt.pro.orig	2014-11-01 15:13:35.000000000 -0400
-+++ b1bl3coin-qt.pro	2014-11-01 21:58:12.000000000 -0400
-@@ -477,10 +477,10 @@
+--- b1bl3coin-qt.pro.orig	2014-11-01 19:13:35 UTC
++++ b1bl3coin-qt.pro
+@@ -477,10 +477,10 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
  # Set libraries and includes at end, to use platform-defined defaults if not overridden
  INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
  LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)

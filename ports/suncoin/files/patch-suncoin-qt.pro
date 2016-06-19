@@ -1,6 +1,6 @@
---- suncoin-qt.pro.orig	2014-02-25 17:08:34.000000000 -0500
-+++ suncoin-qt.pro	2014-02-25 20:33:28.000000000 -0500
-@@ -386,7 +386,7 @@
+--- suncoin-qt.pro.orig	2014-02-25 22:08:34 UTC
++++ suncoin-qt.pro
+@@ -386,7 +386,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32

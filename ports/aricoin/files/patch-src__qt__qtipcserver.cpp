@@ -1,6 +1,6 @@
---- src/qt/qtipcserver.cpp.orig	2014-01-18 05:21:31.335425774 +0000
-+++ src/qt/qtipcserver.cpp	2014-01-18 05:22:33.976421840 +0000
-@@ -21,7 +21,7 @@
+--- src/qt/qtipcserver.cpp.orig	2014-08-30 09:49:14 UTC
++++ src/qt/qtipcserver.cpp
+@@ -21,7 +21,7 @@ using namespace boost::posix_time;
  
  static void ipcThread2(void* pArg);
  

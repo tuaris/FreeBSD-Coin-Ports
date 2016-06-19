@@ -1,5 +1,5 @@
---- src/wallet.cpp.orig	2014-08-30 05:49:14.000000000 -0400
-+++ src/wallet.cpp	2014-10-16 20:57:34.000000000 -0400
+--- src/wallet.cpp.orig	2014-08-30 09:49:14 UTC
++++ src/wallet.cpp
 @@ -11,6 +11,7 @@
  #include "ui_interface.h"
  #include "base58.h"

@@ -11,8 +11,8 @@ COMMENT=	A decentralized alternative for the euro.
 
 LICENSE=	MIT
 
-BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
+BUILD_DEPENDS=	pkg-config:devel/pkgconf
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
 
 USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix
 SHEBANG_FILES= src/test/*.py
@@ -39,6 +39,7 @@ OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+UPNP_LIBS=	-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
@@ -50,7 +51,7 @@ X11_USES=	desktop-file-utils
 WALLET_CONFIGURE_ENABLE=	wallet
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
 WALLET_LIBS=		-L${BDB_LIB_DIR}
-WALLET_USE=	bdb=yes
+WALLET_USE=	bdb=48
 
 QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
 QRCODES_CONFIGURE_WITH=	qrencode
@@ -66,10 +67,8 @@ CONFIGURE_ARGS?=	--disable-reduce-exports
 MAKE_ENV+=	V=1
 
 USE_OPENSSL=	yes
-WANT_BDB_VER=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include
-CXXFLAGS+=	-L${LOCALBASE}/lib
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt

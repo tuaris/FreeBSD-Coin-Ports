@@ -1,6 +1,6 @@
---- GoldReserve-qt.pro.orig	2014-06-28 20:33:51.000000000 -0400
-+++ GoldReserve-qt.pro	2014-11-12 03:49:37.000000000 -0500
-@@ -475,10 +475,10 @@
+--- GoldReserve-qt.pro.orig	2014-06-29 00:33:51 UTC
++++ GoldReserve-qt.pro
+@@ -475,10 +475,10 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
  # Set libraries and includes at end, to use platform-defined defaults if not overridden
  INCLUDEPATH += $$BOOST_INCLUDE_PATH $$BDB_INCLUDE_PATH $$OPENSSL_INCLUDE_PATH $$QRENCODE_INCLUDE_PATH
  LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)

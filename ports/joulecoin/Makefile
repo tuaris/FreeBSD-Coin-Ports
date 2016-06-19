@@ -3,7 +3,7 @@
 
 PORTNAME=	joulecoin
 PORTVERSION=	0.8.99.13
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -27,11 +27,10 @@ GH_TAGNAME=	1ede7c6
 
 USES=		gmake
 USE_OPENSSL=	yes
-USE_BDB=	yes
-WANT_BDB_VER=	48
+USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>

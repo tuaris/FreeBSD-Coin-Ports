@@ -1,6 +1,6 @@
---- muniti-qt.pro.orig	2014-03-31 13:57:17.000000000 -0400
-+++ muniti-qt.pro	2014-07-02 11:26:12.000000000 -0400
-@@ -448,7 +448,7 @@
+--- muniti-qt.pro.orig	2014-03-31 17:57:17 UTC
++++ muniti-qt.pro
+@@ -448,7 +448,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32

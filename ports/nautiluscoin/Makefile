@@ -3,7 +3,7 @@
 
 PORTNAME=	nautiluscoin
 PORTVERSION=	1.2.0.0
-PORTREVISION=	1
+PORTREVISION=	2
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -34,6 +34,7 @@ OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+UPNP_LIBS=	-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
@@ -43,8 +44,9 @@ X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
-WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR} -L${BDB_LIB_DIR}
-WALLET_USE=	bdb=yes
+WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
+WALLET_USE=	bdb=48
+WALLET_LIBS=	-L${BDB_LIB_DIR}
 
 QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
 QRCODES_CONFIGURE_WITH=	qrencode
@@ -60,10 +62,8 @@ CONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/includ
 
 USES=		gmake
 USE_OPENSSL=	yes
-WANT_BDB_VER=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include
-CXXFLAGS+=	-L${LOCALBASE}/lib
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt

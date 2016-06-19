@@ -1,6 +1,6 @@
---- src/serialize.h.orig	2015-07-21 18:30:38 UTC
+--- src/serialize.h.orig	2015-01-04 07:06:38 UTC
 +++ src/serialize.h
-@@ -808,19 +808,6 @@ public:
+@@ -811,19 +811,6 @@ public:
      iterator insert(iterator it, const char& x=char()) { return vch.insert(it, x); }
      void insert(iterator it, size_type n, const char& x) { vch.insert(it, n, x); }
  

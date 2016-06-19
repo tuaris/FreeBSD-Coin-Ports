@@ -32,6 +32,7 @@ OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
+UPNP_LIBS=	-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
@@ -43,7 +44,7 @@ X11_USES=	desktop-file-utils
 WALLET_CONFIGURE_ENABLE=	wallet
 WALLET_CONFIGURE_WITH=	incompatible-bdb
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR} -L${BDB_LIB_DIR}
-WALLET_USE=	bdb=yes
+WALLET_USE=	bdb=5
 
 QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
 QRCODES_CONFIGURE_WITH=	qrencode
@@ -59,10 +60,8 @@ CONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/includ
 
 USES=		gmake
 USE_OPENSSL=	yes
-WANT_BDB_VER=	5
 
 CXXFLAGS+=	-I${LOCALBASE}/include
-CXXFLAGS+=	-L${LOCALBASE}/lib
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt

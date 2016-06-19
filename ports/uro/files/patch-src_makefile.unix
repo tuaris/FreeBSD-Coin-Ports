@@ -28,3 +28,12 @@
     -l pthread
  
  
+@@ -169,7 +174,7 @@ version.cpp: obj/build.h
+ DEFS += -DHAVE_BUILD_INFO
+ 
+ obj/%.o: %.c
+-	$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
++	$(CC) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+ 	@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+ 	  sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+ 	      -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \

@@ -1,4 +1,4 @@
---- pacycoin-qt.pro.orig	2014-03-22 00:20:39 UTC
+--- pacycoin-qt.pro.orig	2015-07-21 18:30:38 UTC
 +++ pacycoin-qt.pro
 @@ -20,14 +20,14 @@ windows:LIBS += -lshlwapi
  LIBS += $$join(BOOST_LIB_PATH,,-L,) $$join(BDB_LIB_PATH,,-L,) $$join(OPENSSL_LIB_PATH,,-L,) $$join(QRENCODE_LIB_PATH,,-L,)
