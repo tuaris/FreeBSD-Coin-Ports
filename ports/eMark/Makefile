@@ -2,8 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	eMark
-PORTVERSION=	1.1.0.0
-PORTREVISION=	1
+PORTVERSION=	1.4.0.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -22,17 +21,16 @@ QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	emarkproject
-GH_PROJECT=	DEM
-GH_COMMIT=	a1aa91a
-GH_TAGNAME=	a1aa91a
+GH_PROJECT=	${PORTNAME}
+GH_COMMIT=	efbc011
+GH_TAGNAME=	efbc011
 
 USES=		gmake
 USE_OPENSSL=	yes
-USE_BDB=	yes
-WANT_BDB_VER=	48
+USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+LIBS+=		-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
