@@ -2,8 +2,7 @@
 # $FreeBSD: head/net-p2p/zetacoin/Makefile 412348 2016-04-01 14:17:44Z mat $
 
 PORTNAME=	zetacoin
-PORTVERSION=	0.11.2.2
-PORTREVISION=	1
+PORTVERSION=	0.11.2.3
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
