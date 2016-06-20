@@ -65,6 +65,7 @@ OctoPkg can be used instead if you prefer a GUI.
 - digitalcoin
 - dnotes
 - dogecoin
+- dotcoin
 - eMark
 - earthcoin
 - eags
