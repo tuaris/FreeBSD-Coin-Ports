@@ -73,8 +73,9 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
-.if ${ARCH} == "i386"
+.if ${ARCH} == "i386" && ${OSVERSION} < 1000000
 USE_GCC=yes
+@echo Forcing use of GCC
 .endif
 
 post-patch:
