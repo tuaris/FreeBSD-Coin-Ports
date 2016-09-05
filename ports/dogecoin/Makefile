@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	dogecoin
-PORTVERSION=	1.8.2
+PORTVERSION=	1.10.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -11,12 +11,12 @@ COMMENT=	Virtual Peer-to-Peer Currency Client
 
 LICENSE=	MIT
 
-BUILD_DEPENDS=	pkg-config:${PORTSDIR}/devel/pkgconf
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
+USES+=			gmake compiler:c++11-lib pkgconfig autoreconf ssl
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
-GH_COMMIT=	80e1218
+GH_COMMIT=	bb4b082
 GH_TAGNAME=	v${PORTVERSION}
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
@@ -31,22 +31,24 @@ OPTIONS_GROUP=	X11
 OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
-UPNP_LIB_DEPENDS=	libminiupnpc.so:${PORTSDIR}/net/miniupnpc
-UPNP_LIBS=	-L${LOCALBASE}/lib
+UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
+UPNP_CPPFLAGS=		-I${LOCALBASE}/include
+UPNP_LIBS=			-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
-X11_BUILD_DEPENDS=	protoc:${PORTSDIR}/devel/protobuf
+X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
 WALLET_CONFIGURE_WITH=	incompatible-bdb
-WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR} -L${BDB_LIB_DIR}
-WALLET_USE=	bdb=5
+WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
+WALLET_LIBS=		-L${BDB_LIB_DIR}
+WALLET_USES=	bdb:5
 
-QRCODES_LIB_DEPENDS=	libqrencode.so:${PORTSDIR}/graphics/libqrencode
+QRCODES_LIB_DEPENDS=	libqrencode.so:graphics/libqrencode
 QRCODES_CONFIGURE_WITH=	qrencode
 
 CLI_CONFIGURE_WITH=	cli
@@ -54,15 +56,10 @@ CLI_CONFIGURE_WITH=	cli
 TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
-AUTOMAKE_ARGS+=	--add-missing
-USE_AUTOTOOLS=	aclocal autoheader automake autoconf
-CONFIGURE_ENV=	SSL_LIBS="-lssl" CRYPTO_LIBS="-lcrypto" SSL_CFLAGS="-I/usr/include" CRYPTO_CFLAGS="-I/usr/include"
-
-USES=		gmake
-USE_OPENSSL=	yes
-
-CXXFLAGS+=	-I${LOCALBASE}/include
-CXXFLAGS+=	-Wno-invalid-offsetof
+GNU_CONFIGURE=	yes
+CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
+				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
+CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
