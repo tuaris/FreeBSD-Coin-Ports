@@ -47,6 +47,7 @@ X11_USE=	qt4=corelib,network,gui,qmake_build,linguisttools_build \
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
+WALLET_CONFIGURE_WITH=	incompatible-bdb
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
 WALLET_LIBS=		-L${BDB_LIB_DIR}
 WALLET_USES=		bdb:5
@@ -65,8 +66,7 @@ CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcr
 				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
 CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
 
-CONFIGURE_ARGS?=	--disable-reduce-exports \
-					--with-incompatible-bdb
+CONFIGURE_ARGS?=	--disable-reduce-exports
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
