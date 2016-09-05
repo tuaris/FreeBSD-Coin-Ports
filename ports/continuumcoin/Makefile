@@ -23,9 +23,8 @@ GH_ACCOUNT=	slayersher
 GH_PROJECT=	CTM
 GH_TAGNAME=	d3a3e42
 
-USES=		gmake
+USES=		gmake bdb:48
 USE_OPENSSL=	yes
-USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}

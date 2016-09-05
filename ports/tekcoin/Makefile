@@ -25,9 +25,8 @@ GH_PROJECT=	TEK
 GH_COMMIT=	94e314c
 GH_TAGNAME=	94e314c
 
-USES=		gmake dos2unix
+USES=		gmake dos2unix bdb:48
 USE_OPENSSL=	yes
-USE_BDB=	48
 
 DOS2UNIX_FILES=	${WRKSRC}/src/makefile.bsd
 

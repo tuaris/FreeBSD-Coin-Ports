@@ -26,9 +26,8 @@ GH_PROJECT=	bitcoindark
 GH_COMMIT=	e84d017
 GH_TAGNAME=	e84d017
 
-USES=		gmake
+USES=		gmake bdb:48
 USE_OPENSSL=	yes
-USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}

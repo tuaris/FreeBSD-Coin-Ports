@@ -25,9 +25,8 @@ GH_PROJECT=	MobiusCoin-v-0.8.6.1
 GH_COMMIT=	927aff9
 GH_TAGNAME=	927aff9
 
-USES=		gmake
+USES=		gmake bdb:48
 USE_OPENSSL=	yes
-USE_BDB=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
