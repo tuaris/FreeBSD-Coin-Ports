@@ -13,7 +13,7 @@ LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
 
-USES+=		autoreconf compiler:c++0x gmake libtool pkgconfig:build shebangfix
+USES+=		autoreconf gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES=	src/test/*.py
 
 BROKEN_armv6=	AtomicPointer not implemented
@@ -49,7 +49,7 @@ X11_USES=	desktop-file-utils
 WALLET_CONFIGURE_ENABLE=	wallet
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
 WALLET_LIBS=		-L${BDB_LIB_DIR}
-WALLET_USE=		bdb=5
+WALLET_USES=		bdb:5
 
 QRCODES_IMPLIES=	X11
 QRCODES_LIB_DEPENDS=	libqrencode.so:graphics/libqrencode
@@ -63,9 +63,10 @@ TEST_ALL_TARGET=	check
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
 				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
+CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
+
 CONFIGURE_ARGS?=	--disable-reduce-exports \
 					--with-incompatible-bdb
-USE_OPENSSL=	yes
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
