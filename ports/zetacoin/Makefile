@@ -1,5 +1,5 @@
 # Created by: Daniel Morante <daniel@morante.net>
-# $FreeBSD: head/net-p2p/zetacoin/Makefile 412348 2016-04-01 14:17:44Z mat $
+# $FreeBSD: head/net-p2p/zetacoin/Makefile 419843 2016-08-08 13:46:50Z mat $
 
 PORTNAME=	zetacoin
 PORTVERSION=	0.11.2.3
