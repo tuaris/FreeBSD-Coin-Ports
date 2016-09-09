@@ -12,7 +12,7 @@ COMMENT=	Virtual Peer-to-Peer Currency Client
 LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
-USES+=			gmake compiler:c++11-lib pkgconfig autoreconf ssl
+USES+=			gmake compiler:c++11-lib libtool pkgconfig autoreconf ssl
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
