@@ -63,6 +63,7 @@ CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="
 CONFIGURE_ARGS?=	--disable-reduce-exports
 MAKE_ENV+=	V=1
 
+CXXFLAGS+=	-I${LOCALBASE}/include
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt
