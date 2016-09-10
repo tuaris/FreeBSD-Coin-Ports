@@ -74,7 +74,7 @@ QMAKE_USE_UPNP=	-
 
 .if ${ARCH} == "i386" && ${OSVERSION} < 1000000
 USE_GCC=yes
-@echo "Forcing use of GCC"
+#@echo "Forcing use of GCC"
 .endif
 
 post-patch:
