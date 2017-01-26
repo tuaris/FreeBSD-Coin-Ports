@@ -1,14 +1,14 @@
---- src/scrypt.cpp.orig	2014-04-03 20:52:43 UTC
-+++ src/scrypt.cpp
-@@ -36,6 +36,7 @@
+--- src/crypto/scrypt.cpp.orig	2015-08-04 13:27:49 UTC
++++ src/crypto/scrypt.cpp
+@@ -32,6 +32,7 @@
+ #include <stdlib.h>
  #include <stdint.h>
  #include <string.h>
++#include <sys/endian.h>
  #include <openssl/sha.h>
-+#include <boost/lexical_cast.hpp>
  
  #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
- #ifdef _MSC_VER
-@@ -47,22 +48,6 @@
+@@ -44,22 +45,6 @@
  #endif
  #endif
  
@@ -31,10 +31,4 @@
  typedef struct HMAC_SHA256Context {
  	SHA256_CTX ictx;
  	SHA256_CTX octx;
-@@ -329,4 +314,4 @@ void scrypt_1024_1_1_256(const char *inp
- {
- 	char scratchpad[SCRYPT_SCRATCHPAD_SIZE];
-     scrypt_1024_1_1_256_sp(input, output, scratchpad);
--}
-\ No newline at end of file
-+}
+
