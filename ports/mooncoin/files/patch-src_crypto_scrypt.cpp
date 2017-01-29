@@ -1,6 +1,19 @@
 --- src/crypto/scrypt.cpp.orig	2016-12-26 14:21:30 UTC
 +++ src/crypto/scrypt.cpp
-@@ -44,22 +44,6 @@
+@@ -28,10 +28,11 @@
+  */
+ 
+ #include "crypto/scrypt.h"
+-#include "util.h"
++//#include "util.h"
+ #include <stdlib.h>
+ #include <stdint.h>
+ #include <string.h>
++#include <sys/endian.h>
+ #include <openssl/sha.h>
+ 
+ #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
+@@ -44,22 +45,6 @@
  #endif
  #endif
  
