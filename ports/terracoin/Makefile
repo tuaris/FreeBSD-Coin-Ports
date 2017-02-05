@@ -10,9 +10,10 @@ COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
+				libevent.so:devel/libevent2
 
-USES+=		autoreconf gmake libtool pkgconfig shebangfix ssl
+USES+=		autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES=	src/test/*.py
 
 BROKEN_armv6=	AtomicPointer not implemented
