@@ -2,8 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	Gulden
-PORTVERSION=	1.6.1.0
-PORTREVISION=	1
+PORTVERSION=	1.6.3.1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -39,14 +38,12 @@ OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
-UPNP_CPPFLAGS=		-I${LOCALBASE}/include
-UPNP_LIBS=			-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
-X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
+X11_USE=	qt5=core,gui,dbus,widgets,network,qmake_build,linguisttools,buildtools_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
@@ -62,9 +59,12 @@ CLI_CONFIGURE_WITH=	cli
 TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
+CPPFLAGS+=	 -I${LOCALBASE}/include
+LDFLAGS+=	 -L${LOCALBASE}/lib
+
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
-				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
-CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
+				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl" \
+				OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
 CONFIGURE_ARGS?=	--disable-reduce-exports
 MAKE_ENV+=	V=1
 
@@ -72,7 +72,7 @@ USE_OPENSSL=	yes
 
 CXXFLAGS+=	-Wno-invalid-offsetof
 
-QT_BINARY=		${PORTNAME}-qt
+QT_BINARY=		${PORTNAME}
 CLI_BINARY=		${PORTNAME}-cli
 DAEMON=		${PORTNAME}D
 
@@ -108,8 +108,7 @@ do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${PORTNAME} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,guldencoin,${PORTNAME},' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
+		-e 's,gulden128,${PORTNAME},g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
 	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else

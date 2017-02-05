@@ -1,6 +1,19 @@
---- src/Gulden/Common/scrypt.cpp.orig	2017-01-26 02:32:12 UTC
+--- src/Gulden/Common/scrypt.cpp.orig	2017-01-14 15:55:04 UTC
 +++ src/Gulden/Common/scrypt.cpp
-@@ -44,21 +44,6 @@
+@@ -28,10 +28,11 @@
+  */
+ 
+ #include "scrypt.h"
+-#include "util.h"
++//#include "util.h"
+ #include <stdlib.h>
+ #include <stdint.h>
+ #include <string.h>
++#include <sys/endian.h>
+ #include <openssl/sha.h>
+ 
+ #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
+@@ -44,21 +45,6 @@
  #endif
  #endif
  
