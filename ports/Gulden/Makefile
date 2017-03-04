@@ -3,6 +3,7 @@
 
 PORTNAME=	Gulden
 PORTVERSION=	1.6.3.1
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -11,7 +12,7 @@ COMMENT=	A decentralized alternative for the euro.
 LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
-				libevent.so:devel/libevent2
+				libevent.so:devel/libevent
 
 USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES= src/test/*.py

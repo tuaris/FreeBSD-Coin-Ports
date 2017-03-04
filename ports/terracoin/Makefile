@@ -3,6 +3,7 @@
 
 PORTNAME=	terracoin
 PORTVERSION=	0.9.12.1
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -10,10 +11,9 @@ COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
-				libevent.so:devel/libevent2
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
 
-USES+=		autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
+USES+=		autoreconf compiler:c++11-lang gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES=	src/test/*.py
 
 BROKEN_armv6=	AtomicPointer not implemented
@@ -106,6 +106,12 @@ BROKEN=	automated testing fails
 USE_RC_SUBR=	${PORTNAME}
 SUB_LIST+=	PORTNAME=${PORTNAME}
 SUB_FILES=	pkg-message
+.endif
+
+.include <bsd.port.pre.mk>
+
+.if ${OSVERSION} < 1000000
+USE_GCC=yes
 .endif
 
 do-install:
