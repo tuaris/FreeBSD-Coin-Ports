@@ -11,7 +11,8 @@ COMMENT=	Open sourced, privacy-centric digital currency
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
+				libevent.so:devel/libevent
 
 USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES= src/test/*.py
