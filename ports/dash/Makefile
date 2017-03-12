@@ -42,7 +42,7 @@ X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
-X11_USE=	qt4=corelib,gui,qmake_build,linguist,uic,moc,rcc,qtestlib_build
+X11_USE=	qt5=core,gui,dbus,widgets,network,qmake_build,linguisttools,buildtools_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
