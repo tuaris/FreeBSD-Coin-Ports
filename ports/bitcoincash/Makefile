@@ -82,6 +82,10 @@ PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 
 .include <bsd.port.options.mk>
 
+.if ${PORT_OPTIONS:MX11}
+QT_NONSTANDARD=	yes
+.endif
+
 # tests will currently fail
 .if ${PORT_OPTIONS:MTEST}
 BROKEN=	automated testing fails
@@ -110,7 +114,7 @@ do-install-CLI-on:
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/bitcoin-cli ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
 
 do-install-X11-on:
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${QT_BINARY} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/bitcoin-qt ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
 		-e 's,bitcoin,bitcoincash,g' \
 		-e 's,Bitcoin,Bitcoincash,g' \
