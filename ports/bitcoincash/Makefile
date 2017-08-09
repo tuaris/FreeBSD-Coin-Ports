@@ -7,7 +7,7 @@ DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency with quick transactions
+COMMENT=	Peer-to-Peer crypto currency with adjustable blocksize cap
 
 LICENSE=	MIT
 
@@ -46,8 +46,7 @@ X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_LIB_DEPENDS=	libprotobuf.so:devel/protobuf
-X11_USE=		qt4=corelib,network,gui,qmake_build,linguisttools_build \
-			qt4=uic_build,moc_build,rcc_build,qtestlib_build
+X11_USE=		qt5=core,gui,dbus,widgets,network,qmake_build,linguisttools,buildtools_build
 X11_USES=		desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=wallet
@@ -81,10 +80,6 @@ PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 		PORTNAME=${PORTNAME}
 
 .include <bsd.port.options.mk>
-
-.if ${PORT_OPTIONS:MX11}
-QT_NONSTANDARD=	yes
-.endif
 
 # tests will currently fail
 .if ${PORT_OPTIONS:MTEST}
