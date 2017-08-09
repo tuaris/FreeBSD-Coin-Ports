@@ -3,6 +3,7 @@
 
 PORTNAME=	dotcoin
 PORTVERSION=	0.8.7.0
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -71,6 +72,10 @@ QMAKE_USE_UPNP=	-
 .endif
 
 .include <bsd.port.pre.mk>
+
+.if ${OSVERSION} >= 1100000
+EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
+.endif
 
 post-extract:
 	@${MV} ${WRKSRC}/Dotcoin-qt.pro ${WRKSRC}/dotcoin-qt.pro
