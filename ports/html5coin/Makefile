@@ -72,6 +72,10 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+.if ${OSVERSION} >= 1100000
+EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
+.endif
+
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.bsd
 	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform
