@@ -76,6 +76,10 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+.if ${OSVERSION} >= 1100000
+EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
+.endif
+
 post-extract:
 	@${RM} -f ${WRKSRC}/src/Makefile
 	@${RM} -f ${WRKSRC}/src/Makefile.in
