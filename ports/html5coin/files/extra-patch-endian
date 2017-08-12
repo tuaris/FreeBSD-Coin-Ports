@@ -1,9 +1,18 @@
 --- src/pbkdf2.cpp.orig	2015-04-28 10:47:39 UTC
 +++ src/pbkdf2.cpp
-@@ -12,19 +12,6 @@ be32dec(const void *pp)
-         ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
- }
+@@ -3,28 +3,6 @@
+ #include <string.h>
+ #include "pbkdf2.h"
  
+-static inline uint32_t
+-be32dec(const void *pp)
+-{
+-    const uint8_t *p = (uint8_t const *)pp;
+-
+-    return ((uint32_t)(p[3]) + ((uint32_t)(p[2]) << 8) +
+-        ((uint32_t)(p[1]) << 16) + ((uint32_t)(p[0]) << 24));
+-}
+-
 -static inline void
 -be32enc(void *pp, uint32_t x)
 -{
