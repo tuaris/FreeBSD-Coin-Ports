@@ -77,6 +77,10 @@ QMAKE_USE_UPNP=	-
 
 .include <bsd.port.pre.mk>
 
+.if ${OSVERSION} >= 1100000
+EXTRA_PATCHES+=	${FILESDIR}/extra-patch-endian
+.endif
+
 post-extract:
 	@${MV} ${WRKSRC}/B1bl3coin-qt.pro ${WRKSRC}/${PORTNAME}-qt.pro
 	@${MV} ${WRKSRC}/src/qt/res/images/Wallet_Logo.png ${WRKSRC}/src/qt/res/images/wallet_logo.png
