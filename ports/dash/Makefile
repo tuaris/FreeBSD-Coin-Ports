@@ -2,7 +2,7 @@
 # $FreeBSD $
 
 PORTNAME=	dash
-PORTVERSION=	0.12.1.3
+PORTVERSION=	0.12.1.5
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
@@ -14,12 +14,10 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent
 
-USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
+USES+=	autoreconf compiler:gcc-c++11-lib gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES= src/test/*.py
-GNU_CONFIGURE=	yes
 
 USE_GITHUB=	yes
-GH_PROJECT=	${PORTNAME}
 GH_ACCOUNT=	${PORTNAME}pay
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
@@ -35,8 +33,6 @@ OPTIONS_GROUP_X11=	QRCODES
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
-UPNP_CPPFLAGS=		-I${LOCALBASE}/include
-UPNP_LIBS=			-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui
 X11_CONFIGURE_ON=	--without-daemon
@@ -58,13 +54,16 @@ CLI_CONFIGURE_WITH=	cli
 TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
+CPPFLAGS+=	 -I${LOCALBASE}/include
+LDFLAGS+=	 -L${LOCALBASE}/lib
+
+GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
-				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
-CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
+				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl" \
+				OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
 CONFIGURE_ARGS?=	--disable-reduce-exports
 MAKE_ENV+=	V=1
 
-CXXFLAGS+=	-I${LOCALBASE}/include
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 QT_BINARY=		${PORTNAME}-qt
