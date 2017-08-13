@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	UniversalCurrency
-PORTVERSION=	1.0.0.0
+PORTVERSION=	1.0.2.0
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -22,8 +22,8 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	unitcurrency
 GH_PROJECT=	${GH_ACCOUNT}
-GH_COMMIT=	a672822
-GH_TAGNAME=	a672822
+GH_COMMIT=	9a7f009
+GH_TAGNAME=	9a7f009
 
 USES=		gmake bdb:48
 USE_OPENSSL=	yes

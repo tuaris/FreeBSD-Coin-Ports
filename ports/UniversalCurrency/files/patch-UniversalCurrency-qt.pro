@@ -1,4 +1,4 @@
---- UniversalCurrency-qt.pro.orig	2015-04-28 10:47:39 UTC
+--- UniversalCurrency-qt.pro.orig	2016-12-31 06:42:40 UTC
 +++ UniversalCurrency-qt.pro
 @@ -439,10 +439,10 @@ macx:QMAKE_CXXFLAGS_THREAD += -pthread
  # Set libraries and includes at end, to use platform-defined defaults if not overridden
