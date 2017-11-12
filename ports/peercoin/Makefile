@@ -3,8 +3,9 @@
 
 PORTNAME=	peercoin
 PORTVERSION=	0.6.1
+PORTREVISION=	1
 DISTVERSIONPREFIX=	v
-DISTVERSIONSUFIX=	ppc
+DISTVERSIONSUFFIX=	ppc
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -12,8 +13,7 @@ COMMENT=	Peer-to-Peer crypto currency using SHA256D as a proof-of-work algorithm
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
-				libexecinfo.so:devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES
 OPTIONS_DEFAULT=	X11 QRCODES
@@ -22,11 +22,11 @@ QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
 
-USES=		gmake bdb:48
+USES=		compiler:gcc-c++11-lib gmake execinfo bdb:48
 USE_OPENSSL=	yes
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
-CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
+#CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
 
 .include <bsd.port.options.mk>
@@ -39,6 +39,8 @@ USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
 .endif
+
+USE_GCC=	yes
 
 .if ${PORT_OPTIONS:MX11}
 USE_QT4=	corelib gui qmake_build linguist uic moc rcc
@@ -74,6 +76,8 @@ post-extract:
 
 post-patch:
 	@${REINPLACE_CMD} -e 's|%%PREFIX%%|${PREFIX}|' ${WRKSRC}/src/makefile.unix
+	@${CHMOD} +x ${WRKSRC}/src/leveldb/build_detect_platform	
+	
 .if !${PORT_OPTIONS:MX11}
 	@cd ${WRKSRC}/src && ${CP} -p makefile.unix Makefile
 	@${REINPLACE_CMD} \
@@ -99,7 +103,7 @@ do-install:
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/bitcoind ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \
