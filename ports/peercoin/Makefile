@@ -1,18 +1,19 @@
 # Created by: Daniel Morante <daniel@morante.net>
 # $FreeBSD$
 
-PORTNAME=	ppcoin
-PORTVERSION=	0.5.4.0
+PORTNAME=	peercoin
+PORTVERSION=	0.6.1
+DISTVERSIONPREFIX=	v
+DISTVERSIONSUFIX=	ppc
 CATEGORIES=	net-p2p finance
-MASTER_SITES=	GH
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency using SHA256D as a proof-of-work algorithm
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
+				libexecinfo.so:devel/libexecinfo
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES
 OPTIONS_DEFAULT=	X11 QRCODES
@@ -20,21 +21,13 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	${PORTNAME}
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	e8ce593
-GH_TAGNAME=	e8ce593
 
 USES=		gmake bdb:48
 USE_OPENSSL=	yes
-#USE_BDB=	48
-#WANT_BDB_VER=	48
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 CXXFLAGS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
 CXXFLAGS+=	-Wno-invalid-offsetof
-
-#USE_GCC=yes
 
 .include <bsd.port.options.mk>
 
@@ -101,16 +94,12 @@ do-configure:
 do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
-	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,Peercoin,g' \
-		-e 's,xpm,png,g' \
-		-e 's,80,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/ppcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
+	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${BINARY} ${STAGEDIR}${PREFIX}/bin/${BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/bitcoind ${STAGEDIR}${PREFIX}/bin/${BINARY}
 	${INSTALL} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 	@if [ ! -f ${PREFIX}/etc/${PORTNAME}.conf ]; then \
 		${CP} -p ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf; \

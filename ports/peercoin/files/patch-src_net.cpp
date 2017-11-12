@@ -1,7 +1,7 @@
---- src/net.cpp.orig	2016-05-05 20:11:35 UTC
+--- src/net.cpp.orig	2012-05-04 14:22:26 UTC
 +++ src/net.cpp
-@@ -51,7 +51,7 @@ CAddress addrLocalHost(CService("0.0.0.0
- CAddress addrSeenByPeer(CService("0.0.0.0", 0), nLocalServices);
+@@ -49,7 +49,7 @@ uint64 nLocalServices = (fClient ? 0 : N
+ CAddress addrLocalHost(CService("0.0.0.0", 0), nLocalServices);
  static CNode* pnodeLocalHost = NULL;
  uint64 nLocalHostNonce = 0;
 -array<int, THREAD_MAX> vnThreadsRunning;
