@@ -8,4 +8,4 @@ server=1
 daemon=1
 listen=1
 logtimestamps=1
-addnode=63.247.147.166
+addnode=joulecoin.securepayment.cc
