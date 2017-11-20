@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	UniversalCurrency
-PORTVERSION=	1.0.2.0
+PORTVERSION=	1.0.2.1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -11,8 +11,8 @@ COMMENT=	Peer-to-Peer crypto currency of with PoS and X11 PoW
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
+				libexecinfo.so:devel/libexecinfo
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
 OPTIONS_DEFAULT=	X11 QRCODES
@@ -22,15 +22,13 @@ QRCODES_DESC=	Build with QR code display
 USE_GITHUB=	yes
 GH_ACCOUNT=	unitcurrency
 GH_PROJECT=	${GH_ACCOUNT}
-GH_COMMIT=	9a7f009
-GH_TAGNAME=	9a7f009
 
 USES=		gmake bdb:48
 USE_OPENSSL=	yes
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
 LIBS+=	-L${LOCALBASE}/lib -L${BDB_LIB_DIR}
-CXXFLAGS+=	-Wno-invalid-offsetof
+CXXFLAGS+=	-Wno-invalid-offsetof -Wno-ignored-qualifiers
 
 .include <bsd.port.options.mk>
 
