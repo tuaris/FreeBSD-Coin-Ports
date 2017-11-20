@@ -58,6 +58,7 @@ OctoPkg can be used instead if you prefer a GUI.
 - catcoin
 - chococoin
 - continuumcoin
+- crown
 - cryptobuck
 - dash
 - DarkCrave
@@ -118,6 +119,7 @@ OctoPkg can be used instead if you prefer a GUI.
 - unbreakablecoin
 - uro
 - VeniVidiVici
+- VERGE
 - xaucoin
 - xmascoin
 
