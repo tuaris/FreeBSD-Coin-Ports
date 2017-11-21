@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	Gulden
-PORTVERSION=	1.6.4.1
+PORTVERSION=	1.6.4.6
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -14,14 +14,16 @@ LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent
 
 USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
+USE_AUTOTOOLS=	aclocal autoheader
+
 SHEBANG_FILES= src/test/*.py
 GNU_CONFIGURE=	yes
 
 USE_GITHUB=	yes
 GH_PROJECT=	gulden-official
 GH_ACCOUNT=	${PORTNAME}
-GH_COMMIT=	74cf91e
-GH_TAGNAME=	74cf91e
+GH_COMMIT=	231ed1d
+GH_TAGNAME=	231ed1d
 
 #WRKSRC=	${WRKDIR}/${GH_ACCOUNT}-${GH_PROJECT}-${GH_TAGNAME}
 
