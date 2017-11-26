@@ -1,0 +1,4 @@
+%%EXECUTABLE%%
+%%X11%%share/applications/%%PORTNAME%%-qt.desktop
+%%X11%%share/pixmaps/%%PORTNAME%%.png
+%%HEADLESS%%etc/%%PORTNAME%%.conf.sample
