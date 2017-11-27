@@ -11,8 +11,7 @@ COMMENT=	Peer-to-Peer PoS crypto currency using SHA256D as a proof-of-work algor
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
 OPTIONS_DEFAULT=	X11 QRCODES
