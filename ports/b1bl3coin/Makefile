@@ -12,8 +12,7 @@ COMMENT=	Peer-to-Peer crypto currency of with PoS and X15 PoW
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
+LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs
 
 OPTIONS_DEFINE=	X11 UPNP QRCODES STATIC
 OPTIONS_DEFAULT=	X11 QRCODES
