@@ -2,7 +2,7 @@
 # $FreeBSD $
 
 PORTNAME=	dash
-PORTVERSION=	0.12.1.5
+PORTVERSION=	0.12.2.1
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
@@ -14,7 +14,7 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent
 
-USES+=	autoreconf compiler:gcc-c++11-lib gmake libtool pkgconfig shebangfix ssl
+USES+=	autoreconf compiler:c++11-lang gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES= src/test/*.py
 
 USE_GITHUB=	yes
