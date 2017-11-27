@@ -3,7 +3,7 @@
 
 PORTNAME=	peercoin
 PORTVERSION=	0.6.1
-PORTREVISION=	1
+PORTREVISION=	2
 DISTVERSIONPREFIX=	v
 DISTVERSIONSUFFIX=	ppc
 CATEGORIES=	net-p2p finance
@@ -22,7 +22,7 @@ QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
 
-USES=		compiler:gcc-c++11-lib gmake bdb:48
+USES=		compiler:c++11-lang gmake bdb:48
 USE_OPENSSL=	yes
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}
@@ -39,8 +39,6 @@ USE_RC_SUBR=	${PORTNAME}
 SUB_FILES=	pkg-message
 PLIST_SUB+=	X11="@comment "
 .endif
-
-USE_GCC=	yes
 
 .if ${PORT_OPTIONS:MX11}
 USE_QT4=	corelib gui qmake_build linguist uic moc rcc
