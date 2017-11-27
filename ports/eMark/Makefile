@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	eMark
-PORTVERSION=	1.4.0.0
+PORTVERSION=	1.4.1
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -21,9 +21,6 @@ QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	emarkproject
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	efbc011
-GH_TAGNAME=	efbc011
 
 USES=		gmake bdb:48
 USE_OPENSSL=	yes
@@ -45,7 +42,7 @@ PLIST_SUB+=	X11="@comment "
 .endif
 
 .if ${PORT_OPTIONS:MX11}
-USE_QT4=	corelib gui qmake_build linguist uic moc rcc
+USE_QT4=	corelib gui qmake_build linguist_build uic_build moc_build rcc_build
 BINARY=		${PORTNAME}-qt
 PLIST_SUB+=	HEADLESS="@comment "
 .else
@@ -96,7 +93,7 @@ do-configure:
 .if ${PORT_OPTIONS:MX11}
 	cd ${WRKSRC} && ${SETENV} ${QMAKE_ENV} \
 		${QMAKE} ${QMAKE_ARGS} USE_UPNP=${QMAKE_USE_UPNP} USE_QRCODE=${QMAKE_USE_QRCODE} \
-		QMAKE_LRELEASE=lrelease-qt4 PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
+		QMAKE_LRELEASE=${LRELEASE} PREFIX=${PREFIX} INCLUDEPATH=${BDB_INCLUDE_DIR} \
 		QMAKE_LIBDIR+=${BDB_LIB_DIR} ${PORTNAME}-qt.pro
 .endif
 

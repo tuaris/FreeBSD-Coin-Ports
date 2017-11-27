@@ -1,4 +1,4 @@
---- eMark-qt.pro.orig	2016-05-17 20:09:59 UTC
+--- eMark-qt.pro.orig	2017-03-02 19:14:47 UTC
 +++ eMark-qt.pro
 @@ -427,10 +427,10 @@ macx:QMAKE_INFO_PLIST = share/qt/Info.pl
  # Set libraries and includes at end, to use platform-defined defaults if not overridden
@@ -13,3 +13,12 @@
  windows:LIBS += -lboost_chrono$$BOOST_LIB_SUFFIX
  
  contains(RELEASE, 1) {
+@@ -442,7 +442,7 @@ contains(RELEASE, 1) {
+ 
+ !windows:!macx {
+     DEFINES += LINUX
+-    LIBS += -lrt -ldl
++    LIBS += -lrt
+ }
+ 
+ system($$QMAKE_LRELEASE -silent $$_PRO_FILE_)
