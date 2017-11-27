@@ -24,7 +24,7 @@ GH_PROJECT=	HTML5
 GH_COMMIT=	703ae87
 GH_TAGNAME=	703ae87
 
-USES=		gmake execinfo bdb:48
+USES=		gmake bdb:48
 USE_OPENSSL=	yes
 
 CXXFLAGS+=	-I${LOCALBASE}/include -I${BDB_INCLUDE_DIR}

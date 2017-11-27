@@ -12,10 +12,9 @@ COMMENT=	Decentralized way of making direct transactions while maintaining \
 LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs\
-				libevent.so:devel/libevent\
-				libexecinfo.so:devel/libexecinfo
+				libevent.so:devel/libevent
 
-USES+=		autoreconf gmake compiler:c++11-lang libtool pkgconfig ssl execinfo
+USES+=		autoreconf gmake compiler:c++11-lang libtool pkgconfig ssl
 
 BROKEN_armv6=	AtomicPointer not implemented
 
