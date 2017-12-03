@@ -14,7 +14,7 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs\
 				libevent.so:devel/libevent
 
-USES+=		autoreconf gmake compiler:c++11-lang libtool pkgconfig ssl
+USES+=		autoreconf gmake compiler:c++11-lib libtool pkgconfig ssl
 
 BROKEN_armv6=	AtomicPointer not implemented
 
@@ -36,7 +36,8 @@ UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
 UPNP_CPPFLAGS=		-I${LOCALBASE}/include
 UPNP_LIBS=			-L${LOCALBASE}/lib
 
-X11_CONFIGURE_WITH=	gui
+X11_CONFIGURE_ARGS+=	CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+X11_CONFIGURE_WITH=	gui=qt5
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
