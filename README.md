@@ -88,6 +88,7 @@ OctoPkg can be used instead if you prefer a GUI.
 - KolschCoin
 - legendarycoin
 - linX
+- lynx
 - mazacoin
 - microcoin
 - mintcoin
