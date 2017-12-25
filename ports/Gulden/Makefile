@@ -3,6 +3,7 @@
 
 PORTNAME=	Gulden
 PORTVERSION=	1.6.4.6
+PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -13,8 +14,9 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent
 
-USES+=	autoreconf compiler:c++0x gmake libtool pkgconfig shebangfix ssl
-USE_AUTOTOOLS=	aclocal autoheader
+USES+=	autoreconf compiler:c++11-lib gmake libtool pkgconfig shebangfix ssl
+
+USE_CXXSTD= c++11
 
 SHEBANG_FILES= src/test/*.py
 GNU_CONFIGURE=	yes
@@ -24,8 +26,6 @@ GH_PROJECT=	gulden-official
 GH_ACCOUNT=	${PORTNAME}
 GH_COMMIT=	231ed1d
 GH_TAGNAME=	231ed1d
-
-#WRKSRC=	${WRKDIR}/${GH_ACCOUNT}-${GH_PROJECT}-${GH_TAGNAME}
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -41,11 +41,12 @@ OPTIONS_GROUP_X11=	QRCODES
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
 
-X11_CONFIGURE_WITH=	gui
+X11_CONFIGURE_ARGS+=	CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+X11_CONFIGURE_WITH=	gui=qt5
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
-X11_USE=	qt5=core,gui,dbus,widgets,network,qmake_build,linguisttools,buildtools_build
+X11_USE=	qt5=core,gui,dbus,widgets,network,webkit,qmake_build,linguisttools,buildtools_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
