@@ -9,3 +9,4 @@ daemon=1
 listen=1
 logtimestamps=1
 addnode=bitcoincash.securepayment.cc
+txindex=1

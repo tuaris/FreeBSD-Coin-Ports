@@ -2,7 +2,7 @@
 # $FreeBSD: $
 
 PORTNAME=	bitcoincash
-PORTVERSION=	0.16.0
+PORTVERSION=	0.16.2
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 

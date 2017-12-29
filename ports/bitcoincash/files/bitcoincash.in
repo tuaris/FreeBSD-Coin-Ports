@@ -44,7 +44,8 @@ stop_cmd=%%PORTNAME%%_stop
 command_args="-conf=${%%PORTNAME%%_config} -datadir=${%%PORTNAME%%_datadir} -noupnp -daemon -pid=${pidfile}"
 start_precmd="${name}_prestart"
 reindex_cmd=%%PORTNAME%%_reindex
-extra_commands="reindex"
+salvage_cmd=%%PORTNAME%%_salvage
+extra_commands="reindex salvage"
 
 %%PORTNAME%%_create_datadir()
 {
@@ -86,6 +87,17 @@ extra_commands="reindex"
 
 	echo "Reindexing ${name} blockchain."
 	command_args="${command_args} -reindex"
+	eval ${command} ${command_args}
+}
+
+%%PORTNAME%%_salvage()
+{
+	if [ -z "$rc_fast" -a -n "$rc_pid" ]; then
+	    %%PORTNAME%%_stop
+	fi
+
+	echo "Reindexing ${name} blockchain."
+	command_args="${command_args} -salvagewallet"
 	eval ${command} ${command_args}
 }
 
