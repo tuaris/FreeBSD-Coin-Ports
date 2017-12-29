@@ -15,6 +15,8 @@ LICENSE=	MIT
 BUILD_DEPENDS=	pkg-config:devel/pkgconf
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
 
+USES+=		autoreconf gmake libtool pkgconfig:build ssl
+
 USE_GITHUB=	yes
 GH_ACCOUNT=	${PORTNAME}
 GH_PROJECT=	${PORTNAME}
@@ -49,7 +51,6 @@ WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
 WALLET_LIBS=		-L${BDB_LIB_DIR}
 WALLET_USES=	bdb:48
 
-
 QRCODES_LIB_DEPENDS=	libqrencode.so:graphics/libqrencode
 QRCODES_CONFIGURE_WITH=	qrencode
 
@@ -59,12 +60,11 @@ TEST_CONFIGURE_ENABLE=	tests
 TEST_ALL_TARGET=	check
 
 AUTOMAKE_ARGS+=	--add-missing
-#USE_AUTOTOOLS=	aclocal autoheader automake autoconf
+
+GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
 				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
 CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
-
-USES=		gmake ssl
 
 CXXFLAGS+=	-Wno-invalid-offsetof
 
