@@ -2,7 +2,7 @@
 # $FreeBSD: head/net-p2p/zetacoin/Makefile 441468 2017-05-22 16:04:19Z linimon $
 
 PORTNAME=	zetacoin
-PORTVERSION=	0.11.3.3
+PORTVERSION=	0.11.3.4
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
