@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	mooncoin
-PORTVERSION=	0.10.5.0
+PORTVERSION=	0.13.9.0
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -13,15 +13,14 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
 
 USES+=		autoreconf gmake libtool pkgconfig shebangfix ssl
-SHEBANG_FILES=	src/test/*.py
 
 BROKEN_armv6=	AtomicPointer not implemented
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	mooncoindev
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	984b721
-GH_TAGNAME=	984b721
+GH_ACCOUNT=	mooncoincore
+GH_PROJECT=	wallet
+GH_COMMIT=	b257fcd
+GH_TAGNAME=	b257fcd
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -109,16 +108,16 @@ SUB_FILES=	pkg-message
 
 do-install:
 .if ${PORT_OPTIONS:MCLI}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/Mooncoin-cli ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME}-cli ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
 .endif
 
 .if ${PORT_OPTIONS:MX11}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/Mooncoin-qt ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${PORTNAME}-qt ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/Mooncoin-tx ${STAGEDIR}${PREFIX}/bin/${TX_BINARY}
-	${INSTALL_PROGRAM} -s ${WRKSRC}/src/Mooncoind ${STAGEDIR}${PREFIX}/bin/${DAEMON}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME}-tx ${STAGEDIR}${PREFIX}/bin/${TX_BINARY}
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME}d ${STAGEDIR}${PREFIX}/bin/${DAEMON}
 	${INSTALL_DATA} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 .endif
 

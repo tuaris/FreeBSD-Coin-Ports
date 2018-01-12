@@ -1,6 +1,11 @@
---- src/crypto/scrypt.cpp.orig	2017-12-30 19:12:09 UTC
+--- src/crypto/scrypt.cpp.orig	2016-12-26 14:21:30 UTC
 +++ src/crypto/scrypt.cpp
-@@ -32,6 +32,7 @@
+@@ -28,10 +28,11 @@
+  */
+ 
+ #include "crypto/scrypt.h"
+-#include "util.h"
++//#include "util.h"
  #include <stdlib.h>
  #include <stdint.h>
  #include <string.h>

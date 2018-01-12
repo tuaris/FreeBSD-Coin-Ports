@@ -1,3 +1,3 @@
-TIMESTAMP = 1485402122
-SHA256 (mooncoindev-mooncoin-0.10.5.0-984b721_GH0.tar.gz) = 6fa000824ad51efca5611e2f39920284008b9168a0076d178218aacbce95d7e5
-SIZE (mooncoindev-mooncoin-0.10.5.0-984b721_GH0.tar.gz) = 6472961
+TIMESTAMP = 1515699064
+SHA256 (mooncoincore-wallet-0.13.9.0-b257fcd_GH0.tar.gz) = 745c72e2a31667b027041a2a2d32bbf301e1d194595f23f3e3659d2f64e1ba6a
+SIZE (mooncoincore-wallet-0.13.9.0-b257fcd_GH0.tar.gz) = 11954414
