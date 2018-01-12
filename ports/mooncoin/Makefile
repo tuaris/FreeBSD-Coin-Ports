@@ -10,7 +10,8 @@ COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
+				libevent.so:devel/libevent
 
 USES+=		autoreconf gmake libtool pkgconfig shebangfix ssl
 
