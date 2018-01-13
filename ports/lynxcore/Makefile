@@ -6,6 +6,9 @@ PORTVERSION=	0.14.99.0
 PORTREVISION=	1
 CATEGORIES=	net-p2p finance
 
+PATCH_SITES=    https://github.com/bitcoin/bitcoin/commit/
+PATCHFILES=     1ec0c0a01c31.patch:-p1
+
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
 
