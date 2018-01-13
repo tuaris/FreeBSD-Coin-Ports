@@ -93,7 +93,7 @@ extra_commands="reindex salvage"
 %%PORTNAME%%_salvage()
 {
 	if [ -z "$rc_fast" -a -n "$rc_pid" ]; then
-	    UniversalCurrency_stop
+	    %%PORTNAME%%_stop
 	fi
 
 	echo "Attempting to salvage ${name} walllet."
