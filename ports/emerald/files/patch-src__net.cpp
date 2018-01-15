@@ -1,15 +1,6 @@
---- src/net.cpp.orig	2015-11-30 23:06:15 UTC
+--- src/net.cpp.orig	2017-07-15 01:21:41 UTC
 +++ src/net.cpp
-@@ -58,7 +58,7 @@ static bool vfReachable[NET_MAX] = {};
- static bool vfLimited[NET_MAX] = {};
- static CNode* pnodeLocalHost = NULL;
- uint64 nLocalHostNonce = 0;
--array<int, THREAD_MAX> vnThreadsRunning;
-+boost::array<int, THREAD_MAX> vnThreadsRunning;
- static std::vector<SOCKET> vhListenSocket;
- CAddrMan addrman;
- 
-@@ -1124,10 +1124,14 @@ void ThreadMapPort2(void* parg)
+@@ -1063,10 +1063,14 @@ void ThreadMapPort()
  #ifndef UPNPDISCOVER_SUCCESS
      /* miniupnpc 1.5 */
      devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0);

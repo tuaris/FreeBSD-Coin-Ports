@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	emerald
-PORTVERSION=	0.8.5.1
+PORTVERSION=	0.8.7.600
 CATEGORIES=	net-p2p finance
 MASTER_SITES=	GH
 
@@ -19,10 +19,10 @@ UPNP_DESC=	Build with UPNP support
 QRCODES_DESC=	Build with QR code display
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	Emerald-Crypto
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	b603738
-GH_TAGNAME=	b603738
+GH_ACCOUNT=	crypto-currency
+GH_PROJECT=	Emerald
+GH_COMMIT=	119ca38
+GH_TAGNAME=	119ca38
 
 USES=		gmake bdb:48
 USE_OPENSSL=	yes
