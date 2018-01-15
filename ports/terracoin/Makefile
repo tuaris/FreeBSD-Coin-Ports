@@ -14,7 +14,7 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent
 
-USES+=		autoreconf compiler:c++11-lang gmake libtool pkgconfig shebangfix ssl
+USES+=		autoreconf compiler:c++14-lang gmake libtool pkgconfig shebangfix ssl
 
 BROKEN_armv6=	AtomicPointer not implemented
 
@@ -104,10 +104,6 @@ SUB_FILES=	pkg-message
 .endif
 
 .include <bsd.port.pre.mk>
-
-.if ${OSVERSION} < 1100000
-USE_GCC=yes
-.endif
 
 do-install:
 .if ${PORT_OPTIONS:MCLI}
