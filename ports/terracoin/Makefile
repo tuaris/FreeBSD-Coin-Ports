@@ -105,6 +105,10 @@ SUB_FILES=	pkg-message
 
 .include <bsd.port.pre.mk>
 
+.if ${OSVERSION} < 1100000
+USE_GCC=yes
+.endif
+
 do-install:
 .if ${PORT_OPTIONS:MCLI}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME}-cli ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
