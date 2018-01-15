@@ -2,8 +2,8 @@
 # $FreeBSD$
 
 PORTNAME=	terracoin
-PORTVERSION=	0.9.12.1
-PORTREVISION=	1
+PORTVERSION=	0.12.1.6
+DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -15,15 +15,10 @@ LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent
 
 USES+=		autoreconf compiler:c++11-lang gmake libtool pkgconfig shebangfix ssl
-SHEBANG_FILES=	src/test/*.py
 
 BROKEN_armv6=	AtomicPointer not implemented
 
 USE_GITHUB=	yes
-GH_ACCOUNT=	clockuniverse
-GH_PROJECT=	${PORTNAME}
-GH_COMMIT=	e73a2f1
-GH_TAGNAME=	e73a2f1
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -39,13 +34,12 @@ OPTIONS_GROUP_X11=	QRCODES
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
 
-X11_CONFIGURE_WITH=	gui
+X11_CONFIGURE_WITH=	gui=qt5
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_LIB_DEPENDS=	libprotobuf.so:devel/protobuf
-X11_USE=	qt4=corelib,network,gui,qmake_build,linguisttools_build \
-			qt4=uic_build,moc_build,rcc_build,qtestlib_build
+X11_USE=	qt5=core,gui,dbus,widgets,network,webkit,qmake_build,linguisttools,buildtools_build
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=	wallet
@@ -111,10 +105,6 @@ SUB_FILES=	pkg-message
 
 .include <bsd.port.pre.mk>
 
-.if ${OSVERSION} < 1000000
-USE_GCC=yes
-.endif
-
 do-install:
 .if ${PORT_OPTIONS:MCLI}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME}-cli ${STAGEDIR}${PREFIX}/bin/${CLI_BINARY}
@@ -123,10 +113,8 @@ do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${PORTNAME}-qt ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,bitcoin,${PORTNAME},g' \
-		-e 's,Bitcoin,Terracoin,g' \
-		-e 's,128,,g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+		-e 's,128,,g' ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/${PORTNAME}.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${PORTNAME}-tx ${STAGEDIR}${PREFIX}/bin/${TX_BINARY}
