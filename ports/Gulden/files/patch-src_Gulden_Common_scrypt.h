@@ -1,4 +1,4 @@
---- src/Gulden/Common/scrypt.h.orig	2017-01-14 15:55:04 UTC
+--- src/Gulden/Common/scrypt.h.orig	2018-01-01 19:55:55 UTC
 +++ src/Gulden/Common/scrypt.h
 @@ -27,18 +27,4 @@ void PBKDF2_SHA256(const uint8_t* passwd
  

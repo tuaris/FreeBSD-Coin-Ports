@@ -1,4 +1,4 @@
---- src/Gulden/Common/scrypt.cpp.orig	2017-01-14 15:55:04 UTC
+--- src/Gulden/Common/scrypt.cpp.orig	2018-01-01 19:55:55 UTC
 +++ src/Gulden/Common/scrypt.cpp
 @@ -28,10 +28,11 @@
   */

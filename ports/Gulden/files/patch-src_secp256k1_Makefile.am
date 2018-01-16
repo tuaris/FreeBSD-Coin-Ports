@@ -1,0 +1,10 @@
+--- src/secp256k1/Makefile.am.orig	2018-01-01 19:55:55 UTC
++++ src/secp256k1/Makefile.am
+@@ -1,4 +1,7 @@
+ ACLOCAL_AMFLAGS = -I build-aux/m4
++CPPFLAGS_FOR_BUILD = 
++CFLAGS_FOR_BUILD = 
++CC_FOR_BUILD = c++
+ 
+ lib_LTLIBRARIES = libsecp256k1.la
+ include_HEADERS = include/secp256k1.h

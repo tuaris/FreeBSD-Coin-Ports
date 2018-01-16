@@ -2,8 +2,8 @@
 # $FreeBSD$
 
 PORTNAME=	Gulden
-PORTVERSION=	1.6.4.6
-PORTREVISION=	1
+PORTVERSION=	1.6.4.8
+DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -23,9 +23,9 @@ GNU_CONFIGURE=	yes
 
 USE_GITHUB=	yes
 GH_PROJECT=	gulden-official
-GH_ACCOUNT=	${PORTNAME}
-GH_COMMIT=	231ed1d
-GH_TAGNAME=	231ed1d
+#GH_ACCOUNT=	${PORTNAME}
+#GH_COMMIT=	231ed1d
+#GH_TAGNAME=	231ed1d
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
 OPTIONS_SUB=	yes
@@ -42,12 +42,15 @@ UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
 
 X11_CONFIGURE_ARGS+=	CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}"
+X11_CXXFLAGS+=	-I${QT_INCDIR}/QtWebKit -I${QT_INCDIR}/QtWebKitWidgets
 X11_CONFIGURE_WITH=	gui=qt5
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_USE=	qt5=core,gui,dbus,widgets,network,webkit,qmake_build,linguisttools,buildtools_build
 X11_USES=	desktop-file-utils
+X11_QMAKE_ARGS+=	INCLUDEPATH+=${LOCALBASE}/include \
+					LIBS+=-L${LOCALBASE}/lib
 
 WALLET_CONFIGURE_ENABLE=	wallet
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
@@ -68,7 +71,7 @@ LDFLAGS+=	 -L${LOCALBASE}/lib
 GNU_CONFIGURE=	yes
 CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcrypto" \
 				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl" \
-				OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
+				OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"				
 CONFIGURE_ARGS?=	--disable-reduce-exports
 MAKE_ENV+=	V=1
 
@@ -102,7 +105,13 @@ SUB_LIST+=	PORTNAME=${PORTNAME} \
 			DAEMON=${DAEMON} \
 			CLI_BINARY=${CLI_BINARY}
 SUB_FILES=	pkg-message
+.else
+SUB_LIST+=	PORTNAME=${PORTNAME}
+SUB_FILES=	${PORTNAME}-qt.desktop
 .endif
+
+post-extract:
+	${MKDIR} ${WRKSRC}/src/secp256k1/build-aux/m4
 
 do-install:
 .if ${PORT_OPTIONS:MCLI}
@@ -111,9 +120,7 @@ do-install:
 
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${PORTNAME} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
-	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,gulden128,${PORTNAME},g' ${WRKSRC}/contrib/debian/bitcoin-qt.desktop
-	${INSTALL} ${WRKSRC}/contrib/debian/bitcoin-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
+	${INSTALL} ${WRKDIR}/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
