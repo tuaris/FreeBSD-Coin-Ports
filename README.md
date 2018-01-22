@@ -46,6 +46,10 @@ pkg install octocoin
 
 OctoPkg can be used instead if you prefer a GUI.
 
+## Your own PKG-NG Repository
+
+If you would like to build your own pkgng repository, symlink the provided make.conf into poudriere's /usr/local/etc/poudriere.d/<jailname>-make.conf. For best results, we recommend using a blank poudriere build jail only for building wallet related things, as this allows you to build packages that do not rely on openssl/libreessl and won't give you a headache later. These ports only build with openssl anyway (like all bitcoin forks).
+
 ## The current list of crypto currencies:
 
 - aricoin
