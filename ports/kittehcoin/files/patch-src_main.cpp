@@ -1,6 +1,6 @@
---- src/main.cpp.orig	2014-02-13 22:56:31.000000000 -0500
-+++ src/main.cpp	2014-02-14 01:44:25.000000000 -0500
-@@ -1071,8 +1071,8 @@
+--- src/main.cpp.orig	2014-04-09 16:44:01 UTC
++++ src/main.cpp
+@@ -1071,8 +1071,8 @@ int GetNumBlocksOfPeers()
  
  int static generateMTRandom(unsigned int s, int range)
  {

@@ -1,5 +1,5 @@
---- ./src/scrypt.cpp.orig	2014-01-10 01:38:53.000000000 +0000
-+++ ./src/scrypt.cpp	2014-02-09 05:45:03.131006405 +0000
+--- src/scrypt.cpp.orig	2014-04-09 16:44:01 UTC
++++ src/scrypt.cpp
 @@ -33,6 +33,7 @@
  #include <stdint.h>
  #include <string.h>

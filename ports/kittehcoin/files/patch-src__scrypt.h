@@ -1,6 +1,6 @@
---- ./src/scrypt.h.orig	2014-01-10 01:38:53.000000000 +0000
-+++ ./src/scrypt.h	2014-02-09 05:45:03.133009188 +0000
-@@ -27,19 +27,4 @@
+--- src/scrypt.h.orig	2014-04-09 16:44:01 UTC
++++ src/scrypt.h
+@@ -27,19 +27,4 @@ void
  PBKDF2_SHA256(const uint8_t *passwd, size_t passwdlen, const uint8_t *salt,
      size_t saltlen, uint64_t c, uint8_t *buf, size_t dkLen);
  

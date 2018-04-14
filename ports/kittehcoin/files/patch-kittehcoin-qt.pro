@@ -1,6 +1,6 @@
---- kittehcoin-qt.pro.orig	2014-02-13 22:56:31.000000000 -0500
-+++ kittehcoin-qt.pro	2014-02-14 01:53:50.000000000 -0500
-@@ -447,7 +447,7 @@
+--- kittehcoin-qt.pro.orig	2014-04-09 16:44:01 UTC
++++ kittehcoin-qt.pro
+@@ -447,7 +447,7 @@ LIBS += $$join(BOOST_LIB_PATH,,-L,) $$jo
  LIBS += -lssl -lcrypto -ldb_cxx$$BDB_LIB_SUFFIX
  # -lgdi32 has to happen after -lcrypto (see  #681)
  win32:LIBS += -lws2_32 -lshlwapi -lmswsock -lole32 -loleaut32 -luuid -lgdi32
