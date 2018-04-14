@@ -1,19 +1,11 @@
---- src/makefile.bsd.orig	2014-12-30 09:47:06 UTC
+--- src/makefile.bsd.orig	2018-04-14 23:18:18 UTC
 +++ src/makefile.bsd
-@@ -5,12 +5,10 @@
- USE_UPNP:=0
- USE_IPV6:=1
- 
--BOOST_INCLUDE_PATH=/usr/local/include
--BOOST_LIB_PATH=/usr/local/lib
--BDB_INCLUDE_PATH=/usr/local/include/db48
--BDB_LIB_PATH=/usr/local/lib/db48
+@@ -9,8 +9,6 @@ BOOST_INCLUDE_PATH=/usr/local/include
+ BOOST_LIB_PATH=/usr/local/lib
+ BDB_INCLUDE_PATH=/usr/local/include/db48
+ BDB_LIB_PATH=/usr/local/lib/db48
 -OPENSSL_INCLUDE_PATH=/usr/local/include
 -OPENSSL_LIB_PATH=/usr/local/lib
-+BOOST_INCLUDE_PATH=%%PREFIX%%/include
-+BOOST_LIB_PATH=%%PREFIX%%/lib
-+BDB_INCLUDE_PATH=%%PREFIX%%/include/db48
-+BDB_LIB_PATH=%%PREFIX%%/lib/db48
  
  LINK:=$(CXX)
  
