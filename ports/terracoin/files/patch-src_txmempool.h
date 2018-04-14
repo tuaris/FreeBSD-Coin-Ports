@@ -1,5 +1,14 @@
 --- src/txmempool.h.orig	2018-01-11 20:38:04 UTC
 +++ src/txmempool.h
+@@ -204,7 +204,7 @@ struct mempoolentry_txid
+ class CompareTxMemPoolEntryByDescendantScore
+ {
+ public:
+-    bool operator()(const CTxMemPoolEntry& a, const CTxMemPoolEntry& b)
++    bool operator()(const CTxMemPoolEntry& a, const CTxMemPoolEntry& b) const
+     {
+         bool fUseADescendants = UseDescendantScore(a);
+         bool fUseBDescendants = UseDescendantScore(b);
 @@ -241,7 +241,7 @@ public:
  class CompareTxMemPoolEntryByScore
  {
