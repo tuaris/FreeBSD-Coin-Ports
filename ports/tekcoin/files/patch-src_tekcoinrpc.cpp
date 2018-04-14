@@ -7,7 +7,7 @@
 -template <typename Protocol, typename SocketAcceptorService>
 -static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
 +template <typename Protocol>
-+static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protoco> > acceptor,
++static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol> > acceptor,
                               ssl::context& context,
                               bool fUseSSL,
                               AcceptedConnection* conn,
