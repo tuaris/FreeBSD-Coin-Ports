@@ -6,9 +6,6 @@ PORTVERSION=	0.17.0
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
-PATCH_SITES=	https://github.com/bitcoin/bitcoin/commit/
-PATCHFILES=	1ec0c0a01c31.patch:-p1
-
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency with adjustable blocksize cap
 
