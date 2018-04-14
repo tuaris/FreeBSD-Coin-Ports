@@ -1,0 +1,29 @@
+--- src/Makefile.qt.include.orig	2018-04-07 02:55:54 UTC
++++ src/Makefile.qt.include
+@@ -268,16 +268,16 @@ if ENABLE_WALLET
+ endif
+ qt_VERGE_qt_LDADD += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_SSE2) $(LIBLEVELDB) $(LIBMEMENV) \
+   $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) \
+-  ../tor/src/or/libtor.a \
+-	../tor/src/common/libor.a \
+-	../tor/src/common/libor-ctime.a \
+-	../tor/src/common/libor-crypto.a \
+-	../tor/src/common/libor-event.a \
+-	../tor/src/trunnel/libor-trunnel.a \
+-	../tor/src/common/libcurve25519_donna.a \
+-	../tor/src/ext/ed25519/donna/libed25519_donna.a \
+-	../tor/src/ext/ed25519/ref10/libed25519_ref10.a \
+-	../tor/src/ext/keccak-tiny/libkeccak-tiny.a \
++  /usr/local/lib/tor/libtor.a \
++	/usr/local/lib/tor/libor.a \
++	/usr/local/lib/tor/libor-ctime.a \
++	/usr/local/lib/tor/libor-crypto.a \
++	/usr/local/lib/tor/libor-event.a \
++	/usr/local/lib/tor/libor-trunnel.a \
++	/usr/local/lib/tor/libcurve25519_donna.a \
++	/usr/local/lib/tor/libed25519_donna.a \
++	/usr/local/lib/tor/libed25519_ref10.a \
++	/usr/local/lib/tor/libkeccak-tiny.a \
+   $(ZLIB_LIBS) \
+   $(LIBEVENT_LIBS) \
+   $(LIBCAP_LIBS) \

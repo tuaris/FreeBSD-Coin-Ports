@@ -6,8 +6,10 @@ These are FreeBSD Ports for several alternative crypto currencies (Altcoins) tha
 
 http://www.unibia.com/unibianet/freebsd/freebsd-ports-many-alternative-crypto-currencies
 
-Some of these ports have an external dependency on the secp256k1 library.  It may be satisfied with the following port:
-https://github.com/tuaris/secp256k1-freebsd
+Some of these ports have an external library dependencies that may not be in the default FreeBSD ports tree
+
+- secp256k1: https://github.com/tuaris/secp256k1-freebsd
+- torlibs: https://github.com/tuaris/torlibs-freebsd
 
 ## Build Logs
 

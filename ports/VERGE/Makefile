@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	VERGE
-PORTVERSION=	3.0
+PORTVERSION=	4.0.2
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -13,7 +13,9 @@ LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs\
 				libevent.so:devel/libevent
-
+				
+BUILD_DEPENDS=	${LOCALBASE}/lib/tor/libtor.a:security/tor-lib			
+				
 USES+=		autoreconf gmake compiler:c++11-lib libtool pkgconfig ssl
 
 BROKEN_armv6=	AtomicPointer not implemented

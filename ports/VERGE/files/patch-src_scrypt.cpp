@@ -1,4 +1,4 @@
---- src/scrypt.cpp.orig	2017-11-08 21:50:52 UTC
+--- src/scrypt.cpp.orig	2018-04-07 02:55:54 UTC
 +++ src/scrypt.cpp
 @@ -55,15 +55,6 @@ static inline uint32_t be32dec(const voi
  }
