@@ -1,7 +1,7 @@
---- src/tekcoinrpc.cpp.orig	2015-07-21 18:30:38 UTC
+--- src/tekcoinrpc.cpp.orig	2014-03-16 00:10:07 UTC
 +++ src/tekcoinrpc.cpp
-@@ -2762,8 +2762,8 @@ void ThreadRPCServer(void* parg)
- }
+@@ -654,8 +654,8 @@ private:
+ void ServiceConnection(AcceptedConnection *conn);
  
  // Forward declaration required for RPCListen
 -template <typename Protocol, typename SocketAcceptorService>
@@ -11,7 +11,7 @@
                               ssl::context& context,
                               bool fUseSSL,
                               AcceptedConnection* conn,
-@@ -2772,8 +2772,8 @@ static void RPCAcceptHandler(boost::shar
+@@ -664,8 +664,8 @@ static void RPCAcceptHandler(boost::shar
  /**
   * Sets up I/O resources to accept and handle a new connection.
   */
@@ -22,7 +22,7 @@
                     ssl::context& context,
                     const bool fUseSSL)
  {
-@@ -2783,7 +2783,7 @@ static void RPCListen(boost::shared_ptr<
+@@ -675,7 +675,7 @@ static void RPCListen(boost::shared_ptr<
      acceptor->async_accept(
              conn->sslStream.lowest_layer(),
              conn->peer,
@@ -31,7 +31,7 @@
                  acceptor,
                  boost::ref(context),
                  fUseSSL,
-@@ -2794,8 +2794,8 @@ static void RPCListen(boost::shared_ptr<
+@@ -686,8 +686,8 @@ static void RPCListen(boost::shared_ptr<
  /**
   * Accept and handle incoming connection.
   */
@@ -42,27 +42,27 @@
                               ssl::context& context,
                               const bool fUseSSL,
                               AcceptedConnection* conn,
-@@ -2870,7 +2870,7 @@ void ThreadRPCServer2(void* parg)
+@@ -756,7 +756,7 @@ void StartRPCThreads()
  
-     asio::io_service io_service;
+     assert(rpc_io_service == NULL);
+     rpc_io_service = new asio::io_service();
+-    rpc_ssl_context = new ssl::context(*rpc_io_service, ssl::context::sslv23);
++    rpc_ssl_context = new ssl::context(ssl::context::sslv23);
  
--    ssl::context context(io_service, ssl::context::sslv23);
-+    ssl::context context(ssl::context::sslv23);
-     if (fUseSSL)
-     {
-         context.set_options(ssl::context::no_sslv2);
-@@ -2886,7 +2886,7 @@ void ThreadRPCServer2(void* parg)
+     const bool fUseSSL = GetBoolArg("-rpcssl", false);
+ 
+@@ -775,7 +775,7 @@ void StartRPCThreads()
          else printf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string().c_str());
  
          string strCiphers = GetArg("-rpcsslciphers", "TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!AH:!3DES:@STRENGTH");
--        SSL_CTX_set_cipher_list(context.impl(), strCiphers.c_str());
-+        SSL_CTX_set_cipher_list(context.native_handle(), strCiphers.c_str());
+-        SSL_CTX_set_cipher_list(rpc_ssl_context->impl(), strCiphers.c_str());
++        SSL_CTX_set_cipher_list(rpc_ssl_context->native_handle(), strCiphers.c_str());
      }
  
      // Try a dual IPv6/IPv4 socket, falling back to separate IPv4 and IPv6 sockets
-@@ -3163,7 +3163,7 @@ Object CallRPC(const string& strMethod, 
+@@ -1074,7 +1074,7 @@ Object CallRPC(const string& strMethod, 
      // Connect to localhost
-     bool fUseSSL = GetBoolArg("-rpcssl");
+     bool fUseSSL = GetBoolArg("-rpcssl", false);
      asio::io_service io_service;
 -    ssl::context context(io_service, ssl::context::sslv23);
 +    ssl::context context(ssl::context::sslv23);
