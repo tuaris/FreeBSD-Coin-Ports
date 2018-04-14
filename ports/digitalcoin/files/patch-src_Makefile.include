@@ -1,8 +1,6 @@
-diff --git a/src/Makefile.include b/src/Makefile.include
-index 2fc6cd7..cdd16f5 100644
---- a/src/Makefile.include
+--- src/Makefile.include.orig	2015-04-13 15:44:29 UTC
 +++ src/Makefile.include
-@@ -40,18 +40,18 @@ $(LIBBITCOINQT):
+@@ -41,18 +41,18 @@ $(LIBBITCOINQT):
  ui_%.h: %.ui
  	@test -d $(abs_builddir)/$(@D) || $(MKDIR_P) $(abs_builddir)/$(@D)
  	@test -f $(UIC) && QT_SELECT=$(QT_SELECT) $(UIC) -o $(abs_builddir)/$@ $(abs_srcdir)/$< || echo error: could not build $(abs_builddir)/$@

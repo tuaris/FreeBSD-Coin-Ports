@@ -1,6 +1,6 @@
---- src/net.cpp.orig	2015-09-28 15:49:30 UTC
+--- src/net.cpp.orig	2015-04-13 15:44:29 UTC
 +++ src/net.cpp
-@@ -1050,10 +1050,14 @@ void ThreadMapPort()
+@@ -1060,10 +1060,14 @@ void ThreadMapPort()
  #ifndef UPNPDISCOVER_SUCCESS
      /* miniupnpc 1.5 */
      devlist = upnpDiscover(2000, multicastif, minissdpdpath, 0);

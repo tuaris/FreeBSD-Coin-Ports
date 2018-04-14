@@ -1,17 +1,10 @@
---- src/scrypt.cpp.orig	2014-11-01 19:25:51 UTC
+--- src/scrypt.cpp.orig	2015-04-13 15:44:29 UTC
 +++ src/scrypt.cpp
-@@ -33,6 +33,7 @@
+@@ -33,22 +33,7 @@
  #include <stdint.h>
  #include <string.h>
  #include <openssl/sha.h>
-+#include <boost/lexical_cast.hpp>
- 
- #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
- #ifdef _MSC_VER
-@@ -44,22 +45,6 @@
- #endif
- #endif
- 
+-
 -static inline uint32_t be32dec(const void *pp)
 -{
 -	const uint8_t *p = (uint8_t const *)pp;
@@ -27,7 +20,7 @@
 -	p[1] = (x >> 16) & 0xff;
 -	p[0] = (x >> 24) & 0xff;
 -}
--
++#include <boost/lexical_cast.hpp>
+ 
  typedef struct HMAC_SHA256Context {
  	SHA256_CTX ictx;
- 	SHA256_CTX octx;

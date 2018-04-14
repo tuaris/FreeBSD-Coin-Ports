@@ -1,9 +1,9 @@
---- src/rpcserver.cpp.orig	2018-01-10 23:24:05 UTC
+--- src/rpcserver.cpp.orig	2015-04-13 15:44:29 UTC
 +++ src/rpcserver.cpp
-@@ -492,8 +492,8 @@ private:
+@@ -528,8 +528,8 @@ private:
  void ServiceConnection(AcceptedConnection *conn);
  
- //! Forward declaration required for RPCListen
+ // Forward declaration required for RPCListen
 -template <typename Protocol, typename SocketAcceptorService>
 -static void RPCAcceptHandler(boost::shared_ptr< basic_socket_acceptor<Protocol, SocketAcceptorService> > acceptor,
 +template <typename Protocol>
@@ -11,7 +11,7 @@
                               ssl::context& context,
                               bool fUseSSL,
                               boost::shared_ptr< AcceptedConnection > conn,
-@@ -502,8 +502,8 @@ static void RPCAcceptHandler(boost::shar
+@@ -538,8 +538,8 @@ static void RPCAcceptHandler(boost::shar
  /**
   * Sets up I/O resources to accept and handle a new connection.
   */
@@ -22,7 +22,7 @@
                     ssl::context& context,
                     const bool fUseSSL)
  {
-@@ -513,7 +513,7 @@ static void RPCListen(boost::shared_ptr<
+@@ -549,7 +549,7 @@ static void RPCListen(boost::shared_ptr<
      acceptor->async_accept(
              conn->sslStream.lowest_layer(),
              conn->peer,
@@ -31,7 +31,7 @@
                  acceptor,
                  boost::ref(context),
                  fUseSSL,
-@@ -525,8 +525,8 @@ static void RPCListen(boost::shared_ptr<
+@@ -561,8 +561,8 @@ static void RPCListen(boost::shared_ptr<
  /**
   * Accept and handle incoming connection.
   */
@@ -42,16 +42,16 @@
                               ssl::context& context,
                               const bool fUseSSL,
                               boost::shared_ptr< AcceptedConnection > conn,
-@@ -620,7 +620,7 @@ void StartRPCThreads()
+@@ -629,7 +629,7 @@ void StartRPCThreads()
  
      assert(rpc_io_service == NULL);
-     rpc_io_service = new boost::asio::io_service();
+     rpc_io_service = new asio::io_service();
 -    rpc_ssl_context = new ssl::context(*rpc_io_service, ssl::context::sslv23);
 +    rpc_ssl_context = new ssl::context(ssl::context::sslv23);
  
      const bool fUseSSL = GetBoolArg("-rpcssl", false);
  
-@@ -639,7 +639,7 @@ void StartRPCThreads()
+@@ -648,7 +648,7 @@ void StartRPCThreads()
          else LogPrintf("ThreadRPCServer ERROR: missing server private key file %s\n", pathPKFile.string());
  
          string strCiphers = GetArg("-rpcsslciphers", "TLSv1.2+HIGH:TLSv1+HIGH:!SSLv2:!aNULL:!eNULL:!3DES:@STRENGTH");
@@ -59,4 +59,4 @@
 +        SSL_CTX_set_cipher_list(rpc_ssl_context->native_handle(), strCiphers.c_str());
      }
  
-     std::vector<ip::tcp::endpoint> vEndpoints;
+     // Try a dual IPv6/IPv4 socket, falling back to separate IPv4 and IPv6 sockets
