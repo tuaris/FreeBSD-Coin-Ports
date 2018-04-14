@@ -42,3 +42,21 @@
                               ssl::context& context,
                               const bool fUseSSL,
                               AcceptedConnection* conn,
+@@ -2870,7 +2870,7 @@ void ThreadRPCServer2(void* parg)
+ 
+     asio::io_service io_service;
+ 
+-    ssl::context context(io_service, ssl::context::sslv23);
++    ssl::context context(ssl::context::sslv23);
+     if (fUseSSL)
+     {
+         context.set_options(ssl::context::no_sslv2);
+@@ -3163,7 +3163,7 @@ Object CallRPC(const string& strMethod, 
+     // Connect to localhost
+     bool fUseSSL = GetBoolArg("-rpcssl");
+     asio::io_service io_service;
+-    ssl::context context(io_service, ssl::context::sslv23);
++    ssl::context context(ssl::context::sslv23);
+     context.set_options(ssl::context::no_sslv2);
+     asio::ssl::stream<asio::ip::tcp::socket> sslStream(io_service, context);
+     SSLIOStreamDevice<asio::ip::tcp> d(sslStream, fUseSSL);
