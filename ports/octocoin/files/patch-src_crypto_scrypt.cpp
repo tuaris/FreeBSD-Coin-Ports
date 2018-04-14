@@ -1,4 +1,4 @@
---- src/crypto/scrypt.cpp.orig	2015-08-04 13:27:49 UTC
+--- src/crypto/scrypt.cpp.orig	2016-04-17 16:40:42 UTC
 +++ src/crypto/scrypt.cpp
 @@ -32,6 +32,7 @@
  #include <stdlib.h>
@@ -31,4 +31,3 @@
  typedef struct HMAC_SHA256Context {
  	SHA256_CTX ictx;
  	SHA256_CTX octx;
-
