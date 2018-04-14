@@ -3,8 +3,12 @@
 
 PORTNAME=	terracoin
 PORTVERSION=	0.12.1.6
+PORTREVISION= 1
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
+
+PATCH_SITES=	https://github.com/bitcoin/bitcoin/commit/
+PATCHFILES=	1ec0c0a01c31.patch:-p1
 
 MAINTAINER=	daniel@morante.net
 COMMENT=	Peer-to-Peer crypto currency using scrypt as a proof-of-work algorithm
