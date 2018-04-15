@@ -9,6 +9,15 @@
      {
          bool fUseADescendants = UseDescendantScore(a);
          bool fUseBDescendants = UseDescendantScore(b);
+@@ -250,7 +250,7 @@ public:
+         return f1 < f2;
+     }
+ 
+-    bool UseDescendantScore(const CTxMemPoolEntry& a)
++    bool UseDescendantScore(const CTxMemPoolEntry& a) const
+     {
+         double f1 = (double)a.GetModifiedFee() * a.GetSizeWithDescendants();
+         double f2 = (double)a.GetModFeesWithDescendants() * a.GetTxSize();
 @@ -264,7 +264,7 @@ public:
   */
  class CompareTxMemPoolEntryByScore {
