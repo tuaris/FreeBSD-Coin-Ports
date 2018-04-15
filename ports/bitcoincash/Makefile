@@ -20,6 +20,7 @@ LDFLAGS+=	-L${OPENSSLLIB}
 
 BROKEN_armv6=		AtomicPointer not implemented
 BROKEN_powerpc64=	fails to configure: No working boost sleep implementation found
+BROKEN_FreeBSD_10_amd64= fails to compile: unexpected cast lvalue
 
 USE_GITHUB=	yes
 GH_ACCOUNT=	Bitcoin-ABC
