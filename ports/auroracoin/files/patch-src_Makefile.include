@@ -1,0 +1,27 @@
+--- src/Makefile.include.orig	2015-04-13 15:44:29 UTC
++++ src/Makefile.include
+@@ -41,18 +41,18 @@ $(LIBBITCOINQT):
+ ui_%.h: %.ui
+ 	@test -d $(abs_builddir)/$(@D) || $(MKDIR_P) $(abs_builddir)/$(@D)
+ 	@test -f $(UIC) && QT_SELECT=$(QT_SELECT) $(UIC) -o $(abs_builddir)/$@ $(abs_srcdir)/$< || echo error: could not build $(abs_builddir)/$@
+-	$(SED) -e '/^\*\*.*Created:/d' $(abs_builddir)/$@ > $(abs_builddir)/$@.n && mv $(abs_builddir)/$@{.n,}
+-	$(SED) -e '/^\*\*.*by:/d' $(abs_builddir)/$@ > $(abs_builddir)/$@.n && mv $(abs_builddir)/$@{.n,}
++	$(SED) -e '/^\*\*.*Created:/d' $(abs_builddir)/$@ > $(abs_builddir)/$@.n && mv $(abs_builddir)/$@.n $(abs_builddir)/$@
++	$(SED) -e '/^\*\*.*by:/d' $(abs_builddir)/$@ > $(abs_builddir)/$@.n && mv $(abs_builddir)/$@.n $(abs_builddir)/$@
+ 
+ %.moc: %.cpp
+ 	QT_SELECT=$(QT_SELECT) $(MOC) $(QT_INCLUDES) $(MOC_DEFS) -o $@ $<
+-	$(SED) -e '/^\*\*.*Created:/d' $@ > $@.n && mv $@{.n,}
+-	$(SED) -e '/^\*\*.*by:/d' $@ > $@.n && mv $@{.n,}
++	$(SED) -e '/^\*\*.*Created:/d' $@ > $@.n && mv $@.n $(abs_builddir)/$@
++	$(SED) -e '/^\*\*.*by:/d' $@ > $@.n && mv $@.n $(abs_builddir)/$@
+ 
+ moc_%.cpp: %.h
+ 	QT_SELECT=$(QT_SELECT) $(MOC) $(QT_INCLUDES) $(MOC_DEFS) -o $@ $<
+-	$(SED) -e '/^\*\*.*Created:/d' $@ > $@.n && mv $@{.n,}
+-	$(SED) -e '/^\*\*.*by:/d' $@ > $@.n && mv $@{.n,}
++	$(SED) -e '/^\*\*.*Created:/d' $@ > $@.n && mv $@.n $(abs_builddir)/$@
++	$(SED) -e '/^\*\*.*by:/d' $@ > $@.n && mv $@.n $(abs_builddir)/$@
+ 
+ %.qm: %.ts
+ 	@test -d $(abs_builddir)/$(@D) || $(MKDIR_P) $(abs_builddir)/$(@D)

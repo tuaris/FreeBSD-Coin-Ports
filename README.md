@@ -55,6 +55,7 @@ If you would like to build your own pkgng repository, symlink the provided make.
 ## The current list of crypto currencies:
 
 - aricoin
+- auroracoin
 - b1bl3coin
 - bitcoindark
 - binarycoin
