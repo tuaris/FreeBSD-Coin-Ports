@@ -1,4 +1,5 @@
 %%NO_X11%%%%EXECUTABLE_DAEMON%%
+%%NO_X11%%%%EXECUTABLE_TX%%
 %%NO_X11%%@sample etc/%%PORTNAME%%.conf.sample
 %%CLI%%%%EXECUTABLE_CLI%%
 %%X11%%%%EXECUTABLE_QT%%

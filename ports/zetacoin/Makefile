@@ -2,7 +2,7 @@
 # $FreeBSD: head/net-p2p/zetacoin/Makefile 441468 2017-05-22 16:04:19Z linimon $
 
 PORTNAME=	zetacoin
-PORTVERSION=	0.11.3.4
+PORTVERSION=	0.12.1.1
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
@@ -11,9 +11,11 @@ COMMENT=	Peer-to-Peer crypto currency with quick transactions
 
 LICENSE=	MIT
 
-LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs
+LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs\
+				libevent.so:devel/libevent
 
-USES+=		autoreconf compiler:c++0x gmake libtool pkgconfig:build ssl
+USES+=		autoreconf compiler:c++11-lib gmake libtool pkgconfig:build ssl
+USE_CXXSTD= c++11
 CFLAGS+=	-I${OPENSSLINC}
 LDFLAGS+=	-L${OPENSSLLIB}
 
@@ -38,13 +40,12 @@ UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
 UPNP_CPPFLAGS=		-I${LOCALBASE}/include
 UPNP_LIBS=		-L${LOCALBASE}/lib
 
-X11_CONFIGURE_WITH=	gui
+X11_CONFIGURE_WITH=	gui=qt5
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_LIB_DEPENDS=	libprotobuf.so:devel/protobuf
-X11_USE=		qt4=corelib,network,gui,qmake_build,linguisttools_build \
-			qt4=uic_build,moc_build,rcc_build,qtestlib_build
+X11_USE=		qt5=core,gui,dbus,widgets,network,qmake_build,linguisttools,buildtools_build
 X11_USES=		desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=wallet
@@ -68,18 +69,20 @@ CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcr
 
 QT_BINARY=	${PORTNAME}-qt
 CLI_BINARY=	${PORTNAME}-cli
+TX_BINARY=	${PORTNAME}-tx
 DAEMON=		${PORTNAME}d
 
 PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 		EXECUTABLE_CLI=bin/${CLI_BINARY} \
+		EXECUTABLE_TX=bin/${TX_BINARY} \
 		EXECUTABLE_DAEMON=bin/${DAEMON} \
 		PORTNAME=${PORTNAME}
 
 .include <bsd.port.options.mk>
 
-.if ${PORT_OPTIONS:MX11}
-QT_NONSTANDARD=	yes
-.endif
+#.if ${PORT_OPTIONS:MX11}
+#QT_NONSTANDARD=	yes
+#.endif
 
 # tests will currently fail
 .if ${PORT_OPTIONS:MTEST}
@@ -120,6 +123,7 @@ do-install-X11-on:
 	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 do-install-X11-off:
+	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${TX_BINARY} ${STAGEDIR}${PREFIX}/bin/${TX_BINARY}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
 	${INSTALL_DATA} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
 
