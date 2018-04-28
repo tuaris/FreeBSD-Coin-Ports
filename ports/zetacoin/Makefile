@@ -14,8 +14,8 @@ LICENSE=	MIT
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs\
 				libevent.so:devel/libevent
 
-USES+=		autoreconf compiler:c++11-lib gmake libtool pkgconfig:build ssl
-USE_CXXSTD= c++11
+USES+=		autoreconf compiler:c++11-lib gmake libtool pkgconfig ssl
+
 CFLAGS+=	-I${OPENSSLINC}
 LDFLAGS+=	-L${OPENSSLLIB}
 
@@ -45,8 +45,10 @@ X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_LIB_DEPENDS=	libprotobuf.so:devel/protobuf
-X11_USE=		qt5=core,gui,dbus,widgets,network,qmake_build,linguisttools,buildtools_build
-X11_USES=		desktop-file-utils
+X11_USE=	CXXSTD=c++11\
+			qt5=core,gui,dbus,widgets,network,\
+			qmake_build,linguisttools,buildtools_build
+X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=wallet
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
@@ -79,10 +81,6 @@ PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 		PORTNAME=${PORTNAME}
 
 .include <bsd.port.options.mk>
-
-#.if ${PORT_OPTIONS:MX11}
-#QT_NONSTANDARD=	yes
-#.endif
 
 # tests will currently fail
 .if ${PORT_OPTIONS:MTEST}
