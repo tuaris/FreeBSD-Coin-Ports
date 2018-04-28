@@ -75,8 +75,8 @@ PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 
 .include <bsd.port.options.mk>
 
-.if ${PORT_OPTIONS:MX11}
-QT_NONSTANDARD=	yes
+.if ${OSVERSION} >= 1100000 && ${PORT_OPTIONS:MX11}
+USE_CXXSTD=c++11
 .endif
 
 # tests will currently fail
