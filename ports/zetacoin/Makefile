@@ -31,9 +31,9 @@ WALLET_DESC=	Build wallet or P2P server node only
 QRCODES_DESC=	Enable QR code display when building graphical interface
 CLI_DESC=		Build command line RPC client
 
-OPTIONS_DEFAULT=	X11 WALLET QRCODES
+OPTIONS_DEFAULT=	X11 DBUS WALLET QRCODES
 OPTIONS_GROUP=		X11
-OPTIONS_GROUP_X11=	QRCODES
+OPTIONS_GROUP_X11=	QRCODES DBUS
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
@@ -45,8 +45,7 @@ X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_LIB_DEPENDS=	libprotobuf.so:devel/protobuf
-X11_USE=	CXXSTD=c++11\
-			qt5=core,gui,dbus,widgets,network,\
+X11_USE=	qt5=core,gui,dbus,widgets,network,\
 			qmake_build,linguisttools,buildtools_build
 X11_USES=	desktop-file-utils
 
@@ -58,6 +57,10 @@ WALLET_USES=		bdb:48
 QRCODES_IMPLIES=	X11
 QRCODES_LIB_DEPENDS=	libqrencode.so:graphics/libqrencode
 QRCODES_CONFIGURE_WITH=	qrencode
+
+DBUS_IMPLIES=	X11
+DBUS_CONFIGURE_WITH=    dbus
+DBUS_USE= qt5=dbus
 
 CLI_CONFIGURE_WITH=	cli
 
@@ -81,6 +84,10 @@ PLIST_SUB+=	EXECUTABLE_QT=bin/${QT_BINARY} \
 		PORTNAME=${PORTNAME}
 
 .include <bsd.port.options.mk>
+
+.if ${OSVERSION} >= 1100000 && ${PORT_OPTIONS:MX11}
+USE_CXXSTD=c++11
+.endif
 
 # tests will currently fail
 .if ${PORT_OPTIONS:MTEST}
