@@ -41,13 +41,14 @@ UPNP_CPPFLAGS=		-I${LOCALBASE}/include
 UPNP_LIBS=		-L${LOCALBASE}/lib
 
 X11_CONFIGURE_WITH=	gui=qt5
-X11_QMAKE_ON=	QMAKE_LRELEASE=${LRELEASE}
+X11_QMAKE_ON=	
 X11_CONFIGURE_ON=	--without-daemon
 X11_CONFIGURE_OFF=	--with-daemon
 X11_BUILD_DEPENDS=	protoc:devel/protobuf
 X11_LIB_DEPENDS=	libprotobuf.so:devel/protobuf
 X11_USE=	qt5=core,gui,widgets,network,\
-			qmake_build,linguisttools,buildtools_build
+			qmake_build,linguisttools,buildtools_build \
+			QMAKE_LRELEASE=${LRELEASE}
 X11_USES=	desktop-file-utils
 
 WALLET_CONFIGURE_ENABLE=wallet
