@@ -94,10 +94,9 @@ do-install:
 .if ${PORT_OPTIONS:MX11}
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/qt/${QT_BINARY} ${STAGEDIR}${PREFIX}/bin/${QT_BINARY}
 	${REINPLACE_CMD} -e 's,=/usr,=${PREFIX},' \
-		-e 's,xpm,png,g' \
-		-e 's,80,,g' ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop	
+		-e 's,verge80\.xpm,VERGE.png,g' ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop	
 	${INSTALL} ${WRKSRC}/contrib/debian/${PORTNAME}-qt.desktop ${STAGEDIR}${PREFIX}/share/applications/${PORTNAME}-qt.desktop
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/verge.png ${STAGEDIR}${PREFIX}/share/pixmaps/verge.png
+	${INSTALL} ${WRKSRC}/src/qt/res/icons/verge.png ${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 .else
 	${INSTALL_PROGRAM} -s ${WRKSRC}/src/${DAEMON} ${STAGEDIR}${PREFIX}/bin/${DAEMON}
 	${INSTALL_DATA} ${FILESDIR}/${PORTNAME}.conf.sample ${STAGEDIR}${PREFIX}/etc/${PORTNAME}.conf.sample
