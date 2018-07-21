@@ -2,7 +2,7 @@
 # $FreeBSD: $
 
 PORTNAME=	bitcoincash
-PORTVERSION=	0.17.0
+PORTVERSION=	0.17.2
 DISTVERSIONPREFIX=	v
 CATEGORIES=	net-p2p finance
 
@@ -53,7 +53,7 @@ X11_USES=		desktop-file-utils
 WALLET_CONFIGURE_ENABLE=wallet
 WALLET_CXXFLAGS=	-I${BDB_INCLUDE_DIR}
 WALLET_LIBS=		-L${BDB_LIB_DIR}
-WALLET_USES=		bdb:48
+WALLET_USES=		bdb:5
 
 QRCODES_IMPLIES=	X11
 QRCODES_LIB_DEPENDS=	libqrencode.so:graphics/libqrencode
