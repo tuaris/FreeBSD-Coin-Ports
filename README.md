@@ -50,7 +50,47 @@ OctoPkg can be used instead if you prefer a GUI.
 
 ## Your own PKG-NG Repository
 
-If you would like to build your own pkgng repository, symlink the provided make.conf into poudriere's /usr/local/etc/poudriere.d/<jailname>-make.conf. For best results, we recommend using a blank poudriere build jail only for building wallet related things, as this allows you to build packages that do not rely on openssl/libreessl and won't give you a headache later. These ports only build with openssl anyway (like all bitcoin forks).
+If you would like to build your own pkg repository, copy the following into poudriere's `/usr/local/etc/poudriere.d/<jailname>-make.conf`. 
+
+```
+OPTIONS_UNSET=SSL PORTS_SSL
+DEFAULT_VERSIONS+= ssl=base "java=1.8+"
+```
+
+For best results, we recommend using a blank poudriere build jail only for building wallet related things, as this allows you to build packages that do not rely on `openssl/libreessl` and won't give you a headache later. These ports only build with openssl anyway (like all bitcoin forks).
+
+
+## Using with Portshaker
+
+Create a file `/usr/local/etc/portshaker.d/coins` with the following contents.
+```
+#!/bin/sh
+. /usr/local/share/portshaker/portshaker.subr
+method="git"
+if	[ "$1" != '--' ]; then
+	err 1 "Extra arguments"
+fi
+shift
+git_clone_uri="https://github.com/tuaris/FreeBSD-Coin-Ports.git"
+git_branch="master"
+run_portshaker_command $*
+```
+
+Then add **coins** to your **_merge_from** line in `/usr/local/etc/portshaker.conf`.  For example.
+
+```
+#---[ Base directory for mirrored Ports Trees ]---
+mirror_base_dir="/var/cache/portshaker"
+
+#---[ Directories where to merge ports ]---
+ports_trees="default"
+
+use_zfs="yes"
+poudriere_dataset="poudriere/poudriere"
+poudriere_ports_mountpoint="/usr/local/poudriere/ports"
+default_poudriere_tree="default"
+default_merge_from="ports coins"
+```
 
 ## The current list of crypto currencies:
 
