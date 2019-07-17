@@ -8,7 +8,7 @@ COMMENT=	Peer-to-Peer crypto currency with quick transactions (Daemon)
 
 SLAVE_PORT=	yes
 
-RUN_DEPENDS+=	zetacoin-utils:net-p2p/zetacoin-utils
+RUN_DEPENDS+=	zetacoin-cli:net-p2p/zetacoin-utils
 
 OPTIONS_DEFINE=		DEBUG HARDENING TESTS UPNP ZMQ
 # WALLET_BDBMODERN is a choice for WALLET, introduced via OPTIONS_RADIO=WALLET
