@@ -10,6 +10,8 @@ COMMENT=	Peer-to-Peer crypto currency with quick transactions
 
 LICENSE=	MIT
 
+BROKEN=         Incomplete port
+
 BUILD_DEPENDS=	llvm-config${LLVM_VER}:${PORTSDIR}/devel/llvm${LLVM_VER} \
 				clang${LLVM_VER}:${PORTSDIR}/lang/clang${LLVM_VER}
 
