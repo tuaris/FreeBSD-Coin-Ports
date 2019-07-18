@@ -13,6 +13,7 @@ COMMENT=	Peer-to-Peer crypto currency of with PoS and X11 PoW
 LICENSE=	MIT
 
 BROKEN=         fails to build with latest tree and platforms
+IGNORE=			Depends on missing libexecinfo and secp256k1
 
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
 				libexecinfo.so:${PORTSDIR}/devel/libexecinfo
