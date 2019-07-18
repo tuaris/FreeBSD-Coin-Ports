@@ -11,13 +11,13 @@ COMMENT=	Peer-to-Peer crypto currency with quick transactions
 
 LICENSE=	MIT
 
+NOT_FOR_ARCHS=		powerpc powerpc64 sparc64
+NOT_FOR_ARCHS_REASON=	does not support big-endian architectures
+
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 		libevent.so:devel/libevent
 
 USES=		autoreconf compiler:c++11-lib gmake libtool pkgconfig qt:5 shebangfix ssl
-
-NOT_FOR_ARCHS=		powerpc powerpc64 sparc64
-NOT_FOR_ARCHS_REASON=	does not support big-endian architectures
 
 USE_GITHUB=	yes
 
