@@ -13,8 +13,7 @@ LICENSE=	MIT
 BROKEN=         Incomplete port
 IGNORE=			Incomplete
 
-BUILD_DEPENDS=	llvm-config${LLVM_VER}:${PORTSDIR}/devel/llvm${LLVM_VER} \
-				clang${LLVM_VER}:${PORTSDIR}/lang/clang${LLVM_VER}
+BUILD_DEPENDS=	llvm-config${LLVM_VER}:${PORTSDIR}/devel/llvm${LLVM_VER}
 
 LIB_DEPENDS=	libboost_python.so:${PORTSDIR}/devel/boost-python-libs \
 				libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
@@ -23,7 +22,7 @@ LIB_DEPENDS=	libboost_python.so:${PORTSDIR}/devel/boost-python-libs \
 				libcryptopp.so:${PORTSDIR}/security/cryptopp \
 				libjsoncpp.so:${PORTSDIR}/devel/jsoncpp \
 				libminiupnpc.so:${PORTSDIR}/net/miniupnpc \
-				libjsonrpccpp-common.so:${PORTSDIR}/devel/libjson-rpc-cpp \
+				#libjsonrpccpp-common.so:${PORTSDIR}/devel/libjson-rpc-cpp \
 				libmicrohttpd.so:${PORTSDIR}/www/libmicrohttpd
 
 USES+=		compiler:c++0x cmake

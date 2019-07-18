@@ -15,7 +15,6 @@ BROKEN=         fails to build with latest tree and platforms
 IGNORE=			Depends on missing libexecinfo and secp256k1
 
 LIB_DEPENDS=	libboost_date_time.so:${PORTSDIR}/devel/boost-libs \
-				libexecinfo.so:${PORTSDIR}/devel/libexecinfo \
 				libsecp256k1.so:${PORTSDIR}/security/secp256k1
 
 BUILD_DEPENDS+=   ${LOCALBASE}/include/secp256k1.h:${PORTSDIR}/security/secp256k1
