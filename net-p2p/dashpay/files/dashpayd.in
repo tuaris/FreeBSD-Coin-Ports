@@ -16,9 +16,9 @@
 # %%PORTNAME%%_config (path):	Set to %%PREFIX%%/etc/%%PORTNAME%%.conf
 #				by default.
 # %%PORTNAME%%_user:	The user account %%PORTNAME%% daemon runs as
-#				It uses 'root' user by default.
+#				It uses 'bitcoin' user by default.
 # %%PORTNAME%%_group:	The group account %%PORTNAME%% daemon runs as
-#				It uses 'wheel' group by default.
+#				It uses 'bitcoin' group by default.
 # %%PORTNAME%%_datadir (str):	Default to "/var/db/%%PORTNAME%%"
 #				Base data directory.
 
@@ -32,12 +32,12 @@ load_rc_config $name
 : ${%%PORTNAME%%_enable:=NO}
 : ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
 : ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}
-: ${%%PORTNAME%%_user="root"}
-: ${%%PORTNAME%%_group="wheel"}
+: ${%%PORTNAME%%_user="bitcoin"}
+: ${%%PORTNAME%%_group="bitcoin"}
 
 required_files=${%%PORTNAME%%_config}
-command=%%PREFIX%%/bin/%%PORTNAME%%d
-cli_command=%%PREFIX%%/bin/%%PORTNAME%%-cli
+command=%%PREFIX%%/bin/%%REALNAME%%d
+cli_command=%%PREFIX%%/bin/%%REALNAME%%-cli
 %%PORTNAME%%_chdir=${%%PORTNAME%%_datadir}
 pidfile="${%%PORTNAME%%_datadir}/%%PORTNAME%%d.pid"
 stop_cmd=%%PORTNAME%%_stop
@@ -52,7 +52,6 @@ extra_commands="reindex salvage"
 	echo "Creating data directory"
 	eval mkdir -p ${%%PORTNAME%%_datadir}
 	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_datadir}
-	ln -s ${%%PORTNAME%%_datadir} /.%%PORTNAME%%
 }
 
 %%PORTNAME%%_prestart()

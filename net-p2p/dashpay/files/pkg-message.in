@@ -1,0 +1,25 @@
+[
+{ type: install
+  message: <<EOM
+To configure the Dash Core server please edit:
+%%PREFIX%%/etc/%%PORTNAME%%.conf
+
+You must at least set a "rpcpassword" in the configuration file above.
+
+To run the %%PORTNAME%%d server at startup, add the following
+settings to your /etc/rc.conf
+
+%%PORTNAME%%_enable="YES"
+
+WARNING: By default Dash Core server will run as the bitcoin user.  This may
+not be desirerable and you should instead create a dedicated user and group. 
+Check the FreeBSD Handbook for instructions.  
+
+Set the service user and group in your /etc/rc.conf:
+
+%%PORTNAME%%_user="new_user"
+%%PORTNAME%%_group="new_group"
+
+EOM
+}
+]

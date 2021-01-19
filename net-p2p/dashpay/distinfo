@@ -1,0 +1,7 @@
+TIMESTAMP = 1611031627
+SHA256 (dashpay-dash-v0.16.1.1_GH0.tar.gz) = 98bc0f50c65ca1a149c95f1b87ae926457e0e0623af7a1e2a7e345fdfe0eecc8
+SIZE (dashpay-dash-v0.16.1.1_GH0.tar.gz) = 8613292
+SHA256 (codablock-bls-signatures-v20181101_GH0.tar.gz) = b3ec74a77a7b6795f84b05e051a0824ef8d9e05b04b2993f01040f35689aa87c
+SIZE (codablock-bls-signatures-v20181101_GH0.tar.gz) = 741690
+SHA256 (rust-lang-nursery-libbacktrace-f4d02bb_GH0.tar.gz) = 11ed6cab34e42ee369dcd830b55324b6fe2d5c36d10cda41ca77225b8f5a1e36
+SIZE (rust-lang-nursery-libbacktrace-f4d02bb_GH0.tar.gz) = 517929
