@@ -36,7 +36,7 @@ USES+=		desktop-file-utils qt:5
 USE_QT=		core gui network widgets \
 		buildtools_build linguisttools_build qmake_build
 
-BUILD_DEPENDS+=	protoc:devel/protobuf				
+BUILD_DEPENDS+=	protoc:devel/protobuf
 LIB_DEPENDS+=	libprotobuf.so:devel/protobuf
 
 TESTS_USE=		QT=testlib
@@ -103,13 +103,19 @@ MAKE_ENV+=	V=1
 CPPFLAGS+=	-I${WRKSRC}/chiabls/include -I${WRKSRC}/libbacktrace/include
 LIBS+=		-L${WRKSRC}/chiabls/lib -L${WRKSRC}/libbacktrace/lib
 
+# For bls-signatures, anything other than amd64 needs be build as 32-bit library
+BLS_CMAKE_ARGS=	-DSTLIB=ON -DSHLIB=OFF -DSTBIN=ON
+.if ${MACHINE_ARCH:tl} != "amd64"
+BLS_CMAKE_ARGS+=	-DWSIZE=32
+.endif
+
 post-extract:
 	${MKDIR} ${WRKSRC_bls}/build
 
 pre-configure:
 	# Configure for bundled bls-signatures dependency
 	(cd ${WRKSRC_bls}/build && \
-	cmake ../)
+	cmake ${BLS_CMAKE_ARGS} ../)
 	# Configure for bundled libbacktrace dependency
 	(cd ${WRKSRC_lbt} && \
 	./configure --disable-shared --enable-host-shared --prefix=${WRKSRC}/libbacktrace CC=${CC} CXX=${CXX})
