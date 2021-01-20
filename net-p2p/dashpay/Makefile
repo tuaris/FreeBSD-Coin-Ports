@@ -2,8 +2,8 @@
 # $FreeBSD$
 
 PORTNAME=	dashpay
-PORTVERSION=	0.16.1.1
 DISTVERSIONPREFIX=	v
+DISTVERSION=	0.16.1.1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
@@ -11,6 +11,7 @@ COMMENT=	Open sourced, privacy-centric digital currency
 
 LICENSE=	MIT
 
+BUILD_DEPENDS=	cmake:devel/cmake
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 				libevent.so:devel/libevent \
 				libgmp.so:math/gmp
@@ -27,18 +28,20 @@ GNU_CONFIGURE=	yes
 
 SLAVE_PORT?=	no
 
+PLIST_FILES?=	bin/dash-qt man/man1/dash-qt.1.gz \
+				share/applications/dash-qt.desktop share/pixmaps/dashpay128.png
+
 .if defined(SLAVE_PORT) && ${SLAVE_PORT} == "no"
 USES+=		desktop-file-utils qt:5
 USE_QT=		core gui network widgets \
 		buildtools_build linguisttools_build qmake_build
 
-BUILD_DEPENDS+=	protoc:devel/protobuf \
-				cmake:devel/cmake
+BUILD_DEPENDS+=	protoc:devel/protobuf				
 LIB_DEPENDS+=	libprotobuf.so:devel/protobuf
 
 TESTS_USE=		QT=testlib
 TESTS_PLIST_FILES=	bin/test_dash-qt \
-			bin/test_dash
+					bin/test_dash
 .endif
 
 OPTIONS_DEFINE?=	DBUS DEBUG HARDENING QRCODES TESTS UPNP WALLET ZMQ
@@ -99,11 +102,6 @@ MAKE_ENV+=	V=1
 # Include paths for bundled libbacktrace and bls-signatures
 CPPFLAGS+=	-I${WRKSRC}/chiabls/include -I${WRKSRC}/libbacktrace/include
 LIBS+=		-L${WRKSRC}/chiabls/lib -L${WRKSRC}/libbacktrace/lib
-
-PLIST_FILES?=	bin/dash-qt man/man1/dash-qt.1.gz \
-		share/applications/dash-qt.desktop share/pixmaps/dashpay128.png
-
-.include <bsd.port.pre.mk>
 
 post-extract:
 	${MKDIR} ${WRKSRC_bls}/build

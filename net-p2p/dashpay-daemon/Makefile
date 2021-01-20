@@ -8,7 +8,7 @@ COMMENT=	Open sourced, privacy-centric digital currency (Daemon)
 
 SLAVE_PORT=	yes
 
-RUN_DEPENDS+=	dashpay-cli:net-p2p/dashpay-utils
+RUN_DEPENDS+=	dash-cli:net-p2p/dashpay-utils
 
 OPTIONS_DEFINE=		DEBUG HARDENING TESTS UPNP WALLET ZMQ
 OPTIONS_DEFAULT=	HARDENING UPNP WALLET ZMQ
@@ -23,8 +23,8 @@ CONFIGURE_ARGS=	--with-daemon \
 		--without-utils
 
 PLIST_FILES=	bin/dashd \
-		man/man1/dashd.1.gz \
-		"@sample %%ETCDIR%%.conf.sample"
+				man/man1/dashd.1.gz \
+				"@sample ${ETCDIR}.conf.sample"
 
 USE_RC_SUBR=	dashpayd
 SUB_LIST+=	PORTNAME=${PORTNAME} REALNAME=${REALNAME}
