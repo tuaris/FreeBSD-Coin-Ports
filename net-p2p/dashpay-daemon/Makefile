@@ -26,7 +26,7 @@ PLIST_FILES=	bin/dashd \
 				man/man1/dashd.1.gz \
 				"@sample ${ETCDIR}.conf.sample"
 
-USE_RC_SUBR=	dashpayd
+USE_RC_SUBR=	dashpay
 SUB_LIST+=	PORTNAME=${PORTNAME} REALNAME=${REALNAME}
 SUB_FILES=	pkg-message
 
