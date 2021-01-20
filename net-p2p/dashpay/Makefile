@@ -103,7 +103,7 @@ MAKE_ENV+=	V=1
 CPPFLAGS+=	-I${WRKSRC}/chiabls/include -I${WRKSRC}/libbacktrace/include
 LIBS+=		-L${WRKSRC}/chiabls/lib -L${WRKSRC}/libbacktrace/lib
 
-# For bls-signatures, anything other than amd64 needs be build as 32-bit library
+# For bls-signatures, anything other than amd64 needs to be build as 32-bit library
 BLS_CMAKE_ARGS=	-DSTLIB=ON -DSHLIB=OFF -DSTBIN=ON
 .if ${MACHINE_ARCH:tl} != "amd64"
 BLS_CMAKE_ARGS+=	-DWSIZE=32
