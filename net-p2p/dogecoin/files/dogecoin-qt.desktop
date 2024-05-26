@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Dogecoin Core
+Comment=Connect to the Dogecoin P2P Network
+Comment[de]=Verbinde mit dem Dogecoin peer-to-peer Netzwerk
+Comment[fr]=Dogecoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Dogecoin, esten ese kriptografik sanal para birimi
+Exec=dogecoin-qt %u
+Terminal=false
+Type=Application
+Icon=dogecoin
+MimeType=x-scheme-handler/dogecoin;
+Categories=Office;Finance;
+StartupWMClass=Dogecoin-qt
