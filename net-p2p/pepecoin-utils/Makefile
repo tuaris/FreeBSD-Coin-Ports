@@ -1,4 +1,4 @@
-MASTERDIR=	${.CURDIR}/../dogecoin
+MASTERDIR=	${.CURDIR}/../pepecoin
 PKGNAMESUFFIX=	-utils
 
 COMMENT=	Virtual Peer-to-Peer Currency (CLI and Utilities)
@@ -17,7 +17,7 @@ CONFIGURE_ARGS=	--without-daemon \
 		--with-utils \
 		--disable-wallet
 
-PLIST_FILES=	bin/dogecoin-cli bin/dogecoin-tx \
-		share/man/man1/dogecoin-cli.1.gz share/man/man1/dogecoin-tx.1.gz
+PLIST_FILES=	bin/pepecoin-cli bin/pepecoin-tx \
+		share/man/man1/pepecoin-cli.1.gz share/man/man1/pepecoin-tx.1.gz
 
 .include "${MASTERDIR}/Makefile"

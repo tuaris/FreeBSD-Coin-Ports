@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Pepecoin Core
+Comment=Connect to the Pepecoin P2P Network
+Exec=pepecoin-qt %u
+Terminal=false
+Type=Application
+Icon=pepecoin
+MimeType=x-scheme-handler/pepecoin;
+Categories=Office;Finance;
+StartupWMClass=Pepecoin-qt
+Name[C]=pepecoin-qt.desktop
