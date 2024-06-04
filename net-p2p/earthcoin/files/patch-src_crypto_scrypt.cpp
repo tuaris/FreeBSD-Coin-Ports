@@ -1,14 +1,6 @@
---- src/scrypt.cpp.orig	2014-11-01 19:25:51 UTC
-+++ src/scrypt.cpp
-@@ -33,6 +33,7 @@
- #include <stdint.h>
- #include <string.h>
- #include <openssl/sha.h>
-+#include <boost/lexical_cast.hpp>
- 
- #if defined(USE_SSE2) && !defined(USE_SSE2_ALWAYS)
- #ifdef _MSC_VER
-@@ -44,22 +45,6 @@
+--- src/crypto/scrypt.cpp.orig	2021-05-15 06:47:32 UTC
++++ src/crypto/scrypt.cpp
+@@ -44,22 +44,6 @@
  #endif
  #endif
  
@@ -28,6 +20,6 @@
 -	p[0] = (x >> 24) & 0xff;
 -}
 -
- typedef struct HMAC_SHA256Context {
- 	SHA256_CTX ictx;
- 	SHA256_CTX octx;
+ /**
+  * PBKDF2_SHA256(passwd, passwdlen, salt, saltlen, c, buf, dkLen):
+  * Compute PBKDF2(passwd, salt, c, dkLen) using HMAC-SHA256 as the PRF, and
