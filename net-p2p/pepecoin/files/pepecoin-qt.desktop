@@ -9,4 +9,3 @@ Icon=pepecoin
 MimeType=x-scheme-handler/pepecoin;
 Categories=Office;Finance;
 StartupWMClass=Pepecoin-qt
-Name[C]=pepecoin-qt.desktop

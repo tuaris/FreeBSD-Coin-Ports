@@ -9,4 +9,3 @@ Icon=earthcoin
 MimeType=x-scheme-handler/litecoin;
 Categories=Office;Finance;
 StartupWMClass=Earthcoin-qt
-Name[C]=earthcoin-qt.desktop
