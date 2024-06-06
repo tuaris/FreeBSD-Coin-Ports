@@ -1,60 +1,50 @@
-# Created by: Daniel Morante <daniel@morante.net>
-# $FreeBSD: head/net-p2p/zetacoin/Makefile 441468 2017-05-22 16:04:19Z linimon $
-
 PORTNAME=	zetacoin
-PORTVERSION=	0.13.2.1
 DISTVERSIONPREFIX=	v
+DISTVERSION=	0.13.2.1
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net
-COMMENT=	Peer-to-Peer crypto currency with quick transactions
+COMMENT?=	Virtual Peer-to-Peer Currency Client
+WWW=		https://www.zetacoin.com/
 
 LICENSE=	MIT
 
-NOT_FOR_ARCHS=		powerpc powerpc64 sparc64
-NOT_FOR_ARCHS_REASON=	does not support big-endian architectures
-
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
+		libfmt.so:devel/libfmt \
 		libevent.so:devel/libevent
 
-USES=		autoreconf compiler:c++11-lib gmake libtool pkgconfig qt:5 shebangfix ssl
+USES=		autoreconf compiler:c++11-lang cpe gmake libtool localbase pkgconfig qt:5 shebangfix ssl
 
 USE_GITHUB=	yes
-
 GNU_CONFIGURE=	yes
+GNU_CONFIGURE_MANPREFIX=${PREFIX}/share
 
 SLAVE_PORT?=	no
 
 .if defined(SLAVE_PORT) && ${SLAVE_PORT} == "no"
 USES+=		desktop-file-utils
 USE_QT=		core gui network widgets \
-		buildtools_build linguisttools_build qmake_build
+		buildtools:build linguisttools:build qmake:build
 
-BUILD_DEPENDS+=	protoc:devel/protobuf
-LIB_DEPENDS+=	libprotobuf.so:devel/protobuf
+BUILD_DEPENDS+=	protoc:devel/protobuf3
+LIB_DEPENDS+=	libprotobuf.so:devel/protobuf3
 
-TESTS_USES=	qt:5
 TESTS_USE=		QT=testlib
 TESTS_PLIST_FILES=	bin/test_${PORTNAME}-qt \
 			bin/test_${PORTNAME}
 .endif
 
-OPTIONS_DEFINE?=	DBUS DEBUG HARDENING QRCODES TESTS UPNP ZMQ
-OPTIONS_RADIO?=		WALLET
-OPTIONS_RADIO_WALLET?=	WALLET_BDB48 WALLET_BDBMODERN
+OPTIONS_DEFINE?=	DBUS DEBUG HARDENING QRCODES TESTS UPNP WALLET_BDBMODERN ZMQ
 OPTIONS_DEFAULT?=	DBUS HARDENING QRCODES UPNP WALLET_BDBMODERN ZMQ
 OPTIONS_SUB=		yes
 
 HARDENING_DESC=	Attempt to harden binaries (PIE for ASLR, NX Stack)
 QRCODES_DESC=	Display QR Codes
 TESTS_DESC=	Build test binary and unit tests
-WALLET_DESC=	Wallet Management Support
-WALLET_BDB48_DESC=	Wallet using BDB 4.8
-WALLET_BDBMODERN_DESC=	Wallet using modern BDB 5.x or 6.x
+WALLET_BDBMODERN_DESC=	Wallet using modern BDB 18.x
 ZMQ_DESC=	Block and transaction broadcasting with ZeroMQ
 
 DBUS_CONFIGURE_WITH=	dbus
-DBUS_USES=	qt:5
 DBUS_USE=		QT=dbus
 
 DEBUG_CONFIGURE_ENABLE=		debug
@@ -70,15 +60,14 @@ TESTS_PLIST_FILES+=	bin/bench_${PORTNAME}
 
 UPNP_CONFIGURE_WITH=	miniupnpc
 UPNP_LIB_DEPENDS=	libminiupnpc.so:net/miniupnpc
-UPNP_CPPFLAGS=		-I${LOCALBASE}/include
-UPNP_LIBS=		-L${LOCALBASE}/lib
 
 QRCODES_CONFIGURE_WITH=	qrencode
 QRCODES_LIB_DEPENDS=	libqrencode.so:graphics/libqrencode
 
 ZMQ_CONFIGURE_ENABLE=	zmq
-ZMQ_BUILD_DEPENDS=	libzmq4>0:net/libzmq4
-ZMQ_RUN_DEPENDS=	libzmq4>0:net/libzmq4
+ZMQ_LIB_DEPENDS=	libzmq.so:net/libzmq4
+
+GH_ACCOUNT=	${PORTNAME}
 
 CONFIGURE_ARGS?=	--without-libs \
 			--with-gui=qt5 \
@@ -90,24 +79,21 @@ CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcr
 		OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
 MAKE_ENV+=	V=1
 
-PLIST_FILES?=	bin/${PORTNAME}-qt share/applications/${PORTNAME}-qt.desktop \
-		share/pixmaps/${PORTNAME}256.png
+PLIST_FILES?=	bin/${PORTNAME}-qt \
+		share/applications/${PORTNAME}-qt.desktop share/pixmaps/${PORTNAME}.png
 
 .include <bsd.port.options.mk>
 
-.if ${PORT_OPTIONS:MWALLET_BDB48}
-CONFIGURE_ARGS+=	--enable-wallet
-USES+=			bdb:48
-.elif ${PORT_OPTIONS:MWALLET_BDBMODERN}
+.if ${PORT_OPTIONS:MWALLET_BDBMODERN}
 CONFIGURE_ARGS+=	--enable-wallet --with-incompatible-bdb
-USES+=			bdb:5+
+USES+=			bdb:18
 .else
 CONFIGURE_ARGS+=	--disable-wallet
 .endif
 
 .include <bsd.port.pre.mk>
 
-.if ${PORT_OPTIONS:MWALLET_BDB48} || ${PORT_OPTIONS:MWALLET_BDBMODERN}
+.if ${PORT_OPTIONS:MWALLET_BDBMODERN}
 CPPFLAGS+=	-I${BDB_INCLUDE_DIR}
 LIBS+=		-L${BDB_LIB_DIR}
 .endif
@@ -116,9 +102,9 @@ LIBS+=		-L${BDB_LIB_DIR}
 
 post-install:
 	${INSTALL} ${FILESDIR}/${PORTNAME}-qt.desktop \
-		${STAGEDIR}${PREFIX}/share/applications
-	${INSTALL} ${WRKSRC}/src/qt/res/icons/bitcoin.png \
-		${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}256.png
+		${STAGEDIR}${PREFIX}/share/applications/
+	${INSTALL} ${WRKSRC}/share/pixmaps/bitcoin256.png \
+		${STAGEDIR}${PREFIX}/share/pixmaps/${PORTNAME}.png
 
 .endif
 
