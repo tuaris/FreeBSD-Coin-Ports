@@ -11,8 +11,8 @@ OPTIONS_DEFAULT=	HARDENING UPNP WALLET_BDBMODERN ZMQ
 USES+=		cpe
 CPE_VERSION=	${PORTVERSION:R}
 
-#USERS=		zetacoin
-#GROUPS=		zetacoin
+USERS=		zetacoin
+GROUPS=		zetacoin
 
 CONFIGURE_ARGS=	--with-daemon \
 		--without-gui \
