@@ -1,0 +1,86 @@
+#!/bin/sh
+#
+# $FreeBSD$
+#
+
+# PROVIDE: %%PORTNAME%%
+# REQUIRE: DAEMON NETWORKING
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# %%PORTNAME%%_enable (bool):			Set to NO by default.
+#										Set it to YES to enable %%PORTNAME%%.
+# %%PORTNAME%%_config (path):			Set to %%PREFIX%%/etc/%%PORTNAME%%.conf
+#										by default.
+# %%PORTNAME%%_user (str):				The user account %%PORTNAME%% daemon runs as
+#										It uses '%%PORTNAME%%' user by default.
+# %%PORTNAME%%_group (str):				The group account %%PORTNAME%% daemon runs as
+#										It uses '%%PORTNAME%%' group by default.
+# %%PORTNAME%%_datadir (str):			Default to "/var/db/%%PORTNAME%%"
+#										Base data directory.
+# %%PORTNAME%%_logdir (str):			Default to "/var/log/%%PORTNAME%%"
+#										Log file directory.
+# %%PORTNAME%%_syslog_priority (str): 	Set to "info" by default.
+#                                		Set it to priority to be used by syslog
+# %%PORTNAME%%_syslog_facility (str): 	Set to "daemon" by default.
+#                                		Set it to facility to be used by syslog
+# %%PORTNAME%%_syslog_tag (str):      	Set to "ipfs-go" by default.
+#                                		Set it to tag to be used by syslog
+
+. /etc/rc.subr
+
+name=%%PORTNAME%%
+rcvar=%%PORTNAME%%_enable
+
+load_rc_config $name
+
+: ${%%PORTNAME%%_enable:=NO}
+: ${%%PORTNAME%%_config=%%PREFIX%%/etc/%%PORTNAME%%.conf}
+: ${%%PORTNAME%%_datadir=/var/db/%%PORTNAME%%}
+: ${%%PORTNAME%%_logdir=/var/log/%%PORTNAME%%}
+: ${%%PORTNAME%%_syslog_priority:="info"}
+: ${%%PORTNAME%%_syslog_facility:="daemon"}
+: ${%%PORTNAME%%_syslog_tag:="%%PORTNAME%%"}
+: ${%%PORTNAME%%_user="root"}
+: ${%%PORTNAME%%_group="wheel"}
+
+required_files=${%%PORTNAME%%_config}
+command="/usr/sbin/daemon"
+command_gobin=%%PREFIX%%/bin/%%PORTNAME%%
+pidfile="/var/run/%%PORTNAME%%/${name}.pid"
+command_args="-S -m 3 -s ${%%PORTNAME%%_syslog_priority} -l ${%%PORTNAME%%_syslog_facility} -T ${%%PORTNAME%%_syslog_tag} -p ${pidfile} ${command_gobin} --configfile=${%%PORTNAME%%_config} --appdir=${%%PORTNAME%%_datadir} --logdir=${%%PORTNAME%%_logdir} --utxoindex"
+procname="%%PREFIX%%/bin/%%PORTNAME%%"
+start_precmd="${name}_prestart"
+
+%%PORTNAME%%_create_datadir()
+{
+	echo "Creating data directory"
+	eval mkdir -p ${%%PORTNAME%%_datadir}
+	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_datadir}
+}
+
+%%PORTNAME%%_create_logdir()
+{
+	echo "Creating data directory"
+	eval mkdir -p ${%%PORTNAME%%_logdir}
+	[ $? -eq 0 ] && chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} ${%%PORTNAME%%_logdir}
+}
+
+%%PORTNAME%%_prestart()
+{
+	if [ ! -d "${%%PORTNAME%%_datadir}/." ]; then
+		%%PORTNAME%%_create_datadir || return 1
+	fi
+
+	if [ ! -d "${%%PORTNAME%%_logdir}/." ]; then
+		%%PORTNAME%%_create_logdir || return 1
+	fi
+
+	chown -R ${%%PORTNAME%%_user}:${%%PORTNAME%%_group} /var/run/%%PORTNAME%%
+}
+
+load_rc_config $name
+run_rc_command "$1"

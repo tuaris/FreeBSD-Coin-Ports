@@ -1,0 +1,150 @@
+PORTNAME=	kdstratum
+DISTVERSIONPREFIX=	v
+DISTVERSION=	0.0.1
+CATEGORIES=	net
+
+MAINTAINER=	ports@FreeBSD.org
+COMMENT=	Stratum server for Kaspad
+WWW=		https://github.com/tuaris/kaspad-stratum.git
+
+USES=		cargo
+USE_GITHUB=	yes
+GH_ACCOUNT=	tuaris
+
+PLIST_FILES=    bin/kaspad-stratum
+
+CARGO_CRATES=	aho-corasick-0.7.18 \
+		anyhow-1.0.58 \
+		arrayref-0.3.6 \
+		arrayvec-0.7.2 \
+		async-stream-0.3.3 \
+		async-stream-impl-0.3.3 \
+		async-trait-0.1.56 \
+		atty-0.2.14 \
+		autocfg-1.1.0 \
+		axum-0.5.13 \
+		axum-core-0.2.7 \
+		base64-0.13.0 \
+		bitflags-1.3.2 \
+		blake2b_simd-1.0.0 \
+		bytes-1.2.0 \
+		cc-1.0.73 \
+		cfg-if-1.0.0 \
+		clap-3.2.15 \
+		clap_derive-3.2.15 \
+		clap_lex-0.2.4 \
+		cmake-0.1.48 \
+		constant_time_eq-0.1.5 \
+		either-1.7.0 \
+		env_logger-0.9.0 \
+		fastrand-1.8.0 \
+		fixedbitset-0.4.2 \
+		fnv-1.0.7 \
+		futures-channel-0.3.21 \
+		futures-core-0.3.21 \
+		futures-sink-0.3.21 \
+		futures-task-0.3.21 \
+		futures-util-0.3.21 \
+		getrandom-0.2.7 \
+		h2-0.3.13 \
+		hashbrown-0.12.3 \
+		heck-0.4.0 \
+		hermit-abi-0.1.19 \
+		hex-0.4.3 \
+		http-0.2.8 \
+		http-body-0.4.5 \
+		http-range-header-0.3.0 \
+		httparse-1.7.1 \
+		httpdate-1.0.2 \
+		humantime-2.1.0 \
+		hyper-0.14.20 \
+		hyper-timeout-0.4.1 \
+		indexmap-1.9.1 \
+		instant-0.1.12 \
+		itertools-0.10.3 \
+		itoa-1.0.2 \
+		lazy_static-1.4.0 \
+		libc-0.2.126 \
+		lock_api-0.4.7 \
+		log-0.4.17 \
+		matchit-0.5.0 \
+		memchr-2.5.0 \
+		mime-0.3.16 \
+		mio-0.8.4 \
+		multimap-0.8.3 \
+		num_cpus-1.13.1 \
+		once_cell-1.13.0 \
+		os_str_bytes-6.2.0 \
+		parking_lot-0.12.1 \
+		parking_lot_core-0.9.3 \
+		percent-encoding-2.1.0 \
+		petgraph-0.6.2 \
+		pin-project-1.0.11 \
+		pin-project-internal-1.0.11 \
+		pin-project-lite-0.2.9 \
+		pin-utils-0.1.0 \
+		ppv-lite86-0.2.16 \
+		prettyplease-0.1.17 \
+		proc-macro-error-1.0.4 \
+		proc-macro-error-attr-1.0.4 \
+		proc-macro2-1.0.42 \
+		prost-0.10.4 \
+		prost-build-0.10.4 \
+		prost-derive-0.10.1 \
+		prost-types-0.10.1 \
+		quote-1.0.20 \
+		rand-0.8.5 \
+		rand_chacha-0.3.1 \
+		rand_core-0.6.3 \
+		redox_syscall-0.2.16 \
+		regex-1.6.0 \
+		regex-syntax-0.6.27 \
+		remove_dir_all-0.5.3 \
+		ryu-1.0.10 \
+		scopeguard-1.1.0 \
+		serde-1.0.140 \
+		serde_derive-1.0.140 \
+		serde_json-1.0.82 \
+		signal-hook-registry-1.4.0 \
+		slab-0.4.7 \
+		smallvec-1.9.0 \
+		socket2-0.4.4 \
+		strsim-0.10.0 \
+		syn-1.0.98 \
+		sync_wrapper-0.1.1 \
+		tempfile-3.3.0 \
+		termcolor-1.1.3 \
+		textwrap-0.15.0 \
+		tokio-1.20.1 \
+		tokio-io-timeout-1.2.0 \
+		tokio-macros-1.8.0 \
+		tokio-stream-0.1.9 \
+		tokio-util-0.7.3 \
+		tonic-0.7.2 \
+		tonic-build-0.7.2 \
+		tower-0.4.13 \
+		tower-http-0.3.4 \
+		tower-layer-0.3.1 \
+		tower-service-0.3.2 \
+		tracing-0.1.35 \
+		tracing-attributes-0.1.22 \
+		tracing-core-0.1.28 \
+		tracing-futures-0.2.5 \
+		try-lock-0.2.3 \
+		unicode-ident-1.0.2 \
+		version_check-0.9.4 \
+		want-0.3.0 \
+		wasi-0.11.0+wasi-snapshot-preview1 \
+		which-4.2.5 \
+		winapi-0.3.9 \
+		winapi-i686-pc-windows-gnu-0.4.0 \
+		winapi-util-0.1.5 \
+		winapi-x86_64-pc-windows-gnu-0.4.0 \
+		windows-sys-0.36.1 \
+		windows_aarch64_msvc-0.36.1 \
+		windows_i686_gnu-0.36.1 \
+		windows_i686_msvc-0.36.1 \
+		windows_x86_64_gnu-0.36.1 \
+		windows_x86_64_msvc-0.36.1
+
+.include <bsd.port.mk>
