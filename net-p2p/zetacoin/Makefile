@@ -17,7 +17,7 @@ USES=		autoreconf compiler:c++14-lang cpe gmake libtool localbase pkgconfig qt:5
 
 USE_GITHUB=	yes
 GNU_CONFIGURE=	yes
-USE_CXXSTD=	c++14 # fix build with clang16 due to use of deprecated feature std::random_shuffle
+USE_CXXSTD=	c++17 # fix build with clang16 due to use of deprecated feature std::random_shuffle
 GNU_CONFIGURE_MANPREFIX=${PREFIX}/share
 
 SLAVE_PORT?=	no
