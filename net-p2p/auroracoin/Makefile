@@ -2,7 +2,7 @@
 # $FreeBSD$
 
 PORTNAME=	auroracoin
-PORTVERSION=	2017.02.1.0
+PORTVERSION=	2018.09.1.0
 CATEGORIES=	net-p2p finance
 
 MAINTAINER=	daniel@morante.net

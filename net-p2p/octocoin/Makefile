@@ -17,8 +17,11 @@ USES+=		autoreconf gmake libtool pkgconfig shebangfix ssl
 SHEBANG_FILES=	src/test/*.py
 
 BROKEN_armv6=	AtomicPointer not implemented
+BROKEN_SSL=	libressl
+BROKEN_SSL_REASON_libressl=	may break consensus compatibility
 
 USE_GITHUB=	yes
+USE_OPENSSL=	yes
 GH_ACCOUNT=	${PORTNAME}-project
 
 OPTIONS_DEFINE=	X11 UPNP WALLET CLI TEST
@@ -66,7 +69,7 @@ CONFIGURE_ENV=	CRYPTO_CFLAGS="-I${OPENSSLINC}" CRYPTO_LIBS="-L${OPENSSLLIB} -lcr
 				SSL_CFLAGS="-I${OPENSSLINC}" SSL_LIBS="-L${OPENSSLLIB} -lssl"
 CONFIGURE_ENV+= OBJC="${CC}" OBJCFLAGS="${CFLAGS}" OBJCXX="${CXX}" OBJCXXFLAGS="${CXXFLAGS}"
 
-CONFIGURE_ARGS?=	--disable-reduce-exports
+CONFIGURE_ARGS?=	--disable-reduce-exports --with-libressl
 
 QT_BINARY=		${PORTNAME}-qt
 CLI_BINARY=		${PORTNAME}-cli
