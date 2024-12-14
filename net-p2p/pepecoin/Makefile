@@ -11,23 +11,25 @@ LICENSE=	MIT
 
 LIB_DEPENDS=	libboost_date_time.so:devel/boost-libs \
 		libfmt.so:devel/libfmt \
-		libevent.so:devel/libevent
+		libevent.so:devel/libevent \
+		libabsl_flags_config.so:devel/abseil
 
-USES=		autoreconf compiler:c++11-lang cpe gmake libtool localbase pkgconfig qt:5 shebangfix ssl
+USES=		autoreconf compiler:c++17-lang cpe gmake libtool localbase pkgconfig qt:5 shebangfix ssl
 
 USE_GITHUB=	yes
 GNU_CONFIGURE=	yes
+USE_CXXSTD=	c++17
 GNU_CONFIGURE_MANPREFIX=${PREFIX}/share
 
 SLAVE_PORT?=	no
 
 .if defined(SLAVE_PORT) && ${SLAVE_PORT} == "no"
 USES+=		desktop-file-utils
-USE_QT=		core gui network widgets \
+USE_QT=		core gui network widgets printsupport \
 		buildtools:build linguisttools:build qmake:build
 
-BUILD_DEPENDS+=	protoc:devel/protobuf3
-LIB_DEPENDS+=	libprotobuf.so:devel/protobuf3
+BUILD_DEPENDS+=	protoc:devel/protobuf
+LIB_DEPENDS+=	libprotobuf.so:devel/protobuf
 
 TESTS_USE=		QT=testlib
 TESTS_PLIST_FILES=	bin/test_${PORTNAME}-qt \
@@ -82,21 +84,16 @@ MAKE_ENV+=	V=1
 PLIST_FILES?=	bin/${PORTNAME}-qt share/man/man1/${PORTNAME}-qt.1.gz \
 		share/applications/${PORTNAME}-qt.desktop share/pixmaps/${PORTNAME}.png
 
-.include <bsd.port.options.mk>
-
-.if ${PORT_OPTIONS:MWALLET_BDBMODERN}
-CONFIGURE_ARGS+=	--enable-wallet --with-incompatible-bdb
-USES+=			bdb:18
-.else
-CONFIGURE_ARGS+=	--disable-wallet
-.endif
+WALLET_BDBMODERN_CONFIGURE_OFF=	--disable-wallet
+WALLET_BDBMODERN_CONFIGURE_ON=	--enable-wallet \
+								--with-incompatible-bdb \
+								BDB_CFLAGS=-I${BDB_INCLUDE_DIR} \
+								BDB_LIBS="-L${BDB_LIB_DIR} \
+										-Wl,-rpath=${BDB_LIB_DIR} \
+										-l${BDB_LIB_CXX_NAME}"
+WALLET_BDBMODERN_USES=		bdb:5+
 
 .include <bsd.port.pre.mk>
-
-.if ${PORT_OPTIONS:MWALLET_BDBMODERN}
-CPPFLAGS+=	-I${BDB_INCLUDE_DIR}
-LIBS+=		-L${BDB_LIB_DIR}
-.endif
 
 .if defined(SLAVE_PORT) && ${SLAVE_PORT} == "no"
 
