@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=1.0
-Name=Bellscoin Core
-Comment=Connect to the Bellscoin P2P Network
+Name=Bells Core
+Comment=Connect to the Bells P2P Network
 Exec=bells-qt %u
 Terminal=false
 Type=Application
@@ -9,4 +9,4 @@ Icon=bellscoin
 MimeType=x-scheme-handler/bellscoin;
 Categories=Office;Finance;
 StartupWMClass=Bellscoin-qt
-Name[C]=bellscoin-qt.desktop
+Name[C]=Bells
